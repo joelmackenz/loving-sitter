@@ -7,19 +7,19 @@ const ProtectedRoute = ({ children, ...routeProps }: RouteProps) => {
     <Route
       {...routeProps}
       render={({ location }: RouteComponentProps) =>
-      loggedInUser ? (
+        loggedInUser ? (
           children
         ) : (
           <Redirect
             to={{
-              pathname: "/login",
-              state: { from: location }
+              pathname: '/login',
+              state: { from: location },
             }}
           />
         )
       }
     />
-  )
-}
+  );
+};
 
-export default ProtectedRoute
+export default ProtectedRoute;
