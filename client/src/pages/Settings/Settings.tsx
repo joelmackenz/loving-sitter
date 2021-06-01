@@ -9,7 +9,7 @@ import EditProfile from '../../components/EditProfile/EditProfile';
 import ProfilePhoto from '../../components/ProfilePhoto/ProfilePhoto';
 import useStyles from './useStyles';
 
-const Settings = () => {
+const Settings = (): JSX.Element => {
   const classes = useStyles();
   const [currentTab, setCurrentTab] = useState('');
   return (

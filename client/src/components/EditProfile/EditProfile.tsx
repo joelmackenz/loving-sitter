@@ -9,7 +9,7 @@ import Box from '@material-ui/core/Box';
 
 import useStyles from './useStyles';
 
-const EditProfile = () => {
+const EditProfile = (): JSX.Element => {
   const classes = useStyles();
   const [isPhoneNumberAdded, setIsPhoneNumberAdded] = useState(false);
   return (

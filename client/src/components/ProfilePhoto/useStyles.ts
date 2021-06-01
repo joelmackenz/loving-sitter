@@ -11,6 +11,19 @@ const useStyles = makeStyles((theme) => ({
   cardContent: {
     margin: '0 auto',
   },
+  large: {
+    width: theme.spacing(15),
+    height: theme.spacing(15),
+  },
+  mediaContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  media: {
+    width: '25%',
+    borderRadius: '6rem',
+  },
 }));
 
 export default useStyles;
