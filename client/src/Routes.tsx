@@ -10,9 +10,7 @@ const Routes = () => {
     <Switch>
       <Route exact path="/login" component={Login} />
       <Route exact path="/signup" component={Signup} />
-      <ProtectedRoute exact path="/dashboard">
-        <Dashboard />
-      </ProtectedRoute>
+      <ProtectedRoute exact path="/dashboard" component={Dashboard} />
       <Route path="*">
         <Redirect to="/login" />
       </Route>

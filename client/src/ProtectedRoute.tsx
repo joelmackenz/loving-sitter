@@ -1,14 +1,16 @@
 import { Route, Redirect, RouteProps, RouteComponentProps } from 'react-router-dom';
 import { useAuth } from './context/useAuthContext';
 
-const ProtectedRoute = ({ children, ...routeProps }: RouteProps) => {
+const ProtectedRoute = ({ children, component: Component, ...routeProps }: RouteProps) => {
   const { loggedInUser } = useAuth();
   return (
     <Route
       {...routeProps}
-      render={({ location }: RouteComponentProps) =>
-        loggedInUser ? (
+      render={({ location, ...restProps }: RouteComponentProps) =>
+        loggedInUser && children ? (
           children
+        ) : loggedInUser && Component ? (
+          <Component {...restProps} location={location} />
         ) : (
           <Redirect
             to={{
