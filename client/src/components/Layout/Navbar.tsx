@@ -14,7 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 
 // Placeholders simulating data from DB
-const notifications: ActiveAlert[] = [
+const notifications: ActiveNotification[] = [
   {
     title: 'Notification 1 Title',
     subtitle: 'Notification 1 Subtitle',
@@ -26,14 +26,6 @@ const notifications: ActiveAlert[] = [
     date: '8/8/2000',
   },
 ];
-
-const myJobs: ActiveAlert[] = [
-  { title: 'My Jobs 1 Title', subtitle: 'My Jobs 1 Subtitle', date: '10/10/2000' },
-  { title: 'My Jobs 2 Title', subtitle: 'My Jobs 2 Subtitle', date: '10/10/2000' },
-];
-
-//   Empty message array simulating no new alerts
-const messages: ActiveAlert[] = [{ title: null, subtitle: null, date: null }];
 
 const useStyles = makeStyles((theme) => ({
   navMain: {
@@ -52,33 +44,33 @@ const useStyles = makeStyles((theme) => ({
   links: {
     display: 'flex',
     flexDirection: 'row',
-    padding: '1rem',
   },
   linkItem: {
     color: 'black',
-    padding: '.5rem',
+    paddingLeft: '.5rem',
+    paddingRight: '.5rem',
     fontSize: '1rem',
     textDecoration: 'none',
     fontWeight: 'bold',
   },
-  alertContainer: {
+  notificationContainer: {
     paddingBottom: '.5rem',
     paddingTop: '.5rem',
   },
-  alertTitle: {
+  notificationTitle: {
     fontWeight: 'bold',
     fontSize: '1rem',
   },
-  alertSubtitle: {
+  notificationSubtitle: {
     fontSize: '.75rem',
   },
-  alertDate: {
+  notificationDate: {
     fontSize: '.75rem',
     fontWeight: 'bold',
   },
   avatar: {
     justifySelf: 'flex-end',
-    margin: '1rem',
+    margin: '.5rem',
   },
   popover: {
     pointerEvents: 'none',
@@ -88,19 +80,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface ActiveAlert {
+interface ActiveNotification {
   title: string | null;
   subtitle: string | null;
   date: string | null;
 }
 
-interface AlertProps {
-  title: string;
+interface NotificationProps {
   titleAnchor: HTMLElement | null;
-  activeAlerts: ActiveAlert[];
+  activeNotifications: ActiveNotification[];
 }
 
-const AlertPopover: React.FC<AlertProps> = ({ title, titleAnchor, activeAlerts }) => {
+const NotificationPopover: React.FC<NotificationProps> = ({ titleAnchor, activeNotifications }) => {
   const classes = useStyles();
   return (
     <Popover
@@ -126,16 +117,16 @@ const AlertPopover: React.FC<AlertProps> = ({ title, titleAnchor, activeAlerts }
       <MenuList autoFocusItem={Boolean(titleAnchor)}>
         <MenuItem>
           <Link className={classes.linkItem} to="/notifications">
-            {activeAlerts.map((alert) =>
-              alert.title !== null ? (
-                <Grid key={null} className={classes.alertContainer}>
-                  <Typography className={classes.alertTitle}>{alert.title}</Typography>
-                  <Typography className={classes.alertSubtitle}>{alert.subtitle}</Typography>
-                  <Typography className={classes.alertDate}>{alert.date}</Typography>
+            {activeNotifications.map((notification) =>
+              notification.title !== null ? (
+                <Grid key={null} className={classes.notificationContainer}>
+                  <Typography className={classes.notificationTitle}>{notification.title}</Typography>
+                  <Typography className={classes.notificationSubtitle}>{notification.subtitle}</Typography>
+                  <Typography className={classes.notificationDate}>{notification.date}</Typography>
                 </Grid>
               ) : (
                 <Grid key={null}>
-                  <Typography>No new alerts</Typography>
+                  <Typography>No new notifications</Typography>
                 </Grid>
               ),
             )}
@@ -151,8 +142,6 @@ const Navbar: React.FC = () => {
 
   const [profilePopoverAnchor, setProfilePopoverAnchor] = useState<null | HTMLElement>(null);
   const [notificationsAnchor, setNotificationsAnchor] = useState<null | HTMLElement>(null);
-  const [myJobsAnchor, setMyJobsAnchor] = useState<null | HTMLElement>(null);
-  const [messagesAnchor, setMessagesAnchor] = useState<null | HTMLElement>(null);
 
   const logout = () => {
     //   handle logout here
@@ -166,7 +155,7 @@ const Navbar: React.FC = () => {
         vertical: 'bottom',
         horizontal: 'left',
       }}
-      onClick={(e) => setProfilePopoverAnchor(null)}
+      onClick={() => setProfilePopoverAnchor(null)}
     >
       <MenuList autoFocusItem={Boolean(profilePopoverAnchor)} onMouseLeave={() => setProfilePopoverAnchor(null)}>
         <MenuItem onClick={() => setProfilePopoverAnchor(null)}>
@@ -201,22 +190,12 @@ const Navbar: React.FC = () => {
               </Link>
             </MenuItem>
             <MenuItem key={'myjobs'}>
-              <Link
-                to={`/myjobs`}
-                className={classes.linkItem}
-                onMouseOver={(e) => setMyJobsAnchor(e.currentTarget)}
-                onMouseLeave={() => setMyJobsAnchor(null)}
-              >
+              <Link to={`/myjobs`} className={classes.linkItem}>
                 My Jobs
               </Link>
             </MenuItem>
             <MenuItem key={'messages'}>
-              <Link
-                to={`/messages`}
-                className={classes.linkItem}
-                onMouseOver={(e) => setMessagesAnchor(e.currentTarget)}
-                onMouseLeave={() => setMessagesAnchor(null)}
-              >
+              <Link to={`/messages`} className={classes.linkItem}>
                 Messages
               </Link>
             </MenuItem>
@@ -225,9 +204,7 @@ const Navbar: React.FC = () => {
             <Avatar src={profileImage} className={classes.avatar} />
           </IconButton>
           {profilePopover}
-          <AlertPopover title="Notifications" titleAnchor={notificationsAnchor} activeAlerts={notifications} />
-          <AlertPopover title="My Jobs" titleAnchor={myJobsAnchor} activeAlerts={myJobs} />
-          <AlertPopover title="Messages" titleAnchor={messagesAnchor} activeAlerts={messages} />
+          <NotificationPopover titleAnchor={notificationsAnchor} activeNotifications={notifications} />
         </Grid>
       </Toolbar>
     </AppBar>
