@@ -1,6 +1,8 @@
 import { MuiThemeProvider } from '@material-ui/core';
 import { theme } from './themes/theme';
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
+import Navbar from './components/Navbar/Navbar';
+import Main from './pages/Main/Main';
 import Login from './pages/Login/Login';
 import Signup from './pages/SignUp/SignUp';
 import Dashboard from './pages/Dashboard/Dashboard';
@@ -17,14 +19,16 @@ function App(): JSX.Element {
         <SnackBarProvider>
           <AuthProvider>
             <SocketProvider>
+              <Navbar />
               <Switch>
+                <Route exact path="/" component={Main} />
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/signup" component={Signup} />
                 <Route exact path="/dashboard">
                   <Dashboard />
                 </Route>
-                <Route path="*">
-                  <Redirect to="/login" />
+                <Route path="/">
+                  <Redirect to="/" />
                 </Route>
               </Switch>
             </SocketProvider>

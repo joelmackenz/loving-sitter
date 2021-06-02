@@ -10,6 +10,8 @@ import LoginForm from './LoginForm/LoginForm';
 import AuthHeader from '../../components/AuthHeader/AuthHeader';
 import { useAuth } from '../../context/useAuthContext';
 import { useSnackBar } from '../../context/useSnackbarContext';
+import { Link } from 'react-router-dom';
+import { Toolbar } from '@material-ui/core';
 
 export default function Login(): JSX.Element {
   const classes = useStyles();
@@ -39,9 +41,8 @@ export default function Login(): JSX.Element {
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
-      <Grid item xs={12} sm={8} md={7} elevation={6} component={Paper} square>
+      <Grid item xs={12} elevation={6} component={Paper} square>
         <Box className={classes.authWrapper}>
-          <AuthHeader linkTo="/signup" asideText="Don't have an account?" btnText="Create account" />
           <Box width="100%" maxWidth={450} p={3} alignSelf="center">
             <Grid container>
               <Grid item xs>
@@ -52,6 +53,12 @@ export default function Login(): JSX.Element {
             </Grid>
             <LoginForm handleSubmit={handleSubmit} />
           </Box>
+          <Grid className={classes.signUpInfo}>
+            <Typography>{"Don't have an account?"}</Typography>
+            <Link to="/signup" className={classes.signUpLink}>
+              Create account
+            </Link>
+          </Grid>
           <Box p={1} alignSelf="center" />
         </Box>
       </Grid>
