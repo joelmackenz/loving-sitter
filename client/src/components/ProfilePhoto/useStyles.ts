@@ -10,19 +10,32 @@ const useStyles = makeStyles((theme) => ({
   },
   cardContent: {
     margin: '0 auto',
-  },
-  large: {
-    width: theme.spacing(15),
-    height: theme.spacing(15),
+    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   mediaContainer: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    textAlign: 'center',
+    '& .MuiTypography-root': {
+      marginTop: '1rem',
+    },
   },
   media: {
     width: '25%',
     borderRadius: '6rem',
+  },
+  upload: {
+    margin: theme.spacing(2, 2, 2),
+    padding: 10,
+    width: 240,
+    height: 56,
+    borderRadius: theme.shape.borderRadius,
+    fontWeight: 'bold',
+    fontSize: '0.8rem',
   },
 }));
 

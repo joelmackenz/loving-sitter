@@ -1,6 +1,6 @@
-import { createMuiTheme } from '@material-ui/core';
+import { createMuiTheme, responsiveFontSizes } from '@material-ui/core';
 
-export const theme = createMuiTheme({
+let theme = createMuiTheme({
   typography: {
     fontFamily: '"Open Sans", "sans-serif", "Roboto"',
     fontSize: 12,
@@ -17,3 +17,7 @@ export const theme = createMuiTheme({
     borderRadius: 5,
   },
 });
+
+theme = responsiveFontSizes(theme);
+
+export { theme };
