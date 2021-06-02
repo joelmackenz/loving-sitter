@@ -12,6 +12,7 @@ import profileImage from '../../Images/775db5e79c5294846949f1f55059b53317f51e30.
 import logo from '../../Images/logo.png';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
+import { useAuth } from '../../context/useAuthContext';
 
 // Placeholders simulating data from DB
 const notifications: ActiveNotification[] = [
@@ -140,11 +141,13 @@ const NotificationPopover: React.FC<NotificationProps> = ({ titleAnchor, activeN
 const Navbar: React.FC = () => {
   const classes = useStyles();
 
+  const { logout } = useAuth();
+
   const [profilePopoverAnchor, setProfilePopoverAnchor] = useState<null | HTMLElement>(null);
   const [notificationsAnchor, setNotificationsAnchor] = useState<null | HTMLElement>(null);
 
-  const logout = () => {
-    //   handle logout here
+  const handleLogout = () => {
+    logout();
   };
 
   const profilePopover = (
@@ -164,7 +167,7 @@ const Navbar: React.FC = () => {
           </Link>
         </MenuItem>
         <MenuItem onClick={() => setProfilePopoverAnchor(null)}>
-          <Link className={classes.linkItem} onClick={logout} to="/">
+          <Link className={classes.linkItem} onClick={handleLogout} to="/">
             Logout
           </Link>
         </MenuItem>
