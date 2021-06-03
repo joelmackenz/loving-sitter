@@ -29,6 +29,12 @@ interface Props {
 export default function Login({ handleSubmit }: Props): JSX.Element {
   const classes = useStyles();
 
+  const generateDemoUser = (values: any) => {
+    const randomNum = Math.floor(10000 + Math.random() * 90000);
+    values.email = `ing${randomNum}@test.com`;
+    values.password = 'testing';
+  };
+
   return (
     <Formik
       initialValues={{
@@ -89,6 +95,16 @@ export default function Login({ handleSubmit }: Props): JSX.Element {
           <Box textAlign="center">
             <Button type="submit" size="large" variant="contained" color="secondary" className={classes.submit}>
               {isSubmitting ? <CircularProgress style={{ color: 'white' }} /> : 'LOGIN'}
+            </Button>
+            <Button
+              type="submit"
+              size="large"
+              variant="contained"
+              color="secondary"
+              className={classes.submit}
+              onClick={() => generateDemoUser(values)}
+            >
+              {isSubmitting ? <CircularProgress style={{ color: 'white' }} /> : 'DEMO USER'}
             </Button>
           </Box>
         </form>

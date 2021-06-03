@@ -11,15 +11,16 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'center',
   },
   subBox: {
-    padding: '30px 15%',
+    padding: '30px 120px',
   },
   mainText: {
     fontWeight: 900,
     marginBottom: '80px',
   },
   searchText: {
-    fontWeight: 800,
+    fontWeight: 900,
     marginTop: '30px',
+    marginBottom: '10px',
   },
   placeSearchInput: {
     width: '50%',
