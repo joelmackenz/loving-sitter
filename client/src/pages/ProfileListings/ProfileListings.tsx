@@ -11,6 +11,8 @@ import InputBase from '@material-ui/core/InputBase';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import Rating from '@material-ui/lab/Rating';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import Popover from '@material-ui/core/Popover';
 import SearchIcon from '@material-ui/icons/Search';
 import DateRangeIcon from '@material-ui/icons/DateRange';
@@ -85,9 +87,9 @@ const user4: User = {
   title: 'Animal lover',
   rating: 4,
   description: 'I have had dogs as pets for most of my life',
-  city: 'Vancouver',
+  city: 'Pitt Meadows',
   provinceState: 'BC',
-  rate: 25,
+  rate: 22,
 };
 const user5: User = {
   _id: 5,
@@ -97,8 +99,8 @@ const user5: User = {
   title: 'Cat owner',
   rating: 3,
   description: "I have four cats, and I think that's a normal thing",
-  city: 'Vancouver',
-  provinceState: 'BC',
+  city: 'Seattle',
+  provinceState: 'Washington',
   rate: 25,
 };
 const user6: User = {
@@ -109,9 +111,9 @@ const user6: User = {
   title: 'Professional dog walker',
   rating: 5,
   description: 'I have been doing this job for many years',
-  city: 'Vancouver',
-  provinceState: 'BC',
-  rate: 25,
+  city: 'Maryland',
+  provinceState: 'Georgia',
+  rate: 24,
 };
 const user7: User = {
   _id: 7,
@@ -121,24 +123,48 @@ const user7: User = {
   title: 'Pitt bull lover',
   rating: 4,
   description: "I'd love to walk your pitt bull",
-  city: 'Vancouver',
-  provinceState: 'BC',
-  rate: 25,
+  city: 'Quebec City',
+  provinceState: 'Quebec',
+  rate: 18,
 };
 const user8: User = {
   _id: 8,
   image: image4,
-  firstName: 'Elit',
-  lastName: 'Malesuada',
+  firstName: 'Sem',
+  lastName: 'Imperdiet',
   title: 'Giunea pig friend',
   rating: 2,
   description: "If you've got a guinea pig, I want to meet it!",
+  city: 'Ottawa',
+  provinceState: 'Ontario',
+  rate: 20,
+};
+const user9: User = {
+  _id: 9,
+  image: image2,
+  firstName: 'Elit',
+  lastName: 'Malesuada',
+  title: 'Cat sitter',
+  rating: 3.5,
+  description: 'Let me watch your cats!',
+  city: 'Coffeeville',
+  provinceState: 'Alberta',
+  rate: 14,
+};
+const user10: User = {
+  _id: 10,
+  image: image1,
+  firstName: 'Sed',
+  lastName: 'Ullamcorper',
+  title: 'Senior dog friend',
+  rating: 5,
+  description: 'I love senior dogs',
   city: 'Vancouver',
   provinceState: 'BC',
-  rate: 25,
+  rate: 26,
 };
 
-const users: User[] = [user1, user2, user3, user4, user5, user6, user7, user8];
+const users: User[] = [user1, user2, user3, user4, user5, user6, user7, user8, user9, user10];
 
 const useStyles = makeStyles({
   root: {
@@ -215,6 +241,10 @@ const useStyles = makeStyles({
   },
 });
 
+function Alert(props: AlertProps) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 const MediaCard: React.FC<MediaCardProps> = ({ user }) => {
   const classes = useStyles();
 
@@ -257,6 +287,7 @@ export default function ProfileListings(): JSX.Element {
   const classes = useStyles();
 
   const [displayedUsers, setDisplayedUsers] = useState<User[]>(users.slice(0, 6));
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [dateFrom, setDateFrom] = useState<Date | null>(new Date('2014-08-18T21:11:54'));
   const [dateTo, setDateTo] = useState<Date | null>(new Date('2014-08-18T21:11:54'));
   const [chosenDateRange, setChosenDateRange] = useState<string | null>('16 - 17 June 2019');
@@ -271,7 +302,18 @@ export default function ProfileListings(): JSX.Element {
 
   const handleShowMore = () => {
     const numberOfUsers = displayedUsers.length;
-    setDisplayedUsers(users.slice(0, numberOfUsers + 6));
+    const lastUser = users[displayedUsers.length];
+    if (lastUser === undefined) {
+      setSnackbarOpen(true);
+    }
+    setDisplayedUsers(users.slice(0, numberOfUsers + 3));
+  };
+
+  const handleSnackbarClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen(false);
   };
 
   const mediaCardGrid = (
@@ -279,6 +321,9 @@ export default function ProfileListings(): JSX.Element {
       {displayedUsers.map((user) => (
         <MediaCard user={user} key={user.firstName} />
       ))}
+      <Snackbar open={snackbarOpen} autoHideDuration={2000} onClose={handleSnackbarClose}>
+        <Alert severity="info">No more users found</Alert>
+      </Snackbar>
     </Grid>
   );
 
