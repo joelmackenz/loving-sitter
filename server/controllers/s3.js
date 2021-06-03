@@ -27,7 +27,6 @@ exports.uploadImage = (req, res) => {
     }
 
     if(data) {
-      // fs.unlinkSync(req.file.path); // Empty temp folder
       const locationUrl = data.Location;
       // store locationUrl to database
     }
