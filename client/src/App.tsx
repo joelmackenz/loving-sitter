@@ -1,13 +1,10 @@
 import { MuiThemeProvider } from '@material-ui/core';
 import { theme } from './themes/theme';
-import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
-import Main from './pages/Main/Main';
-import Login from './pages/Login/Login';
-import Signup from './pages/SignUp/SignUp';
-import Dashboard from './pages/Dashboard/Dashboard';
+import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/useAuthContext';
 import { SocketProvider } from './context/useSocketContext';
 import { SnackBarProvider } from './context/useSnackbarContext';
+import Routes from './Routes';
 
 import './App.css';
 
@@ -18,17 +15,7 @@ function App(): JSX.Element {
         <SnackBarProvider>
           <AuthProvider>
             <SocketProvider>
-              <Switch>
-                <Route exact path="/" component={Main} />
-                <Route exact path="/login" component={Login} />
-                <Route exact path="/signup" component={Signup} />
-                <Route exact path="/dashboard">
-                  <Dashboard />
-                </Route>
-                <Route path="/">
-                  <Redirect to="/" />
-                </Route>
-              </Switch>
+              <Routes />
             </SocketProvider>
           </AuthProvider>
         </SnackBarProvider>
