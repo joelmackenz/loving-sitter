@@ -1,0 +1,296 @@
+import { useState } from 'react';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles, fade } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import Avatar from '@material-ui/core/Avatar';
+import Typography from '@material-ui/core/Typography';
+import InputBase from '@material-ui/core/InputBase';
+import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import Rating from '@material-ui/lab/Rating';
+import Popover from '@material-ui/core/Popover';
+import SearchIcon from '@material-ui/icons/Search';
+import DateRangeIcon from '@material-ui/icons/DateRange';
+import CloseIcon from '@material-ui/icons/Close';
+import RoomIcon from '@material-ui/icons/Room';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+
+interface User {
+  _id: number;
+  image: string;
+  firstName: string;
+  lastName: string;
+  title: string;
+  rating: number;
+  description: string;
+  city: string;
+  provinceState: string;
+  rate: number;
+}
+
+// Dummy data
+import image1 from '../../Images/68f55f7799df6c8078a874cfe0a61a5e6e9e1687.png';
+const user1: User = {
+  _id: 1,
+  image: image1,
+  firstName: 'Lorem',
+  lastName: 'Ipsum',
+  title: 'Pet sitter',
+  rating: 5,
+  description: 'I provide dog walking and pet sitting services',
+  city: 'Toronto',
+  provinceState: 'Ontario',
+  rate: 15,
+};
+import image2 from '../../Images/775db5e79c5294846949f1f55059b53317f51e30.png';
+const user2: User = {
+  _id: 2,
+  image: image2,
+  firstName: 'Sed',
+  lastName: 'Elementum',
+  title: 'Professional dog trainer',
+  rating: 3,
+  description: 'Dog sitting, cat sitting, pocket pet and bird care',
+  city: 'Lethbridge',
+  provinceState: 'Alberta',
+  rate: 16,
+};
+import image3 from '../../Images/b1f0e680702e811aa8ba333cb19c0e0ea95e8e31.png';
+const user3: User = {
+  _id: 3,
+  image: image3,
+  firstName: 'Nunc',
+  lastName: 'Aliquet',
+  title: 'Dog care helper',
+  rating: 5,
+  description: 'I would love to work with your dog',
+  city: "St. John's",
+  provinceState: 'Newfoundland',
+  rate: 20,
+};
+import image4 from '../../Images/d9fc84a0d1d545d77e78aaad39c20c11d3355074.png';
+const user4: User = {
+  _id: 4,
+  image: image4,
+  firstName: 'Lacinia',
+  lastName: 'Quis',
+  title: 'Animal lover',
+  rating: 4,
+  description: 'I have had dogs as pets for most of my life',
+  city: 'Vancouver',
+  provinceState: 'BC',
+  rate: 25,
+};
+
+const useStyles = makeStyles({
+  root: {
+    // flexGrow: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  title: {
+    fontWeight: 'bold',
+    margin: '2rem',
+  },
+  card: {
+    margin: '2rem',
+    width: '300px',
+  },
+  cardContentUpper: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '250px',
+  },
+  cardContentLower: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  cardAvatar: {
+    height: '100px',
+    width: '100px',
+  },
+  profilesContainer: {
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchDateContainer: {
+    flexDirection: 'row',
+    border: '1.25px solid lightgrey',
+    justifyContent: 'center',
+  },
+  search: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: '5px',
+  },
+  searchIcon: {
+    padding: '.25rem',
+    color: 'red',
+  },
+  roomIcon: {
+    color: 'red',
+    paddingRight: '.25rem',
+  },
+  cityContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  datePicker: {
+    // height: '1rem',
+  },
+  dateRangeContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+  dateRangeIcon: {
+    paddingLeft: '1rem',
+    paddingRight: '1rem',
+    color: 'lightgrey',
+  },
+});
+
+interface MediaCardProps {
+  user: User;
+}
+
+const MediaCard: React.FC<MediaCardProps> = ({ user }) => {
+  const classes = useStyles();
+
+  const handleClickCard = () => {
+    // handle navigating to profile page here
+  };
+
+  return (
+    <Card className={classes.card} onClick={handleClickCard} raised={true}>
+      <CardActionArea>
+        <CardContent className={classes.cardContentUpper}>
+          <Avatar className={classes.cardAvatar} src={user.image} />
+          <Typography gutterBottom variant="h5" component="h2" style={{ fontWeight: 'bold', marginTop: '.5rem' }}>
+            {user.firstName} {user.lastName}
+          </Typography>
+          <Typography style={{ color: 'grey' }}>{user.title}</Typography>
+          <Rating style={{ margin: '.5rem' }} name="read-only" value={user.rating} readOnly />
+          <Typography variant="body2" color="textSecondary" style={{ fontWeight: 'bold' }}>
+            {user.description}
+          </Typography>
+        </CardContent>
+        <Grid>
+          <Divider orientation="horizontal" />
+        </Grid>
+        <CardContent className={classes.cardContentLower}>
+          <Grid className={classes.cityContainer}>
+            <RoomIcon className={classes.roomIcon} />
+            <Typography style={{ color: 'grey' }}>
+              {user.city}, {user.provinceState}
+            </Typography>
+          </Grid>
+          <Typography style={{ fontWeight: 'bold' }}>${user.rate}/hr</Typography>
+        </CardContent>
+      </CardActionArea>
+    </Card>
+  );
+};
+
+const MediaCardGrid = () => {
+  const classes = useStyles();
+  return (
+    <Grid container className={classes.profilesContainer} xs={9}>
+      <MediaCard user={user1} />
+      <MediaCard user={user2} />
+      <MediaCard user={user3} />
+      <MediaCard user={user4} />
+      <MediaCard user={user1} />
+      <MediaCard user={user1} />
+    </Grid>
+  );
+};
+
+export default function ProfileListings(): JSX.Element {
+  const classes = useStyles();
+
+  const [dateFrom, setDateFrom] = useState<Date | null>(new Date('2014-08-18T21:11:54'));
+  const [dateTo, setDateTo] = useState<Date | null>(new Date('2014-08-18T21:11:54'));
+  const [chosenDateRange, setChosenDateRange] = useState<string | null>('16 - 17 June 2019');
+
+  const handleDateFromChange = (date: Date | null) => {
+    setDateFrom(date);
+  };
+
+  const handleDateToChange = (date: Date | null) => {
+    setDateTo(date);
+  };
+
+  //   const dateSelectPopover = (
+  //     <Popover>
+  //       <MuiPickersUtilsProvider utils={DateFnsUtils}>
+  //         <KeyboardDatePicker
+  //           className={classes.datePicker}
+  //           disableToolbar
+  //           variant="inline"
+  //           format="MM/dd/yyyy"
+  //           margin="normal"
+  //           id="date-picker-inline"
+  //           label="From"
+  //           value={dateFrom}
+  //           onChange={handleDateFromChange}
+  //           KeyboardButtonProps={{
+  //             'aria-label': 'change date',
+  //           }}
+  //         />
+  //         <KeyboardDatePicker
+  //           className={classes.datePicker}
+  //           disableToolbar
+  //           variant="inline"
+  //           format="MM/dd/yyyy"
+  //           margin="normal"
+  //           id="date-picker-inline"
+  //           label="To"
+  //           value={dateTo}
+  //           onChange={handleDateToChange}
+  //           KeyboardButtonProps={{
+  //             'aria-label': 'change date',
+  //           }}
+  //         />
+  //       </MuiPickersUtilsProvider>
+  //       <Button>Go!</Button>
+  //     </Popover>
+  //   );
+
+  return (
+    <Grid container className={classes.root}>
+      <Typography variant="h4" className={classes.title}>
+        Your search results
+      </Typography>
+      <Grid container className={classes.searchDateContainer}>
+        <Grid className={classes.search}>
+          <SearchIcon className={classes.searchIcon} />
+          <InputBase placeholder="Search…" inputProps={{ 'aria-label': 'search' }} />
+        </Grid>
+        <Grid>
+          <Divider orientation="vertical" />
+        </Grid>
+        <Grid className={classes.dateRangeContainer}>
+          <DateRangeIcon className={classes.dateRangeIcon} />
+          <Typography>{chosenDateRange}</Typography>
+          <CloseIcon className={classes.dateRangeIcon} />
+        </Grid>
+      </Grid>
+      <MediaCardGrid />
+      <Button variant="outlined" style={{ margin: '1rem', marginBottom: '2rem' }}>
+        Show More
+      </Button>
+    </Grid>
+  );
+}
