@@ -32,6 +32,10 @@ interface User {
   rate: number;
 }
 
+interface MediaCardProps {
+  user: User;
+}
+
 // Dummy data
 import image1 from '../../Images/68f55f7799df6c8078a874cfe0a61a5e6e9e1687.png';
 const user1: User = {
@@ -85,6 +89,56 @@ const user4: User = {
   provinceState: 'BC',
   rate: 25,
 };
+const user5: User = {
+  _id: 5,
+  image: image1,
+  firstName: 'Interdum',
+  lastName: 'Pharetra',
+  title: 'Cat owner',
+  rating: 3,
+  description: "I have four cats, and I think that's a normal thing",
+  city: 'Vancouver',
+  provinceState: 'BC',
+  rate: 25,
+};
+const user6: User = {
+  _id: 6,
+  image: image2,
+  firstName: 'Lacinia',
+  lastName: 'Quis',
+  title: 'Professional dog walker',
+  rating: 5,
+  description: 'I have been doing this job for many years',
+  city: 'Vancouver',
+  provinceState: 'BC',
+  rate: 25,
+};
+const user7: User = {
+  _id: 7,
+  image: image3,
+  firstName: 'Diam',
+  lastName: 'Euismod',
+  title: 'Pitt bull lover',
+  rating: 4,
+  description: "I'd love to walk your pitt bull",
+  city: 'Vancouver',
+  provinceState: 'BC',
+  rate: 25,
+};
+const user8: User = {
+  _id: 8,
+  image: image4,
+  firstName: 'Elit',
+  lastName: 'Malesuada',
+  title: 'Giunea pig friend',
+  rating: 2,
+  description: "If you've got a guinea pig, I want to meet it!",
+  city: 'Vancouver',
+  provinceState: 'BC',
+  rate: 25,
+};
+
+const users: User[] = [user1, user2, user3, user4, user5, user6, user7, user8];
 
 const useStyles = makeStyles({
   root: {
@@ -125,13 +179,14 @@ const useStyles = makeStyles({
   searchDateContainer: {
     flexDirection: 'row',
     border: '1.25px solid lightgrey',
+    borderRadius: '5px',
     justifyContent: 'center',
+    padding: '.5rem',
   },
   search: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: '5px',
   },
   searchIcon: {
     padding: '.25rem',
@@ -152,7 +207,6 @@ const useStyles = makeStyles({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    textAlign: 'center',
   },
   dateRangeIcon: {
     paddingLeft: '1rem',
@@ -160,10 +214,6 @@ const useStyles = makeStyles({
     color: 'lightgrey',
   },
 });
-
-interface MediaCardProps {
-  user: User;
-}
 
 const MediaCard: React.FC<MediaCardProps> = ({ user }) => {
   const classes = useStyles();
@@ -203,23 +253,10 @@ const MediaCard: React.FC<MediaCardProps> = ({ user }) => {
   );
 };
 
-const MediaCardGrid = () => {
-  const classes = useStyles();
-  return (
-    <Grid container className={classes.profilesContainer} xs={9}>
-      <MediaCard user={user1} />
-      <MediaCard user={user2} />
-      <MediaCard user={user3} />
-      <MediaCard user={user4} />
-      <MediaCard user={user1} />
-      <MediaCard user={user1} />
-    </Grid>
-  );
-};
-
 export default function ProfileListings(): JSX.Element {
   const classes = useStyles();
 
+  const [displayedUsers, setDisplayedUsers] = useState<User[]>(users.slice(0, 6));
   const [dateFrom, setDateFrom] = useState<Date | null>(new Date('2014-08-18T21:11:54'));
   const [dateTo, setDateTo] = useState<Date | null>(new Date('2014-08-18T21:11:54'));
   const [chosenDateRange, setChosenDateRange] = useState<string | null>('16 - 17 June 2019');
@@ -231,6 +268,19 @@ export default function ProfileListings(): JSX.Element {
   const handleDateToChange = (date: Date | null) => {
     setDateTo(date);
   };
+
+  const handleShowMore = () => {
+    const numberOfUsers = displayedUsers.length;
+    setDisplayedUsers(users.slice(0, numberOfUsers + 6));
+  };
+
+  const mediaCardGrid = (
+    <Grid container className={classes.profilesContainer} xs={9}>
+      {displayedUsers.map((user) => (
+        <MediaCard user={user} key={user.firstName} />
+      ))}
+    </Grid>
+  );
 
   //   const dateSelectPopover = (
   //     <Popover>
@@ -273,22 +323,24 @@ export default function ProfileListings(): JSX.Element {
       <Typography variant="h4" className={classes.title}>
         Your search results
       </Typography>
-      <Grid container className={classes.searchDateContainer}>
-        <Grid className={classes.search}>
-          <SearchIcon className={classes.searchIcon} />
-          <InputBase placeholder="Search…" inputProps={{ 'aria-label': 'search' }} />
-        </Grid>
-        <Grid>
-          <Divider orientation="vertical" />
-        </Grid>
-        <Grid className={classes.dateRangeContainer}>
-          <DateRangeIcon className={classes.dateRangeIcon} />
-          <Typography>{chosenDateRange}</Typography>
-          <CloseIcon className={classes.dateRangeIcon} />
+      <Grid>
+        <Grid container className={classes.searchDateContainer}>
+          <Grid className={classes.search}>
+            <SearchIcon className={classes.searchIcon} />
+            <InputBase placeholder="Search…" inputProps={{ 'aria-label': 'search' }} />
+          </Grid>
+          <Grid>
+            <Divider orientation="vertical" />
+          </Grid>
+          <Grid className={classes.dateRangeContainer}>
+            <DateRangeIcon className={classes.dateRangeIcon} />
+            <Typography>{chosenDateRange}</Typography>
+            <CloseIcon className={classes.dateRangeIcon} />
+          </Grid>
         </Grid>
       </Grid>
-      <MediaCardGrid />
-      <Button variant="outlined" style={{ margin: '1rem', marginBottom: '2rem' }}>
+      {mediaCardGrid}
+      <Button onClick={handleShowMore} variant="outlined" style={{ margin: '1rem', marginBottom: '2rem' }}>
         Show More
       </Button>
     </Grid>
