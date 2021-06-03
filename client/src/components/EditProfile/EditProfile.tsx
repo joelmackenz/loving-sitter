@@ -10,21 +10,31 @@ import Box from '@material-ui/core/Box';
 import { Formik } from 'formik';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
-// import * as Yup from 'yup';
+import * as Yup from 'yup';
 
 import useStyles from './useStyles';
+
+interface FormValues {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  whereYouLive: string;
+  describeYourself: string;
+}
 
 const EditProfile = (): JSX.Element => {
   const theme = useTheme();
   const isLessthanSm: boolean = useMediaQuery(theme.breakpoints.down('sm'));
   const classes = useStyles({ isLessthanSm })();
   const [isPhoneNumberAdded, setIsPhoneNumberAdded] = useState(false);
-  const handleSubmit = () => {
-    return;
+  const handleSubmit = (values: FormValues): void => {
+    // handle form values;
+    console.log(values);
   };
   return (
     <>
-      <CardHeader title="Edit Profile" component="h2" className={classes.cardHeader} />
+      <CardHeader title="Edit Profile" component="h1" className={classes.cardHeader} />
       <CardContent className={classes.cardContent}>
         <Formik
           initialValues={{
@@ -35,6 +45,14 @@ const EditProfile = (): JSX.Element => {
             whereYouLive: '',
             describeYourself: '',
           }}
+          validationSchema={Yup.object().shape({
+            firstName: Yup.string().required('First Name is required').max(30, 'First Name is too long'),
+            lastName: Yup.string().required('Last Name is required').max(30, 'Last Name is too long'),
+            email: Yup.string().required('Email is required').email('Email is not valid'),
+            phone: Yup.string()
+              .required('Please, enter your phone number')
+              .matches(/^[0-9]+$/, 'Must contain numbers only'),
+          })}
           onSubmit={handleSubmit}
         >
           {({ handleSubmit, handleChange, values, touched, errors, isSubmitting }) => (
@@ -127,6 +145,7 @@ const EditProfile = (): JSX.Element => {
                       alignItems="center"
                     >
                       <span className={classes.phoneSpan}>No phone number is added</span>
+                      <input type="text" hidden id="phone" />
                       <Button
                         type="button"
                         variant="outlined"

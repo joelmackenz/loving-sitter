@@ -1,5 +1,5 @@
 // TODO: type of regex;
-const acceptedCreditCards: any = {
+export const acceptedCreditCards: any = {
   visa: /^4[0-9]{12}(?:[0-9]{3})?$/,
   mastercard: /^5[1-5][0-9]{14}$|^2(?:2(?:2[1-9]|[3-9][0-9])|[3-6][0-9][0-9]|7(?:[01][0-9]|20))[0-9]{12}$/,
   amex: /^3[47][0-9]{13}$/,
@@ -27,7 +27,6 @@ export const validateCard = (valueArg: string): boolean => {
   }
   const valid = sum % 10 == 0;
   let accepted = false;
-
   // loop through the keys (visa, mastercard, amex, etc.)
   Object.keys(acceptedCreditCards).forEach((key: string) => {
     const regex: RegExp = acceptedCreditCards[key];

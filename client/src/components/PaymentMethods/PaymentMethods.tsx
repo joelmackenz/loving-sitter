@@ -1,5 +1,4 @@
-import React, { useState, useCallback } from 'react';
-import Avatar from '@material-ui/core/Avatar';
+import React, { useState } from 'react';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -17,11 +16,11 @@ import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
-import { Formik } from 'formik';
+import { Formik, FormikHelpers } from 'formik';
 import Fade from '@material-ui/core/Fade';
-// import * as Yup from 'yup';
+import PaymentIcon from 'react-payment-icons';
 
-import { validateCVV, validateCard } from './utils';
+import { validateCVV, validateCard, acceptedCreditCards } from './utils';
 import useStyles from './useStyles';
 
 interface FormValues {
@@ -32,16 +31,14 @@ interface FormValues {
 
 interface CardState extends FormValues {
   id?: number;
+  cardName: string;
 }
 
 const Payment = (): JSX.Element => {
   const theme = useTheme();
   const isLessthanSm: boolean = useMediaQuery(theme.breakpoints.down('sm'));
   const classes = useStyles({ isLessthanSm })();
-  const [cards, setCards] = useState<CardState[]>([
-    { id: 1, cardNumber: '1212 1212 1212 1212', expires: '06/24', cvv: '123' },
-    { id: 2, cardNumber: '1222 1213 1212 4212', expires: '07/24', cvv: '133' },
-  ]);
+  const [cards, setCards] = useState<CardState[]>([]);
   const [selectedValue, setSelectedValue] = useState('card-0');
   const [isModelOpen, setIsModelOpen] = useState(false);
   const [maxLength, setMaxLength] = useState({
@@ -52,8 +49,30 @@ const Payment = (): JSX.Element => {
   const handleModelOpening = () => setIsModelOpen(true);
   const handleModelClosing = () => setIsModelOpen(false);
   const handleRadioButtonChange = (event: React.ChangeEvent<HTMLInputElement>) => setSelectedValue(event.target.value);
-  const handleSubmit = () => {
-    return;
+  const handleSubmit = (values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) => {
+    const { cardNumber, expires: expiresAt, cvv } = values;
+    let cardName: string;
+    // loop through the keys (visa, mastercard, amex, etc.)
+    Object.keys(acceptedCreditCards).forEach((key: string) => {
+      const regex: RegExp = acceptedCreditCards[key];
+      if (regex.test(cardNumber.replace(/\D/g, ''))) {
+        cardName = key;
+      }
+    });
+    const expiresProperty = expiresAt.split('-');
+    let expires: string;
+    if (expiresProperty.length === 2) {
+      // To get the last two values of year in Chrome case
+      expires = `${expiresProperty[1]}/${expiresProperty[0].substring(
+        expiresProperty[0].length - 2,
+        expiresProperty[0].length,
+      )}`;
+    } else {
+      expires = expiresAt;
+    }
+    setCards((prevState) => [...prevState, { expires, cardNumber, cardName, cvv }]);
+    setSubmitting(false);
+    setIsModelOpen(false);
   };
 
   const validateForm = (values: FormValues) => {
@@ -77,7 +96,7 @@ const Payment = (): JSX.Element => {
     return errors;
   };
 
-  const formatCardNumber = useCallback((valueArg: string): string => {
+  const formatCardNumber = (valueArg: string): string => {
     // remove all non digit characters
     const value = valueArg.replace(/\D/g, '');
     let formattedValue;
@@ -95,11 +114,11 @@ const Payment = (): JSX.Element => {
       setMaxLength((prevState) => ({ ...prevState, cardNumber: 19 }));
     }
     return formattedValue || '';
-  }, []);
+  };
 
   return (
     <>
-      <CardHeader title="Payment Methods" component="h2" className={classes.cardHeader} />
+      <CardHeader title="Payment Methods" component="h1" className={classes.cardHeader} />
       <CardContent className={classes.cardContent}>
         {cards.length ? (
           <>
@@ -108,10 +127,12 @@ const Payment = (): JSX.Element => {
             </Typography>
             <Grid container spacing={2} className={classes.cardsContainer}>
               {cards.map((card, idx) => (
-                <Grid item xs={12} md={6} key={card.id}>
+                <Grid item xs={12} md={6} key={idx}>
                   <Card elevation={1}>
                     <CardHeader
-                      avatar={<Avatar aria-label="recipe">R</Avatar>}
+                      avatar={
+                        <PaymentIcon id={card.cardName} style={{ margin: 10, width: 100 }} className="payment-icon" />
+                      }
                       action={
                         <Radio
                           icon={<CircleUnchecked />}
@@ -124,10 +145,10 @@ const Payment = (): JSX.Element => {
                       }
                     />
                     <CardContent>
-                      <Typography variant="h6" component="h4">
+                      <Typography variant="h6" component="h2">
                         {card.cardNumber.replace(/\d{4}(?= \d{4})/g, '****')}
                       </Typography>
-                      <Typography color="textSecondary">{`Exp: Date `}</Typography>
+                      <Typography color="textSecondary">{`Exp. Date ${card.expires}`}</Typography>
                     </CardContent>
                   </Card>
                 </Grid>

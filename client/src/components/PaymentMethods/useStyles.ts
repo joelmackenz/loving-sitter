@@ -1,5 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
+// eslint-disable-next-line
 const useStyles = (props: { isLessthanSm: boolean }) =>
   makeStyles((theme) => ({
     cardHeader: {
@@ -23,7 +24,7 @@ const useStyles = (props: { isLessthanSm: boolean }) =>
       fontWeight: 'bold',
       fontSize: '0.8rem',
       marginLeft: props.isLessthanSm ? theme.spacing(0) : theme.spacing(1),
-      margin: props.isLessthanSm ? '0 auto' : 0,
+      margin: props.isLessthanSm ? '0 auto' : theme.spacing(1, 0, 0, 1),
     },
     modal: {
       display: 'flex',
