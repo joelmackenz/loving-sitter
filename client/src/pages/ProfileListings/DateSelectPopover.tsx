@@ -13,38 +13,7 @@ import Button from '@material-ui/core/Button';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import DateFnsUtils from '@date-io/date-fns';
-
-const useStyles = makeStyles({
-  popover: {
-    backgroundColor: 'rgba(0, 0, 0, .5)',
-  },
-  datePickerCard: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '1rem',
-  },
-  datePickerHeader: {
-    alignSelf: 'flex-end',
-  },
-  datePickerTitle: {
-    paddingBottom: '1rem',
-  },
-  datePickerActions: {
-    flexDirection: 'column',
-  },
-  datePickerButton: {
-    marginTop: '1rem',
-    width: '7rem',
-  },
-  datePicker: {
-    marginRight: '5rem',
-    marginLeft: '5rem',
-    marginTop: '1rem',
-    marginBottom: '1rem',
-  },
-});
+import useStyles from './useStyles';
 
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
