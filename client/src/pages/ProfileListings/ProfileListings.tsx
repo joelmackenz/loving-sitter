@@ -10,24 +10,21 @@ import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import Rating from '@material-ui/lab/Rating';
 import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import SearchIcon from '@material-ui/icons/Search';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import CloseIcon from '@material-ui/icons/Close';
 import RoomIcon from '@material-ui/icons/Room';
-
 import DateSelectPopover from './DateSelectPopover';
+import Alert from './alert';
 import useStyles from './useStyles';
+import * as Moment from 'moment';
+import { extendMoment } from 'moment-range';
 
 // Temporary user data to show functionality
 import { User, users } from './dummyUserData';
 
 interface MediaCardProps {
   user: User;
-}
-
-function Alert(props: AlertProps) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
 const MediaCard: React.FC<MediaCardProps> = ({ user }) => {
@@ -72,10 +69,13 @@ export default function ProfileListings(): JSX.Element {
   const classes = useStyles();
 
   const [calendarOpen, setCalendarOpen] = useState<true | false>(false);
-  const [dateRange, setDateRange] = useState<string | null>('Any');
+  const [dateRange, setDateRange] = useState<Record<string, Date | null>>({ from: null, to: null });
+  const [formattedDateRange, setFormattedDateRange] = useState<string>('any');
   const [displayedUsers, setDisplayedUsers] = useState<User[]>(users.slice(0, 6));
   const [snackbarOpen, setSnackbarOpen] = useState<true | false>(false);
   const [search, setSearch] = useState<string>('');
+
+  const moment = extendMoment(Moment);
 
   const handleShowMore = () => {
     const numberOfUsers = displayedUsers.length;
@@ -99,6 +99,10 @@ export default function ProfileListings(): JSX.Element {
 
   const updateDateRange = (dateFrom: Date | null, dateTo: Date | null) => {
     if (dateFrom instanceof Date && dateTo instanceof Date) {
+      setDateRange({
+        from: dateFrom,
+        to: dateTo,
+      });
       const formattedDateFrom = new Intl.DateTimeFormat('en', {
         year: 'numeric',
         month: 'short',
@@ -107,17 +111,11 @@ export default function ProfileListings(): JSX.Element {
       const formattedDateTo = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: '2-digit' }).format(
         dateTo,
       );
-      setDateRange(`${formattedDateFrom} – ${formattedDateTo}`);
+      setFormattedDateRange(`${formattedDateFrom} – ${formattedDateTo}`);
     } else {
-      setDateRange(`Any`);
+      setFormattedDateRange(`any`);
     }
   };
-
-  useEffect(() => {
-    if (!dateRange) {
-      setCalendarOpen(true);
-    }
-  }, [dateRange]);
 
   const updateSearch = () => {
     const searchResults: User[] = [];
@@ -129,6 +127,29 @@ export default function ProfileListings(): JSX.Element {
       }
     });
   };
+
+  useEffect(() => {
+    if (formattedDateRange === 'any') {
+      setDisplayedUsers(users.slice(0, 6));
+    } else {
+      if (dateRange.from && dateRange.to) {
+        const searchResults: User[] = [];
+        setDisplayedUsers([]);
+        const range = moment.range(dateRange.from, dateRange.to);
+        users.map((user) => {
+          const isInDateRange = (date: Date) => {
+            return range.contains(date);
+          };
+          //   If at least one available date falls within the selected range, the user
+          //   is added to the displayedUsers array.
+          if (user.availableDates.some(isInDateRange)) {
+            searchResults.push(user);
+            setDisplayedUsers(searchResults);
+          }
+        });
+      }
+    }
+  }, [dateRange, setDateRange, formattedDateRange, setFormattedDateRange]);
 
   useEffect(() => {
     if (search) {
@@ -173,15 +194,15 @@ export default function ProfileListings(): JSX.Element {
             <Button onClick={handleCalendarOpen}>
               <DateRangeIcon className={classes.dateRangeIcon} />
             </Button>
-            <Typography>{dateRange}</Typography>
-            <Button onClick={() => setDateRange('Any')}>
+            <Typography>{formattedDateRange.charAt(0).toUpperCase() + formattedDateRange.slice(1)}</Typography>
+            <Button onClick={() => setFormattedDateRange('any')}>
               <CloseIcon className={classes.dateRangeIcon} />
             </Button>
           </Grid>
         </Grid>
       </Grid>
       {mediaCardGrid}
-      {search === '' ? (
+      {search === '' && formattedDateRange === 'any' ? (
         <Button onClick={handleShowMore} variant="outlined" style={{ margin: '1rem', marginBottom: '2rem' }}>
           Show More
         </Button>
