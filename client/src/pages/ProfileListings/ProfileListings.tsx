@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles, fade } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -19,6 +19,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import RoomIcon from '@material-ui/icons/Room';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+
+// Temporary user data to show functionality
 import { User, users } from './dummyUserData';
 
 interface MediaCardProps {
@@ -27,7 +29,6 @@ interface MediaCardProps {
 
 const useStyles = makeStyles({
   root: {
-    // flexGrow: 1,
     flexDirection: 'column',
     alignItems: 'center',
   },
@@ -85,9 +86,19 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'row',
   },
-  datePicker: {
-    // height: '1rem',
+  popover: {
+    backgroundColor: 'rgba(0, 0, 0, .5)',
   },
+  datePickerContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '3rem',
+  },
+  selectDateButton: {
+    marginTop: '1rem',
+  },
+  datePicker: {},
   dateRangeContainer: {
     display: 'flex',
     justifyContent: 'center',
@@ -142,26 +153,108 @@ const MediaCard: React.FC<MediaCardProps> = ({ user }) => {
   );
 };
 
-export default function ProfileListings(): JSX.Element {
-  const classes = useStyles();
+interface DateSelectProps {
+  open: true | false;
+  handleOpen: any;
+  handleUpdate: any;
+}
 
-  const [displayedUsers, setDisplayedUsers] = useState<User[]>(users.slice(0, 6));
+const DateSelectPopover: React.FC<DateSelectProps> = ({ open, handleOpen, handleUpdate }) => {
+  const classes = useStyles();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [dateFrom, setDateFrom] = useState<Date | null>(new Date('2014-08-18T21:11:54'));
-  const [dateTo, setDateTo] = useState<Date | null>(new Date('2014-08-18T21:11:54'));
-  const [chosenDateRange, setChosenDateRange] = useState<string | null>('16 - 17 June 2019');
+  const [dateFrom, setDateFrom] = useState<Date | null>(new Date('2021-06-01'));
+  const [dateTo, setDateTo] = useState<Date | null>(new Date('2021-06-30'));
 
   const handleDateFromChange = (date: Date | null) => {
     setDateFrom(date);
   };
 
   const handleDateToChange = (date: Date | null) => {
-    setDateTo(date);
+    if (date && dateFrom && date < dateFrom) {
+      setSnackbarOpen(true);
+    } else {
+      setDateTo(date);
+    }
   };
 
-  //   const handleCalendarOpen = () => {};
+  const updateDateRange = () => {
+    handleUpdate(dateFrom, dateTo);
+  };
 
-  //   const handleCalendarClose = () => {};
+  const handleSnackbarClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
+
+  return (
+    <Popover
+      open={open}
+      className={classes.popover}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'center',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'center',
+      }}
+    >
+      <Grid container className={classes.datePickerContainer}>
+        <Typography variant="h5">Select date range</Typography>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <KeyboardDatePicker
+            className={classes.datePicker}
+            disableToolbar
+            format="MM/dd/yyyy"
+            margin="normal"
+            id="date-picker-dialog"
+            label="From"
+            value={dateFrom}
+            onChange={handleDateFromChange}
+            KeyboardButtonProps={{
+              'aria-label': 'change date',
+            }}
+          />
+          <KeyboardDatePicker
+            className={classes.datePicker}
+            disableToolbar
+            format="MM/dd/yyyy"
+            margin="normal"
+            id="date-picker-dialog"
+            label="to"
+            value={dateTo}
+            onChange={handleDateToChange}
+            KeyboardButtonProps={{
+              'aria-label': 'change date',
+            }}
+          />
+        </MuiPickersUtilsProvider>
+        <Button
+          className={classes.selectDateButton}
+          onClick={() => {
+            handleOpen();
+            updateDateRange();
+          }}
+        >
+          <Typography variant="h5">Go!</Typography>
+        </Button>
+      </Grid>
+      <Snackbar open={snackbarOpen} autoHideDuration={2000} onClose={handleSnackbarClose}>
+        <Alert severity="error">Please select a date later than the start date</Alert>
+      </Snackbar>
+    </Popover>
+  );
+};
+
+export default function ProfileListings(): JSX.Element {
+  const classes = useStyles();
+
+  const [calendarOpen, setCalendarOpen] = useState<true | false>(false);
+  const [dateRange, setDateRange] = useState<string | null>(null);
+  const [displayedUsers, setDisplayedUsers] = useState<User[]>(users.slice(0, 6));
+  const [snackbarOpen, setSnackbarOpen] = useState<true | false>(false);
 
   const handleShowMore = () => {
     const numberOfUsers = displayedUsers.length;
@@ -179,6 +272,26 @@ export default function ProfileListings(): JSX.Element {
     setSnackbarOpen(false);
   };
 
+  const handleCalendarOpen = () => {
+    setCalendarOpen((prevState) => !prevState);
+  };
+
+  const updateDateRange = (dateFrom: Date, dateTo: Date) => {
+    const formattedDateFrom = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: '2-digit' }).format(
+      dateFrom,
+    );
+    const formattedDateTo = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: '2-digit' }).format(
+      dateTo,
+    );
+    setDateRange(`${formattedDateFrom} – ${formattedDateTo}`);
+  };
+
+  useEffect(() => {
+    if (!dateRange) {
+      setCalendarOpen(true);
+    }
+  }, [dateRange]);
+
   const mediaCardGrid = (
     <Grid container className={classes.profilesContainer} xs={9}>
       {displayedUsers.map((user) => (
@@ -189,42 +302,6 @@ export default function ProfileListings(): JSX.Element {
       </Snackbar>
     </Grid>
   );
-
-  //   const dateSelectPopover = (
-  //     <Popover>
-  //       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-  //         <KeyboardDatePicker
-  //           className={classes.datePicker}
-  //           disableToolbar
-  //           variant="inline"
-  //           format="MM/dd/yyyy"
-  //           margin="normal"
-  //           id="date-picker-inline"
-  //           label="From"
-  //           value={dateFrom}
-  //           onChange={handleDateFromChange}
-  //           KeyboardButtonProps={{
-  //             'aria-label': 'change date',
-  //           }}
-  //         />
-  //         <KeyboardDatePicker
-  //           className={classes.datePicker}
-  //           disableToolbar
-  //           variant="inline"
-  //           format="MM/dd/yyyy"
-  //           margin="normal"
-  //           id="date-picker-inline"
-  //           label="To"
-  //           value={dateTo}
-  //           onChange={handleDateToChange}
-  //           KeyboardButtonProps={{
-  //             'aria-label': 'change date',
-  //           }}
-  //         />
-  //       </MuiPickersUtilsProvider>
-  //       <Button>Go!</Button>
-  //     </Popover>
-  //   );
 
   return (
     <Grid container className={classes.root}>
@@ -241,9 +318,13 @@ export default function ProfileListings(): JSX.Element {
             <Divider orientation="vertical" />
           </Grid>
           <Grid className={classes.dateRangeContainer}>
-            <DateRangeIcon className={classes.dateRangeIcon} />
-            <Typography>{chosenDateRange}</Typography>
-            <CloseIcon className={classes.dateRangeIcon} />
+            <Button onClick={handleCalendarOpen}>
+              <DateRangeIcon className={classes.dateRangeIcon} />
+            </Button>
+            <Typography>{dateRange}</Typography>
+            <Button onClick={() => setDateRange(null)}>
+              <CloseIcon className={classes.dateRangeIcon} />
+            </Button>
           </Grid>
         </Grid>
       </Grid>
@@ -251,6 +332,7 @@ export default function ProfileListings(): JSX.Element {
       <Button onClick={handleShowMore} variant="outlined" style={{ margin: '1rem', marginBottom: '2rem' }}>
         Show More
       </Button>
+      <DateSelectPopover open={calendarOpen} handleOpen={handleCalendarOpen} handleUpdate={updateDateRange} />
     </Grid>
   );
 }
