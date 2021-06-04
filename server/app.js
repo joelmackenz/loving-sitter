@@ -11,7 +11,8 @@ const logger = require("morgan");
 
 const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
-const requestRouter = require("./routes/request");
+const s3Router = require("./routes/s3");
+const requestRouter = require('./routes/request');
 
 const { json, urlencoded } = express;
 
@@ -26,7 +27,7 @@ const io = socketio(server, {
 });
 
 io.on("connection", socket => {
-  console.log("connected");
+  console.log("Socket connected");
 });
 
 if (process.env.NODE_ENV === "development") {
@@ -44,6 +45,7 @@ app.use((req, res, next) => {
 
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
+app.use("/upload", s3Router);
 app.use("/request", requestRouter);
 
 if (process.env.NODE_ENV === "production") {
