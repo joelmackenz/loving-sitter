@@ -8,8 +8,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import { Formik } from 'formik';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { useTheme } from '@material-ui/core/styles';
 import * as Yup from 'yup';
 
 import useStyles from './useStyles';
@@ -24,10 +22,7 @@ interface FormValues {
 }
 
 const EditProfile = (): JSX.Element => {
-  const theme = useTheme();
-  const isLessthanSm: boolean = useMediaQuery(theme.breakpoints.down('sm'));
-  const classes = useStyles({ isLessthanSm })();
-  const [isPhoneNumberAdded, setIsPhoneNumberAdded] = useState(false);
+  const classes = useStyles();
   const handleSubmit = (values: FormValues): void => {
     // handle form values;
     console.log(values);
@@ -87,7 +82,6 @@ const EditProfile = (): JSX.Element => {
                     margin="normal"
                     name="lastName"
                     autoComplete="lastName"
-                    autoFocus
                     variant="outlined"
                     placeholder="Doe"
                     helperText={touched.lastName ? errors.lastName : ''}
@@ -107,7 +101,6 @@ const EditProfile = (): JSX.Element => {
                     margin="normal"
                     name="email"
                     autoComplete="email"
-                    autoFocus
                     variant="outlined"
                     placeholder="johndoe@gmail.com"
                     helperText={touched.email ? errors.email : ''}
@@ -120,42 +113,20 @@ const EditProfile = (): JSX.Element => {
                   <InputLabel htmlFor="phone">Phone Number</InputLabel>
                 </Grid>
                 <Grid item md={7} xs={12}>
-                  {isPhoneNumberAdded ? (
-                    <TextField
-                      type="tel"
-                      id="phone"
-                      fullWidth
-                      margin="normal"
-                      name="phone"
-                      autoComplete="phone"
-                      autoFocus
-                      variant="outlined"
-                      placeholder="Phone Number 647-777-702"
-                      helperText={touched.phone ? errors.phone : ''}
-                      error={touched.phone && Boolean(errors.phone)}
-                      value={values.phone}
-                      onChange={handleChange}
-                    />
-                  ) : (
-                    <Box
-                      marginTop={2}
-                      marginBottom={1}
-                      display="flex"
-                      justifyContent="space-between"
-                      alignItems="center"
-                    >
-                      <span className={classes.phoneSpan}>No phone number is added</span>
-                      <input type="text" hidden id="phone" />
-                      <Button
-                        type="button"
-                        variant="outlined"
-                        color="primary"
-                        onClick={() => setIsPhoneNumberAdded(true)}
-                      >
-                        Add a phone number
-                      </Button>
-                    </Box>
-                  )}
+                  <TextField
+                    type="tel"
+                    id="phone"
+                    fullWidth
+                    margin="normal"
+                    name="phone"
+                    autoComplete="phone"
+                    variant="outlined"
+                    placeholder="Phone Number 647-777-702"
+                    helperText={touched.phone ? errors.phone : ''}
+                    error={touched.phone && Boolean(errors.phone)}
+                    value={values.phone}
+                    onChange={handleChange}
+                  />
                 </Grid>
                 <Grid item md={3} xs={12} className={classes.inputLabelGridContainer}>
                   <InputLabel htmlFor="whereYouLive">Where You Live</InputLabel>
@@ -167,7 +138,6 @@ const EditProfile = (): JSX.Element => {
                     margin="normal"
                     name="whereYouLive"
                     autoComplete="whereYouLive"
-                    autoFocus
                     variant="outlined"
                     placeholder="Address"
                     helperText={touched.whereYouLive ? errors.whereYouLive : ''}
@@ -186,7 +156,6 @@ const EditProfile = (): JSX.Element => {
                     margin="normal"
                     name="describeYourself"
                     autoComplete="describeYourself"
-                    autoFocus
                     variant="outlined"
                     placeholder="About you"
                     multiline

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import clsx from 'clsx';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -14,8 +15,6 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Typography from '@material-ui/core/Typography';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { useTheme } from '@material-ui/core/styles';
 import { Formik, FormikHelpers } from 'formik';
 import Fade from '@material-ui/core/Fade';
 import PaymentIcon from 'react-payment-icons';
@@ -35,10 +34,10 @@ interface CardState extends FormValues {
 }
 
 const Payment = (): JSX.Element => {
-  const theme = useTheme();
-  const isLessthanSm: boolean = useMediaQuery(theme.breakpoints.down('sm'));
-  const classes = useStyles({ isLessthanSm })();
-  const [cards, setCards] = useState<CardState[]>([]);
+  const classes = useStyles();
+  const [cards, setCards] = useState<CardState[]>([
+    { cardName: 'mastercard', cardNumber: '1213 1313 1331 1322', expires: '02/23', cvv: '123' },
+  ]);
   const [selectedValue, setSelectedValue] = useState('card-0');
   const [isModelOpen, setIsModelOpen] = useState(false);
   const [maxLength, setMaxLength] = useState({
@@ -79,16 +78,16 @@ const Payment = (): JSX.Element => {
     const errors: { cardNumber?: string; expires?: string; cvv?: string } = {};
     if (values.cardNumber) {
       const result = validateCard(values.cardNumber);
+      setIsButtonDisabled(true);
       if (!result) {
         errors.cardNumber = 'Please, enter correct card number.';
-      } else {
-        setIsButtonDisabled(false);
       }
     }
     if (values.cvv) {
       const result = validateCVV(values.cardNumber, values.cvv);
       if (!result) {
         errors.cvv = 'Please, enter correct CVV';
+        setIsButtonDisabled(true);
       } else {
         setIsButtonDisabled(false);
       }
@@ -122,7 +121,7 @@ const Payment = (): JSX.Element => {
       <CardContent className={classes.cardContent}>
         {cards.length ? (
           <>
-            <Typography color="textSecondary" className={classes.marginLeft} align={isLessthanSm ? 'center' : 'left'}>
+            <Typography color="textSecondary" className={classes.marginLeft}>
               Saved Payment Profiles:
             </Typography>
             <Grid container spacing={2} className={classes.cardsContainer}>
@@ -130,9 +129,7 @@ const Payment = (): JSX.Element => {
                 <Grid item xs={12} md={6} key={idx}>
                   <Card elevation={1}>
                     <CardHeader
-                      avatar={
-                        <PaymentIcon id={card.cardName} style={{ margin: 10, width: 100 }} className="payment-icon" />
-                      }
+                      avatar={<PaymentIcon id={card.cardName} className={clsx('payment-icon', classes.paymentIcon)} />}
                       action={
                         <Radio
                           icon={<CircleUnchecked />}
@@ -235,7 +232,6 @@ const Payment = (): JSX.Element => {
                             margin="normal"
                             name="expires"
                             autoComplete="expires"
-                            autoFocus
                             variant="outlined"
                             placeholder="MM/YY"
                             helperText={touched.expires ? errors.expires : ''}
@@ -255,7 +251,6 @@ const Payment = (): JSX.Element => {
                             margin="normal"
                             name="cvv"
                             autoComplete="cvv"
-                            autoFocus
                             variant="outlined"
                             placeholder="***"
                             helperText={errors.cvv ? errors.cvv : ''}
