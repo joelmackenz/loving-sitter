@@ -11,6 +11,7 @@ export interface User {
   city: string;
   provinceState: string;
   rate: number;
+  availableDates: Date[];
 }
 
 import image1 from '../../Images/68f55f7799df6c8078a874cfe0a61a5e6e9e1687.png';
@@ -25,6 +26,7 @@ const user1: User = {
   city: 'Toronto',
   provinceState: 'Ontario',
   rate: 15,
+  availableDates: [new Date('2021-06-01'), new Date('2021-06-02'), new Date('2021-06-03'), new Date('2021-06-04')],
 };
 import image2 from '../../Images/775db5e79c5294846949f1f55059b53317f51e30.png';
 const user2: User = {
@@ -38,6 +40,7 @@ const user2: User = {
   city: 'Lethbridge',
   provinceState: 'Alberta',
   rate: 16,
+  availableDates: [new Date('2021-06-04'), new Date('2021-06-05'), new Date('2021-06-06'), new Date('2021-06-07')],
 };
 import image3 from '../../Images/b1f0e680702e811aa8ba333cb19c0e0ea95e8e31.png';
 const user3: User = {
@@ -51,19 +54,21 @@ const user3: User = {
   city: "St. John's",
   provinceState: 'Newfoundland',
   rate: 20,
+  availableDates: [new Date('2021-06-01'), new Date('2021-06-02'), new Date('2021-06-03'), new Date('2021-06-04')],
 };
 import image4 from '../../Images/d9fc84a0d1d545d77e78aaad39c20c11d3355074.png';
 const user4: User = {
   _id: 4,
   image: image4,
-  firstName: 'Lacinia',
-  lastName: 'Quis',
+  firstName: 'Labi',
+  lastName: 'Notarus',
   title: 'Animal lover',
   rating: 4,
   description: 'I have had dogs as pets for most of my life',
   city: 'Pitt Meadows',
   provinceState: 'BC',
   rate: 22,
+  availableDates: [new Date('2021-06-08'), new Date('2021-06-09'), new Date('2021-06-10'), new Date('2021-06-11')],
 };
 const user5: User = {
   _id: 5,
@@ -76,6 +81,7 @@ const user5: User = {
   city: 'Seattle',
   provinceState: 'Washington',
   rate: 25,
+  availableDates: [new Date('2021-06-08'), new Date('2021-06-09'), new Date('2021-06-10'), new Date('2021-06-11')],
 };
 const user6: User = {
   _id: 6,
@@ -85,9 +91,10 @@ const user6: User = {
   title: 'Professional dog walker',
   rating: 5,
   description: 'I have been doing this job for many years',
-  city: 'Maryland',
-  provinceState: 'Georgia',
+  city: 'Ottawa',
+  provinceState: 'Ontario',
   rate: 24,
+  availableDates: [new Date('2021-06-01'), new Date('2021-06-02'), new Date('2021-06-03'), new Date('2021-06-04')],
 };
 const user7: User = {
   _id: 7,
@@ -100,6 +107,16 @@ const user7: User = {
   city: 'Quebec City',
   provinceState: 'Quebec',
   rate: 18,
+  availableDates: [
+    new Date('2021-06-12'),
+    new Date('2021-06-13'),
+    new Date('2021-06-14'),
+    new Date('2021-06-15'),
+    new Date('2021-06-16'),
+    new Date('2021-06-17'),
+    new Date('2021-06-18'),
+    new Date('2021-06-19'),
+  ],
 };
 const user8: User = {
   _id: 8,
@@ -112,6 +129,7 @@ const user8: User = {
   city: 'Ottawa',
   provinceState: 'Ontario',
   rate: 20,
+  availableDates: [new Date('2021-06-15'), new Date('2021-06-16'), new Date('2021-06-17'), new Date('2021-06-18')],
 };
 const user9: User = {
   _id: 9,
@@ -121,14 +139,15 @@ const user9: User = {
   title: 'Cat sitter',
   rating: 3.5,
   description: 'Let me watch your cats!',
-  city: 'Coffeeville',
+  city: 'Toronto',
   provinceState: 'Alberta',
   rate: 14,
+  availableDates: [new Date('2021-06-18'), new Date('2021-06-19'), new Date('2021-06-20'), new Date('2021-06-21')],
 };
 const user10: User = {
   _id: 10,
   image: image1,
-  firstName: 'Sed',
+  firstName: 'Isced',
   lastName: 'Ullamcorper',
   title: 'Senior dog friend',
   rating: 5,
@@ -136,6 +155,16 @@ const user10: User = {
   city: 'Vancouver',
   provinceState: 'BC',
   rate: 26,
+  availableDates: [
+    new Date('2021-06-01'),
+    new Date('2021-06-02'),
+    new Date('2021-06-21'),
+    new Date('2021-06-22'),
+    new Date('2021-06-23'),
+    new Date('2021-06-24'),
+    new Date('2021-06-25'),
+    new Date('2021-06-26'),
+  ],
 };
 
 export const users: User[] = [user1, user2, user3, user4, user5, user6, user7, user8, user9, user10];
