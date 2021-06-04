@@ -21,8 +21,9 @@ exports.uploadImage = (req, res) => {
 
   s3.upload(params, (error, data) => {
     if (error) {
-      return res.status(400).json({
-        error
+      console.log(error);
+      return res.status(error.status).json({
+        error: `${error.message}`
       });
     }
 
