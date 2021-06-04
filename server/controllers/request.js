@@ -1,7 +1,23 @@
-// Get Request Model
+// require Request Model
 const Request = {};
 
-exports.getRequests = (req, res) => {
+exports.getRequestById = (req, res, next, id) => {
+  Request
+    .findById(id)
+    .exec((error, request) => {
+      if (error) {
+        return res.status(400).json({
+          error: "No request was found in DB"
+        })
+      }
+
+      req.request = request;
+      next();
+
+    })
+}
+
+exports.getAllRequest = (req, res) => {
   let limit = req.query.limit ? parseInt(req.query.limit) : 8;
   let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
 
@@ -39,7 +55,7 @@ exports.createRequest = (req, res) => {
 
 exports.updateRequest = (req, res) => {
   Request.update(
-    { _id: req.body.requestId },
+    { _id: req.request._id },
     { $set: {
         "accepted": req.body.accepted,
         "declined": req.body.declined
