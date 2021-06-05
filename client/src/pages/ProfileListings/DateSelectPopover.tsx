@@ -120,7 +120,7 @@ const DateSelectPopover: React.FC<DateSelectProps> = ({ open, handleOpen, handle
                 updateDateRange(null, null);
               }}
             >
-              <Typography variant="h6">Any day</Typography>
+              <Typography variant="h6">Any time</Typography>
             </Button>
           </Grid>
         </CardActions>

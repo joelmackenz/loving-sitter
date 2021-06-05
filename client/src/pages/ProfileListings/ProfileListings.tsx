@@ -1,69 +1,24 @@
 import { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardContent from '@material-ui/core/CardContent';
-import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
 import InputBase from '@material-ui/core/InputBase';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
-import Rating from '@material-ui/lab/Rating';
 import Snackbar from '@material-ui/core/Snackbar';
 import SearchIcon from '@material-ui/icons/Search';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import CloseIcon from '@material-ui/icons/Close';
-import RoomIcon from '@material-ui/icons/Room';
+
 import DateSelectPopover from './DateSelectPopover';
+import ProfileCard from './ProfileCard';
 import Alert from './alert';
+
 import useStyles from './useStyles';
 import * as Moment from 'moment';
 import { extendMoment } from 'moment-range';
 
 // Temporary user data to show functionality
 import { User, users } from './dummyUserData';
-
-interface MediaCardProps {
-  user: User;
-}
-
-const MediaCard: React.FC<MediaCardProps> = ({ user }) => {
-  const classes = useStyles();
-
-  const handleClickCard = () => {
-    // handle navigating to profile page here
-  };
-
-  return (
-    <Card className={classes.card} onClick={handleClickCard} raised={true}>
-      <CardActionArea>
-        <CardContent className={classes.cardContentUpper}>
-          <Avatar className={classes.cardAvatar} src={user.image} />
-          <Typography gutterBottom variant="h5" component="h2" style={{ fontWeight: 'bold', marginTop: '.5rem' }}>
-            {user.firstName} {user.lastName}
-          </Typography>
-          <Typography style={{ color: 'grey' }}>{user.title}</Typography>
-          <Rating style={{ margin: '.5rem' }} name="read-only" value={user.rating} readOnly />
-          <Typography variant="body2" color="textSecondary" style={{ fontWeight: 'bold' }}>
-            {user.description}
-          </Typography>
-        </CardContent>
-        <Grid>
-          <Divider orientation="horizontal" />
-        </Grid>
-        <CardContent className={classes.cardContentLower}>
-          <Grid className={classes.cityContainer}>
-            <RoomIcon className={classes.roomIcon} />
-            <Typography style={{ color: 'grey' }}>
-              {user.city}, {user.provinceState}
-            </Typography>
-          </Grid>
-          <Typography style={{ fontWeight: 'bold' }}>${user.rate}/hr</Typography>
-        </CardContent>
-      </CardActionArea>
-    </Card>
-  );
-};
 
 export default function ProfileListings(): JSX.Element {
   const classes = useStyles();
@@ -103,14 +58,8 @@ export default function ProfileListings(): JSX.Element {
         from: dateFrom,
         to: dateTo,
       });
-      const formattedDateFrom = new Intl.DateTimeFormat('en', {
-        year: 'numeric',
-        month: 'short',
-        day: '2-digit',
-      }).format(dateFrom);
-      const formattedDateTo = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: '2-digit' }).format(
-        dateTo,
-      );
+      const formattedDateFrom = moment(dateFrom).format('MMMM Do YYYY');
+      const formattedDateTo = moment(dateTo).format('MMMM Do YYYY');
       setFormattedDateRange(`${formattedDateFrom} – ${formattedDateTo}`);
     } else {
       setFormattedDateRange(`any`);
@@ -128,6 +77,7 @@ export default function ProfileListings(): JSX.Element {
     });
   };
 
+  //   Updates based on date selection
   useEffect(() => {
     if (formattedDateRange === 'any') {
       setDisplayedUsers(users.slice(0, 6));
@@ -137,11 +87,11 @@ export default function ProfileListings(): JSX.Element {
         setDisplayedUsers([]);
         const range = moment.range(dateRange.from, dateRange.to);
         users.map((user) => {
+          //   If at least one available date falls within the selected range, the user
+          //   is added to the displayedUsers array.
           const isInDateRange = (date: Date) => {
             return range.contains(date);
           };
-          //   If at least one available date falls within the selected range, the user
-          //   is added to the displayedUsers array.
           if (user.availableDates.some(isInDateRange)) {
             searchResults.push(user);
             setDisplayedUsers(searchResults);
@@ -149,8 +99,9 @@ export default function ProfileListings(): JSX.Element {
         });
       }
     }
-  }, [dateRange, setDateRange, formattedDateRange, setFormattedDateRange]);
+  }, [formattedDateRange, setFormattedDateRange]);
 
+  //   Updates based on search parameters
   useEffect(() => {
     if (search) {
       updateSearch();
@@ -159,10 +110,10 @@ export default function ProfileListings(): JSX.Element {
     }
   }, [search, setSearch]);
 
-  const mediaCardGrid = (
+  const profileCardGrid = (
     <Grid container className={classes.profilesContainer} xs={9}>
       {displayedUsers.map((user) => (
-        <MediaCard user={user} key={user._id} />
+        <ProfileCard user={user} key={user._id} />
       ))}
       <Snackbar open={snackbarOpen} autoHideDuration={2000} onClose={handleSnackbarClose}>
         <Alert severity="info">No more users found</Alert>
@@ -201,7 +152,7 @@ export default function ProfileListings(): JSX.Element {
           </Grid>
         </Grid>
       </Grid>
-      {mediaCardGrid}
+      {profileCardGrid}
       {search === '' && formattedDateRange === 'any' ? (
         <Button onClick={handleShowMore} variant="outlined" style={{ margin: '1rem', marginBottom: '2rem' }}>
           Show More
