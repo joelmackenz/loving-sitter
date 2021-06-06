@@ -5,7 +5,7 @@ exports.createNotification = (req, res) => {
   notification.save((error, notification) => {
     if (error) {
       return res.status(400).json({
-        error: "Error in Saving the notification"
+        error: "Error in Saving the notification",
       })
     }
 
@@ -27,9 +27,7 @@ exports.updateReadNotification = (req, res) => {
         })
       }
 
-      return res.status(200).json({
-        success: "Notification updated successfully."
-      })
+      return res.status(204)
 
     }
   )
@@ -58,7 +56,7 @@ exports.getAllNotification = (req, res) => {
 exports.getUnreadNotification = (req, res) => {
   Notification
     .find({ 
-      readStatus: { $eq: true },
+      readStatus: { $eq: false },
       user: req.body.userId 
     })
     .exec((error, notification) => {
@@ -68,6 +66,8 @@ exports.getUnreadNotification = (req, res) => {
         })
       }
 
-      return res.status(200).json({ notification })
+      return res.status(200).json({
+        notifications: notification
+      })
     })
 };
