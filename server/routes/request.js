@@ -9,7 +9,7 @@ const {
   getRequestById 
 } = require('../controllers/request');
 
-router.param('requestId', protect, getRequestById);
+router.param('requestId', getRequestById);
 
 router.get('/', protect, getAllRequest);
 router.post('/create', protect, createRequest);

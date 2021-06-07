@@ -1,9 +1,8 @@
-// require Request Model
-const Request = {};
+const Request = require("../models/Request");
 
-exports.getRequestById = (req, res, next, id) => {
+exports.getRequestById = (req, res, next, requestId) => {
   Request
-    .findById(id)
+    .findById(requestId)
     .exec((error, request) => {
       if (error) {
         return res.status(400).json({
@@ -36,7 +35,12 @@ exports.getAllRequest = (req, res) => {
 }
 
 exports.createRequest = (req, res) => {
-  if (req.body.user_id !== req.user) {
+  if (req.body.sitter_id === req.user.id) {
+    return res.status(400).json({
+      error: "User cann't create request for themselves."
+    })
+  }
+  if (req.body.user_id !== req.user.id) {
     return res.status(401).json({
       error: "Please, only pass the user_id for the logged in user."
     });
@@ -57,8 +61,21 @@ exports.createRequest = (req, res) => {
 }
 
 exports.updateRequest = (req, res) => {
-  Request.update(
-    { _id: req.request._id },
+  // A User cannot accept or decline it's own request
+  if (req.request.user_id.toString() === req.user.id) {
+    return res.status(401).json({
+      error: "User is not authorized to accept or decline its own request."
+    })
+  }
+
+  if (req.request.sitter_id.toString() !== req.user.id) {
+    return res.status(401).json({
+      error: "Logged In user id doesn't match with the sitter id."
+    })
+  }
+
+  Request.updateOne(
+    { _id: req.params.requestId },
     { $set: {
         "accepted": req.body.accepted,
         "declined": req.body.declined
@@ -71,8 +88,8 @@ exports.updateRequest = (req, res) => {
         })
       }
 
-      return res.status(200).json({
-        success: "Request status updated successfully."
+      return res.status(204).json({
+        success: "query updated successfully."
       })
 
     }
