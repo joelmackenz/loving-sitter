@@ -98,6 +98,10 @@ const useStyles = makeStyles({
     paddingRight: '1rem',
     color: 'lightgrey',
   },
+  showMore: {
+    margin: '1rem',
+    marginBottom: '2rem',
+  },
 });
 
 export default useStyles;

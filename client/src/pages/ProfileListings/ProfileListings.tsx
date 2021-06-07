@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import InputBase from '@material-ui/core/InputBase';
@@ -66,50 +66,6 @@ export default function ProfileListings(): JSX.Element {
     }
   };
 
-  const updateSearch = () => {
-    const searchResults: User[] = [];
-    setDisplayedUsers([]);
-    users.map((user: User) => {
-      if (user.city.toLowerCase().includes(search)) {
-        searchResults.push(user);
-        setDisplayedUsers(searchResults);
-      }
-    });
-  };
-
-  //   Updates based on date selection
-  useEffect(() => {
-    if (formattedDateRange === 'any') {
-      setDisplayedUsers(users.slice(0, 6));
-    } else {
-      if (dateRange.from && dateRange.to) {
-        const searchResults: User[] = [];
-        setDisplayedUsers([]);
-        const range = moment.range(dateRange.from, dateRange.to);
-        users.map((user) => {
-          //   If at least one available date falls within the selected range, the user
-          //   is added to the displayedUsers array.
-          const isInDateRange = (date: Date) => {
-            return range.contains(date);
-          };
-          if (user.availableDates.some(isInDateRange)) {
-            searchResults.push(user);
-            setDisplayedUsers(searchResults);
-          }
-        });
-      }
-    }
-  }, [formattedDateRange, setFormattedDateRange]);
-
-  //   Updates based on search parameters
-  useEffect(() => {
-    if (search) {
-      updateSearch();
-    } else {
-      setDisplayedUsers(users.slice(0, 6));
-    }
-  }, [search, setSearch]);
-
   const profileCardGrid = (
     <Grid container className={classes.profilesContainer} xs={9}>
       {displayedUsers.map((user) => (
@@ -123,7 +79,7 @@ export default function ProfileListings(): JSX.Element {
 
   return (
     <Grid container className={classes.root}>
-      <Typography variant="h4" className={classes.title}>
+      <Typography variant="h4" component="h1" className={classes.title}>
         Your search results
       </Typography>
       <Grid>
@@ -154,7 +110,7 @@ export default function ProfileListings(): JSX.Element {
       </Grid>
       {profileCardGrid}
       {search === '' && formattedDateRange === 'any' ? (
-        <Button onClick={handleShowMore} variant="outlined" style={{ margin: '1rem', marginBottom: '2rem' }}>
+        <Button onClick={handleShowMore} variant="outlined" className="showMore">
           Show More
         </Button>
       ) : null}

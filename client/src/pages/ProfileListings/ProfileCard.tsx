@@ -26,7 +26,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
     <Card className={classes.card} onClick={handleClickCard} raised={true}>
       <CardActionArea>
         <CardContent className={classes.cardContentUpper}>
-          <Avatar className={classes.cardAvatar} src={user.image} />
+          <Avatar className={classes.cardAvatar} src={user.image} alt="" />
           <Typography gutterBottom variant="h5" component="h2" style={{ fontWeight: 'bold', marginTop: '.5rem' }}>
             {user.firstName} {user.lastName}
           </Typography>

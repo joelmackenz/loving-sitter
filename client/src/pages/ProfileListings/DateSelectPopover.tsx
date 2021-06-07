@@ -16,8 +16,8 @@ import Alert from './alert';
 
 interface DateSelectProps {
   open: true | false;
-  handleOpen: any;
-  handleUpdate: any;
+  handleOpen: () => void;
+  handleUpdate: (dateFrom: Date | null, dateTo: Date | null) => void;
 }
 
 const DateSelectPopover: React.FC<DateSelectProps> = ({ open, handleOpen, handleUpdate }) => {
@@ -39,7 +39,7 @@ const DateSelectPopover: React.FC<DateSelectProps> = ({ open, handleOpen, handle
   };
 
   const updateDateRange = (dateFrom: Date | null, dateTo: Date | null) => {
-    dateFrom && dateTo ? handleUpdate(dateFrom, dateTo) : handleUpdate(null);
+    handleUpdate(dateFrom, dateTo);
   };
 
   const handleSnackbarClose = (event?: React.SyntheticEvent, reason?: string) => {
@@ -80,7 +80,7 @@ const DateSelectPopover: React.FC<DateSelectProps> = ({ open, handleOpen, handle
             disableToolbar
             format="MM/dd/yyyy"
             margin="normal"
-            id="date-picker-dialog"
+            id="date-picker-dialog-from"
             label="From"
             value={dateFrom instanceof Date ? dateFrom : null}
             onChange={handleDateFromChange}
@@ -93,7 +93,7 @@ const DateSelectPopover: React.FC<DateSelectProps> = ({ open, handleOpen, handle
             disableToolbar
             format="MM/dd/yyyy"
             margin="normal"
-            id="date-picker-dialog"
+            id="date-picker-dialog-to"
             label="to"
             value={dateTo instanceof Date ? dateFrom : null}
             onChange={handleDateToChange}
