@@ -18,13 +18,11 @@ exports.getRequestById = (req, res, next, id) => {
 }
 
 exports.getAllRequest = (req, res) => {
-  let limit = req.query.limit ? parseInt(req.query.limit) : 8;
   let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
 
   Request
     .find()
     .sort([[sortBy, 'ascending']])
-    .limit(limit)
     .exec((error, requests) => {
       if (error) {
         return res.status(500).json({
@@ -38,6 +36,11 @@ exports.getAllRequest = (req, res) => {
 }
 
 exports.createRequest = (req, res) => {
+  if (req.body.user_id !== req.user) {
+    return res.status(401).json({
+      error: "Please, only pass the user_id for the logged in user."
+    });
+  }
   const request = new Request(req.body);
   request.save((error, request) => {
     if (error) {
