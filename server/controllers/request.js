@@ -20,7 +20,7 @@ exports.getAllRequest = (req, res) => {
   let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
 
   Request
-    .find()
+    .find({ sitter_id: req.user.id })
     .sort([[sortBy, 'ascending']])
     .exec((error, requests) => {
       if (error) {
