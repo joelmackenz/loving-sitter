@@ -1,42 +1,27 @@
-const ObjectId = require('mongoose').Types.ObjectId;
+const ObjectId = require("mongoose").Types.ObjectId;
 const asyncHandler = require("express-async-handler");
 const Profile = require("../models/Profile");
 const User = require("../models/User");
 
-// @route POST /profile
-// @Given parameters passed in, create a profile.
-exports.createProfile = asyncHandler(async (req, res, next) => {
-  let profileData = req.body;
-  let profile = new Profile(profileData);
-
-  try {
-    const newProfile = await profile.save();
-    res.status(200).json({
-      success: {
-        profile: newProfile,
-      },
-    });
-  } catch (e) {
-    res.status(500);
-    throw new Error(e.message);
-  }
-});
-
 // @route PUT /profile/:id
 // @Given an ID and new parameters, update the profile
 exports.updatedProfile = asyncHandler(async (req, res, next) => {
-  const id = req.params.id;
-  let profile = req.body;
+  const userId = req.params.id;
+  const profileData = req.body.profile;
 
   // validate id
-  if (!ObjectId.isValid(id)) {
-    return res.status(400).send(Error("Profile ID is invalid."));
+  if (!ObjectId.isValid(userId)) {
+    return res.status(400).send(Error("User ID is invalid."));
   }
 
   try {
-    const updatedProfile = await Profile.findByIdAndUpdate(id, profile, {
-      new: true,
-    });
+    const updatedProfile = await Profile.findByIdAndUpdate(
+      userId,
+      profileData,
+      {
+        new: true,
+      }
+    );
     res.status(200).json({
       success: {
         profile: updatedProfile,
@@ -51,20 +36,16 @@ exports.updatedProfile = asyncHandler(async (req, res, next) => {
 // @route GET /profile/:id
 // @Given an ID, return profile with that ID
 exports.getOneProfile = asyncHandler(async (res, res, next) => {
-  const id = req.params.id;
+  const userId = req.params.id;
 
   // validate id
-  if (!ObjectId.isValid(id)) {
-    return res.status(400).send(Error("Profile ID is invalid."));
+  if (!ObjectId.isValid(userId)) {
+    return res.status(400).send(Error("User ID is invalid."));
   }
 
   try {
-    const profile = await Profile.findById(id);
-    res.status(200).json({
-      success: {
-        profile,
-      },
-    });
+    const user = await User.findById(userId).populate("profile");
+    res.status(200).json(user.profile);
   } catch (e) {
     res.status(500);
     throw new Error(e.message);
