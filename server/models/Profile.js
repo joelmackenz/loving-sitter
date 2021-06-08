@@ -6,16 +6,21 @@ const profileSchema = new mongoose.Schema({
   firstName: { type: String, require: true },
   lastName: { type: String, require: true },
   gender: String,
+  title: string,
   birthDate: Date,
   email: String,
   phoneNumber: String,
-  address: String,
+  address: {
+    street: String,
+    city: String,
+    provinceState: String,
+  },
   description: String,
   profileImg: String,
   coverImg: String,
   galleryImg: [String],
-  availability: [String],
-  price: Number,
+  availableDates: [String],
+  priceRate: Number,
 });
 
 module.exports = Profile = mongoose.model("profile", profileSchema);
