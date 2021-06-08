@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   mediaContainer: {
+    position: 'relative',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -24,9 +25,19 @@ const useStyles = makeStyles((theme) => ({
       marginTop: '1rem',
     },
   },
+  backgroundMedia: {
+    maxHeight: '300px',
+  },
   media: {
+    position: 'absolute',
     width: '25%',
+    bottom: '-23%',
+    border: '4px solid white',
     borderRadius: '6rem',
+  },
+  profileMediaInfo: {
+    textAlign: 'center',
+    marginTop: '5rem',
   },
   upload: {
     margin: theme.spacing(2, 2, 2),
