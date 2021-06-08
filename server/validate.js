@@ -33,8 +33,11 @@ exports.validateLogin = [
 
 exports.validateCreateNotification = [
   check("user").isMongoId().withMessage("User must be valid mongo Object Id"),
-  check("type").isIn(["SERVICE_REQUEST", "VIEWED_ACCOUNT"]).withMessage("Type must be VIEWED_ACCOUNT or SERVICE_REQUEST"),
-  check("title", "Title is required").notEmpty().isLength({ max: 32 }),
+  check("type")
+    .isIn(["SERVICE_REQUEST", "VIEWED_ACCOUNT", "SERVICE_ACCEPTED", "SERVICE_DECLINED",])
+    .withMessage("Type must be VIEWED_ACCOUNT or SERVICE_REQUEST or SERVICE_ACCEPTED or SERVICE_DECLINED"),
+  check("title", "Title is required and has a maximum length of 50 chars only.").notEmpty().isLength({ max: 50 }),
+  check("description", "Description is required").notEmpty(),
   (req, res, next) => {
     const errors = validationResult(req);
 

@@ -13,16 +13,16 @@ const notificationSchema = new Schema({
     type: String,
     enum: [
       'SERVICE_REQUEST',
+      'SERVICE_ACCEPTED',
+      'SERVICE_DECLINED',
       'VIEWED_ACCOUNT',
-      // 'SERVICE_ACCEPTED', // In future, if the user posts a job
-      // 'SERVICE_DECLINED', // then these notifications will be helpful
     ],
     required: true
   },
   title: {
     type: String,
     required: true,
-    maxlength: 32
+    maxlength: 50
   },
   description: {
     type: String,
