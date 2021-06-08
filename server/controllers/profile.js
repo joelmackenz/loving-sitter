@@ -6,7 +6,8 @@ const User = require("../models/User");
 // @route PUT /profile/:id
 // @Given an ID and new parameters, update the profile
 exports.updatedProfile = asyncHandler(async (req, res, next) => {
-  const userId = req.params.id;
+  const userId = req.body.id;
+  const profileId = req.params.id;
   const profileData = req.body.profile;
 
   // validate id
@@ -16,7 +17,7 @@ exports.updatedProfile = asyncHandler(async (req, res, next) => {
 
   try {
     const updatedProfile = await Profile.findByIdAndUpdate(
-      userId,
+      profileId,
       profileData,
       {
         new: true,
@@ -36,7 +37,8 @@ exports.updatedProfile = asyncHandler(async (req, res, next) => {
 // @route GET /profile/:id
 // @Given an ID, return profile with that ID
 exports.getOneProfile = asyncHandler(async (res, res, next) => {
-  const userId = req.params.id;
+  const userId = req.body.id;
+  const profileId = req.params.id;
 
   // validate id
   if (!ObjectId.isValid(userId)) {
