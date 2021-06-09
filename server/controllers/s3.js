@@ -1,11 +1,12 @@
 const AWS = require("aws-sdk");
 
+AWS.config.update({ 
+  accessKeyId: process.env.ACCESS_KEY,
+  secretAccessKey: process.env.SECRET_ACCESS_KEY,
+  region: process.env.REGION
+});
+
 exports.uploadImage = (req, res) => {
-  AWS.config.update({ 
-    accessKeyId: process.env.IAM_ACCESS_KEY,
-    secretAccessKey: process.env.IAM_SECRET_ACCESS_KEY,
-    region: process.env.REGION
-  });
   const s3 = new AWS.S3();
 
   let locationUrls = [];
@@ -20,7 +21,6 @@ exports.uploadImage = (req, res) => {
       Body: file[0].buffer,
       ContentType: file[0].mimetype,
       Key: `${req.user.id}/${file[0].fieldname}`,
-      Expires: 604800
     };
     s3.upload(params, (error, data) => {
       if (error) {
