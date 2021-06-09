@@ -12,6 +12,7 @@ const logger = require("morgan");
 const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
 const s3Router = require("./routes/s3");
+const requestRouter = require('./routes/request');
 const notificationRouter = require("./routes/notification");
 
 const { json, urlencoded } = express;
@@ -46,6 +47,7 @@ app.use((req, res, next) => {
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
 app.use("/upload", s3Router);
+app.use("/request", requestRouter);
 app.use("/notification", notificationRouter);
 
 if (process.env.NODE_ENV === "production") {

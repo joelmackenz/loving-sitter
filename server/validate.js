@@ -31,6 +31,18 @@ exports.validateLogin = [
   }
 ];
 
+exports.validateCreateRequest = [
+  check("user_id").isMongoId().withMessage("User Id must be valid mongo Object Id"),
+  check("sitter_id").isMongoId().withMessage("User Id must be valid mongo Object Id"),
+  check("start_date").isDate({ format: "YYYY-MM-DD" }),
+  check("end_date").isDate({ format: "YYYY-MM-DD" }),
+    (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.status(400).json({ errors: errors.array() });
+    next();
+}
+  
 exports.validateCreateNotification = [
   check("user").isMongoId().withMessage("User must be valid mongo Object Id"),
   check("type")
@@ -40,7 +52,6 @@ exports.validateCreateNotification = [
   check("description", "Description is required").notEmpty(),
   (req, res, next) => {
     const errors = validationResult(req);
-
     if (!errors.isEmpty())
       return res.status(400).json({ errors: errors.array() });
     next();
