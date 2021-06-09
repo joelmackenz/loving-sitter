@@ -1,8 +1,9 @@
 export interface FetchOptions {
 	method: string;
 	headers?: {
-		"Content-Type": string;
+		Accept?: string;
+		"Content-Type"?: string;
 	};
-	body?: string;
+	body?: string | FormData;
 	credentials: RequestCredentials;
 }

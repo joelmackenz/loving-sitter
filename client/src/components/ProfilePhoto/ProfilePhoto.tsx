@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, ChangeEvent } from 'react';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -10,34 +10,39 @@ import { useAuth } from '../../context/useAuthContext';
 import { useSnackBar } from '../../context/useSnackbarContext';
 
 import useStyles from './useStyles';
+import uploadImagesAPI from '../../helpers/APICalls/uploadImages';
 
 interface ImagesState {
   background: string;
   profile: string;
-  additionalOne: string;
-  additionalTwo: string;
+}
+
+interface UploadImagesState {
+  background: string | File;
+  profile: string | File;
 }
 
 const ProfilePhoto = (): JSX.Element => {
   const [images, setImages] = useState<ImagesState>({
     background: '',
     profile: '',
-    additionalOne: '',
-    additionalTwo: '',
+  });
+  const [uploadImages, setUploadImages] = useState<UploadImagesState>({
+    background: '',
+    profile: '',
   });
   const classes = useStyles();
   const { loggedInUser } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    if (event.target.files?.length === 2) {
+  const handleImageUpload = (event: ChangeEvent<HTMLInputElement>): void => {
+    if (images.background === '' && event.target.files?.length) {
       const background = URL.createObjectURL(event.target.files[0]);
-      const profile = URL.createObjectURL(event.target.files[1]);
-      // const additionalOne = URL.createObjectURL(event.target.files[2]);
-      // const additionalTwo = URL.createObjectURL(event.target.files[3]);
-      setImages({ ...images, profile, background });
-    } else {
-      updateSnackBarMessage('Make sure you upload 2 pictures. 1. background and 2. Profile');
+      setImages((prevState) => ({ ...prevState, background }));
+      setUploadImages((prevState) => ({ ...prevState, background: event.target.files![0] }));
+    } else if (images.profile === '' && event.target.files?.length) {
+      const profile = URL.createObjectURL(event.target.files[0]);
+      setImages((prevState) => ({ ...prevState, profile }));
+      setUploadImages((prevState) => ({ ...prevState, profile: event.target.files![0] }));
     }
   };
 
@@ -45,8 +50,33 @@ const ProfilePhoto = (): JSX.Element => {
     setImages({
       background: '',
       profile: '',
-      additionalOne: '',
-      additionalTwo: '',
+    });
+    setUploadImages({
+      background: '',
+      profile: '',
+    });
+  };
+
+  const handleImageUploads = (): void => {
+    if (!uploadImages.background && !uploadImages.profile) return;
+    const formData = new FormData();
+    formData.set('background', uploadImages.background);
+    formData.set('profile', uploadImages.profile);
+    uploadImagesAPI(formData).then((data: any): void => {
+      console.log(data);
+      if (data.error) {
+        if (data.error.message) {
+          updateSnackBarMessage(data.error.message);
+        } else {
+          updateSnackBarMessage(data.error);
+        }
+      } else if (data.success) {
+        updateSnackBarMessage(data.success);
+      } else {
+        // should not get here from backend but this catch is for an unknown issue
+        console.error({ data });
+        updateSnackBarMessage('An unexpected error occurred. Please try again');
+      }
     });
   };
 
@@ -62,8 +92,8 @@ const ProfilePhoto = (): JSX.Element => {
               ? images.background
               : `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmFJpMlEV-41ZFT8U7iUsMJzaXVIL_hAtT9A&usqp=CAU`
           }
-          title="User Profile Picture"
-          alt="Your Profile"
+          title="Background Picture"
+          alt="Your Background"
         />
         <CardMedia
           className={classes.media}
@@ -82,14 +112,30 @@ const ProfilePhoto = (): JSX.Element => {
       <CardContent className={classes.cardContent}>
         <Box>
           <Button variant="outlined" component="label" color="primary" className={classes.upload}>
-            Upload a file from your device
-            <input type="file" hidden accept="image/*" onChange={handleImageUpload} multiple max={2} />
+            {images.background === ''
+              ? `Select Your Background Image`
+              : images.profile === ''
+              ? `Select Your Profile Image`
+              : `Both Files are uploaded.`}
+            <input type="file" hidden accept="image/*" onChange={handleImageUpload} />
           </Button>
         </Box>
         <Button type="button" disableFocusRipple disableRipple onClick={handleDeleteIcon}>
           <DeleteOutlineIcon />
-          <Typography color="textSecondary">Delete photo</Typography>
+          <Typography color="textSecondary">Delete photos</Typography>
         </Button>
+        <Box textAlign="center">
+          <Button
+            type="submit"
+            size="large"
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+            onClick={handleImageUploads}
+          >
+            Save
+          </Button>
+        </Box>
       </CardContent>
     </>
   );
