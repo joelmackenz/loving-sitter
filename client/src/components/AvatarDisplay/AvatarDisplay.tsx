@@ -1,5 +1,5 @@
 import Avatar from '@material-ui/core/Avatar';
-import { User } from '../../interface/User';
+import { User } from '../../context/interface/User';
 
 interface Props {
   loggedIn: boolean;
