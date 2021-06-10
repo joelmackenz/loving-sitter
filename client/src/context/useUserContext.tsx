@@ -10,13 +10,6 @@ type Action =
   | { type: 'UPLOAD_BACKGROUND'; background: string }
   | { type: 'EMPTY_IMAGES' };
 
-// type DispatchInterface = (action: Action) => void;
-
-// interface IUserContextState {
-//   state: IUserContext;
-//   dispatchUserContext: any;
-// }
-
 const userReducer = (state: IUserContext, action: Action) => {
   switch (action.type) {
     case 'UPLOAD_PROFILE':
