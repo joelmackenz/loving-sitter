@@ -40,31 +40,44 @@ module.exports.createConvo = async (req, res, next) => {
     }
 };
 
+// GET -- Fetch all convos
+module.exports.getAllConvos = async (req, res, next) => {
+    try {
+        Convo.find({}, (err, convos) => {
+            res.send(convos).status(200);
+        });
+    } catch (err) {
+        res.send(err);
+    }
+};
+
 // GET -- Fetch Single Convo
 module.exports.getSingleConvo = async (req, res, next) => {
-    const convoId = req.params.convoId;
+    try {
+        const convoId = req.params.convoId;
 
-    const foundConvo = await Convo.findOne({
-        _id: convoId,
-    });
-
-    res.status(200).json(foundConvo);
+        const foundConvo = await Convo.findOne({
+            _id: convoId,
+        });
+        res.status(200).json(foundConvo);
+    } catch (err) {
+        res.send(err);
+    }
 };
 
 // GET -- Fetch all Messages from Single Convo
 module.exports.getConvoMessages = async (req, res, next) => {
-    const convoId = req.params.id;
+    try {
+        const convoId = req.params.id;
 
-    Convo.findById(convoId, (err, convo) => {
-        if (err) {
-            console.log(err);
-            res.send(err);
-        } else {
+        Convo.findById(convoId, (err, convo) => {
             if (convo) {
                 res.json(convo.messages);
             } else {
                 res.send("No conversation found!");
             }
-        }
-    });
+        });
+    } catch (err) {
+        res.send(err);
+    }
 };
