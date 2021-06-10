@@ -26,9 +26,28 @@ const useStyles = makeStyles({
     alignItems: 'center',
     justifyContent: 'space-around',
   },
-  cardAvatar: {
+  cardUserAvatar: {
     height: '100px',
     width: '100px',
+  },
+  cardUserTitle: {
+    color: 'grey',
+  },
+  cardUserRating: {
+    margin: '.5rem',
+  },
+  cardUserName: {
+    fontWeight: 'bold',
+    marginTop: '.5rem',
+  },
+  cardUserDesc: {
+    fontWeight: 'bold',
+  },
+  cardUserLocation: {
+    color: 'grey',
+  },
+  cardUserRate: {
+    fontWeight: 'bold',
   },
   profilesContainer: {
     alignSelf: 'center',

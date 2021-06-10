@@ -98,22 +98,22 @@ export default function ProfileListings(): JSX.Element {
             <Divider orientation="vertical" />
           </Grid>
           <Grid className={classes.dateRangeContainer}>
-            <Button onClick={handleCalendarOpen}>
+            <Button onClick={handleCalendarOpen} component="span">
               <DateRangeIcon className={classes.dateRangeIcon} />
             </Button>
             <Typography>{formattedDateRange.charAt(0).toUpperCase() + formattedDateRange.slice(1)}</Typography>
-            <Button onClick={() => setFormattedDateRange('any')}>
+            <Button onClick={() => setFormattedDateRange('any')} component="span">
               <CloseIcon className={classes.dateRangeIcon} />
             </Button>
           </Grid>
         </Grid>
       </Grid>
       {profileCardGrid}
-      {search === '' && formattedDateRange === 'any' ? (
-        <Button onClick={handleShowMore} variant="outlined" className="showMore">
+      {!search && formattedDateRange === 'any' && (
+        <Button onClick={handleShowMore} variant="outlined" className={classes.showMore}>
           Show More
         </Button>
-      ) : null}
+      )}
       <DateSelectPopover open={calendarOpen} handleOpen={handleCalendarOpen} handleUpdate={updateDateRange} />
     </Grid>
   );

@@ -26,13 +26,13 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
     <Card className={classes.card} onClick={handleClickCard} raised={true}>
       <CardActionArea>
         <CardContent className={classes.cardContentUpper}>
-          <Avatar className={classes.cardAvatar} src={user.image} alt="" />
-          <Typography gutterBottom variant="h5" component="h2" style={{ fontWeight: 'bold', marginTop: '.5rem' }}>
+          <Avatar className={classes.cardUserAvatar} src={user.image} alt="" />
+          <Typography gutterBottom variant="h5" component="h2" className={classes.cardUserName}>
             {user.firstName} {user.lastName}
           </Typography>
-          <Typography style={{ color: 'grey' }}>{user.title}</Typography>
-          <Rating style={{ margin: '.5rem' }} name="read-only" value={user.rating} readOnly />
-          <Typography variant="body2" color="textSecondary" style={{ fontWeight: 'bold' }}>
+          <Typography className={classes.cardUserTitle}>{user.title}</Typography>
+          <Rating className={classes.cardUserRating} name="read-only" value={user.rating} readOnly />
+          <Typography variant="body2" color="textSecondary" className={classes.cardUserDesc}>
             {user.description}
           </Typography>
         </CardContent>
@@ -42,11 +42,11 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
         <CardContent className={classes.cardContentLower}>
           <Grid className={classes.cityContainer}>
             <RoomIcon className={classes.roomIcon} />
-            <Typography style={{ color: 'grey' }}>
+            <Typography className={classes.cardUserLocation}>
               {user.city}, {user.provinceState}
             </Typography>
           </Grid>
-          <Typography style={{ fontWeight: 'bold' }}>${user.rate}/hr</Typography>
+          <Typography className={classes.cardUserRate}>${user.rate}/hr</Typography>
         </CardContent>
       </CardActionArea>
     </Card>
