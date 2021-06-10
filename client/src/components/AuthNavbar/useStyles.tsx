@@ -39,19 +39,26 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'bold',
   },
   notificationContainer: {
+    pointerEvents: 'initial',
+    display: 'flex',
+    flexDirection: 'column',
     paddingBottom: '.5rem',
     paddingTop: '.5rem',
+    '&:first-child': {
+      marginTop: '1rem',
+    },
   },
   notificationTitle: {
     fontWeight: 'bold',
-    fontSize: '1rem',
+    fontSize: '0.9rem',
   },
   notificationSubtitle: {
-    fontSize: '.75rem',
+    fontSize: '0.7rem',
   },
   notificationDate: {
-    fontSize: '.75rem',
+    fontSize: '0.8rem',
     fontWeight: 'bold',
+    marginTop: '0.3rem',
   },
   avatar: {
     justifySelf: 'flex-end',
@@ -60,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
   notificationsPopper: {
     pointerEvents: 'none',
     borderTop: '.25rem solid black',
-    width: '300px',
+    width: '450px',
     backgroundColor: 'white',
     border: '1px solid lightgrey',
     borderRadius: '5px',
@@ -72,6 +79,23 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     backgroundColor: 'red',
+  },
+  badgeIcon: {
+    '& .MuiBadge-anchorOriginTopRightCircle': {
+      left: 0,
+    },
+  },
+  linkFlexContainer: {
+    display: 'flex',
+    marginBottom: '1rem',
+    '&:hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.04)',
+    },
+  },
+  avatarSize: {
+    marginRight: '1rem',
+    width: theme.spacing(8),
+    height: theme.spacing(8),
   },
 }));
 

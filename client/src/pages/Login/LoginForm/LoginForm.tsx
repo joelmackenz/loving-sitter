@@ -29,7 +29,7 @@ interface Props {
 export default function Login({ handleSubmit }: Props): JSX.Element {
   const classes = useStyles();
 
-  const generateDemoUser = (values: any) => {
+  const generateDemoUser = (values: { email: string; password: string }) => {
     values.email = `testing@test.com`;
     values.password = 'testing';
   };

@@ -4,7 +4,6 @@ import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import mainPagePhoto from '../../Images/mainPagePhoto.jpg';
 import useStyles from './useStyles';
-import LandingNavbar from '../../components/LandingNavbar/LandingNavbar';
 
 export default function Main(): JSX.Element {
   const [dropInDate, setDropInDate] = useState<Date | null>(null);
@@ -21,7 +20,6 @@ export default function Main(): JSX.Element {
 
   return (
     <div className={classes.root}>
-      <LandingNavbar />
       <Grid container>
         <Grid item sm={6} className={classes.mainContent}>
           <Grid className={classes.subBox}>

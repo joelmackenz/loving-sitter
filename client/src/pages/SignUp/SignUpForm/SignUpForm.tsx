@@ -32,7 +32,7 @@ interface Props {
 const SignUpForm = ({ handleSubmit }: Props): JSX.Element => {
   const classes = useStyles();
 
-  const generateDemoUser = (values: any) => {
+  const generateDemoUser = (values: { username: string; email: string; password: string }) => {
     const randomNum = Math.floor(10000 + Math.random() * 90000);
     values.username = `testing${randomNum}`;
     values.email = `testing${randomNum}@test.com`;

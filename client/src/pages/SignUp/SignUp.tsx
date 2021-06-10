@@ -7,11 +7,9 @@ import Typography from '@material-ui/core/Typography';
 import useStyles from './useStyles';
 import register from '../../helpers/APICalls/register';
 import SignUpForm from './SignUpForm/SignUpForm';
-import AuthHeader from '../../components/AuthHeader/AuthHeader';
 import { useAuth } from '../../context/useAuthContext';
 import { useSnackBar } from '../../context/useSnackbarContext';
 import { Link } from 'react-router-dom';
-import LandingNavbar from '../../components/LandingNavbar/LandingNavbar';
 
 export default function Register(): JSX.Element {
   const classes = useStyles();
@@ -40,32 +38,29 @@ export default function Register(): JSX.Element {
   };
 
   return (
-    <div>
-      <LandingNavbar />
-      <Grid container component="main" className={classes.root}>
-        <CssBaseline />
-        <Grid item xs={12} elevation={6} component={Paper} square>
-          <Box className={classes.authWrapper}>
-            <Box width="100%" maxWidth={450} p={3} alignSelf="center">
-              <Grid container>
-                <Grid item xs>
-                  <Typography className={classes.welcome} component="h1" variant="h5">
-                    Sign up
-                  </Typography>
-                </Grid>
+    <Grid container component="main" className={classes.root}>
+      <CssBaseline />
+      <Grid item xs={12} elevation={6} component={Paper} square>
+        <Box className={classes.authWrapper}>
+          <Box width="100%" maxWidth={450} p={3} alignSelf="center">
+            <Grid container>
+              <Grid item xs>
+                <Typography className={classes.welcome} component="h1" variant="h5">
+                  Sign up
+                </Typography>
               </Grid>
-              <SignUpForm handleSubmit={handleSubmit} />
-            </Box>
-            <Grid className={classes.loginInfo}>
-              <Typography>{'Already have an account?'}</Typography>
-              <Link to="/login" className={classes.loginLink}>
-                Login
-              </Link>
             </Grid>
-            <Box p={1} alignSelf="center" />
+            <SignUpForm handleSubmit={handleSubmit} />
           </Box>
-        </Grid>
+          <Grid className={classes.loginInfo}>
+            <Typography>{'Already have an account?'}</Typography>
+            <Link to="/login" className={classes.loginLink}>
+              Login
+            </Link>
+          </Grid>
+          <Box p={1} alignSelf="center" />
+        </Box>
       </Grid>
-    </div>
+    </Grid>
   );
 }
