@@ -1,12 +1,9 @@
 let mongoose = require("mongoose");
 
-let Message = new mongoose.Schema({
-    author: {
-        id: Number,
-        // id: mongoose.ObjectId,
-    },
+const Message = new mongoose.Schema({
+    author: mongoose.ObjectId,
     body: String,
-    time: Date,
+    time: { type: Date, default: Date.now },
 });
 
-module.exports = Message = mongoose.model("message", Message);
+module.exports = mongoose.model("message", Message);

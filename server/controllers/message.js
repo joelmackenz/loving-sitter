@@ -3,16 +3,18 @@ const router = express.Router();
 const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 const Convo = require("../models/convo");
+const Message = require("../models/message");
+const ObjectId = require("mongodb").ObjectId;
 
-// POST operation
+// POST -- Add Message
 module.exports.addMessage = async (req, res, next) => {
-    const convoId = req.params.id;
+    const convoId = req.params.convoId;
 
-    const newMessage = req.body.message;
+    const newMessage = new Message(req.body);
 
-    // Used to ensure posting user is a member of the conversation
     let convoUsers;
 
+    // Gets users involved in conversation
     Convo.findById(convoId, (err, convo) => {
         if (err) {
             console.log(err);
@@ -20,31 +22,78 @@ module.exports.addMessage = async (req, res, next) => {
         } else {
             convoUsers = convo.users;
         }
-    });
-
-    Convo.updateOne(
-        { _id: convoId },
-        { $push: { messages: newMessage } },
-        (err) => {
-            if (err) {
-                console.log(err);
-                res.send(err);
+    }).exec((err) => {
+        if (err) {
+            console.log(err);
+            res.send(err);
+        } else {
+            // Ensures author is a member of the conversation
+            if (convoUsers.includes(newMessage.author)) {
+                Convo.updateOne(
+                    { _id: convoId },
+                    { $push: { messages: newMessage } },
+                    (err) => {
+                        if (err) {
+                            console.log(err);
+                            res.send(err);
+                        } else {
+                            res.json({ success: true, msg: "Message added" });
+                        }
+                    }
+                );
             } else {
-                if (convoUsers.includes(newMessage.user)) {
-                    res.json({ success: true, msg: "Message added" });
-                } else {
-                    res.status(400);
-                    res.send("Message sender not a conversation user!");
-                }
+                res.status(400);
+                res.send("Message sender not a conversation user!");
             }
         }
-    );
+    });
 };
 
-// PUT -- edit message
+// PUT -- Edit Message
+module.exports.editMessage = async (req, res, next) => {
+    const convoId = req.params.convoId;
+    const messageId = req.params.messageId;
+    newMessageBody = req.body.message.body;
+    try {
+        let result = await Convo.findByIdAndUpdate(
+            convoId,
+            {
+                $set: {
+                    "messages.$[i].body": newMessageBody,
+                },
+            },
+            {
+                arrayFilters: [{ "i._id": ObjectId(messageId) }],
+                new: true,
+            }
+        );
 
-// module.exports.editMessage = async (req, res, next) => {
-//     // Send the message id
-//     const messageId = req.params.id
-//     Message.updateOne
-// }
+        if (!result) return res.status(404);
+        res.send(result);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Problem -- message not edited.");
+    }
+};
+
+// DELETE -- Delete Message
+module.exports.deleteMessage = async (req, res, next) => {
+    const convoId = req.params.convoId;
+    const messageId = req.params.messageId;
+    try {
+        let result = await Convo.findByIdAndUpdate(
+            convoId,
+            {
+                $pull: { messages: { _id: ObjectId(messageId) } },
+            },
+            {
+                new: true,
+            }
+        );
+        if (!result) return res.status(404);
+        res.send(result);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Problem -- message not erased.");
+    }
+};

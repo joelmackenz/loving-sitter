@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 const Convo = require("../models/convo");
 
-// POST operation
+// POST operation -- Create Convo
 module.exports.createConvo = async (req, res, next) => {
     const { users } = req.body;
     const alreadyExists = await Convo.findOne({
@@ -16,7 +16,6 @@ module.exports.createConvo = async (req, res, next) => {
                 const newConvo = new Convo({
                     users: users,
                 });
-
                 newConvo.save().then((err) => {
                     if (err) {
                         console.log(err);
@@ -41,18 +40,18 @@ module.exports.createConvo = async (req, res, next) => {
     }
 };
 
-// GET single convo
+// GET -- Fetch Single Convo
 module.exports.getSingleConvo = async (req, res, next) => {
-    const users = req.body.users;
+    const convoId = req.params.convoId;
 
     const foundConvo = await Convo.findOne({
-        users: users,
+        _id: convoId,
     });
 
     res.status(200).json(foundConvo);
 };
 
-// GET messages from single convo using convo ID
+// GET -- Fetch all Messages from Single Convo
 module.exports.getConvoMessages = async (req, res, next) => {
     const convoId = req.params.id;
 
