@@ -1,5 +1,5 @@
-import { FetchOptions } from '../../interface/FetchOptions';
-import { SearchUsersApiData } from '../../interface/User';
+import { FetchOptions } from '../../context/interface/FetchOptions';
+import { SearchUsersApiData } from '../../context/interface/User';
 
 interface Props {
   search: string;
