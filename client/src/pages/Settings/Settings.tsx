@@ -42,6 +42,7 @@ const TabPanel = (props: TabPanelProps) => {
 const Settings = (): JSX.Element => {
   const classes = useStyles();
   const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
+  // eslint-disable-next-line
   const handleTabIndexChange = (event: any, newValue: number): void => {
     setCurrentTabIndex(newValue);
   };

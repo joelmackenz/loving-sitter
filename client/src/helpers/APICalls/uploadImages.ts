@@ -1,7 +1,7 @@
-import { AuthApiData } from '../../interface/AuthApiData';
+import { S3UploadAPIData } from '../../interface/S3Upload';
 import { FetchOptions } from '../../interface/FetchOptions';
 
-const uploadImagesAPI = async (data: FormData): Promise<AuthApiData> => {
+const uploadImagesAPI = async (data: FormData): Promise<S3UploadAPIData> => {
   const fetchOptions: FetchOptions = {
     method: 'POST',
     headers: {

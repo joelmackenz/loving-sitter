@@ -8,14 +8,10 @@ import Typography from '@material-ui/core/Typography';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import { useAuth } from '../../context/useAuthContext';
 import { useSnackBar } from '../../context/useSnackbarContext';
+import { useUser } from '../../context/useUserContext';
 
 import useStyles from './useStyles';
 import uploadImagesAPI from '../../helpers/APICalls/uploadImages';
-
-interface ImagesState {
-  background: string;
-  profile: string;
-}
 
 interface UploadImagesState {
   background: string | File;
@@ -23,34 +19,30 @@ interface UploadImagesState {
 }
 
 const ProfilePhoto = (): JSX.Element => {
-  const [images, setImages] = useState<ImagesState>({
-    background: '',
-    profile: '',
-  });
   const [uploadImages, setUploadImages] = useState<UploadImagesState>({
     background: '',
     profile: '',
   });
+  const { userState, dispatchUserContext } = useUser();
   const classes = useStyles();
   const { loggedInUser } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>): void => {
-    if (images.background === '' && event.target.files?.length) {
+    if (userState.background === '' && event.target.files?.length) {
       const background = URL.createObjectURL(event.target.files[0]);
-      setImages((prevState) => ({ ...prevState, background }));
+      dispatchUserContext({ type: 'UPLOAD_BACKGROUND', background });
+      // eslint-disable-next-line
       setUploadImages((prevState) => ({ ...prevState, background: event.target.files![0] }));
-    } else if (images.profile === '' && event.target.files?.length) {
+    } else if (userState.profile === '' && event.target.files?.length) {
       const profile = URL.createObjectURL(event.target.files[0]);
-      setImages((prevState) => ({ ...prevState, profile }));
+      dispatchUserContext({ type: 'UPLOAD_PROFILE', profile });
+      // eslint-disable-next-line
       setUploadImages((prevState) => ({ ...prevState, profile: event.target.files![0] }));
     }
   };
 
   const handleDeleteIcon = (): void => {
-    setImages({
-      background: '',
-      profile: '',
-    });
+    dispatchUserContext({ type: 'EMPTY_IMAGES' });
     setUploadImages({
       background: '',
       profile: '',
@@ -62,14 +54,10 @@ const ProfilePhoto = (): JSX.Element => {
     const formData = new FormData();
     formData.set('background', uploadImages.background);
     formData.set('profile', uploadImages.profile);
-    uploadImagesAPI(formData).then((data: any): void => {
+    uploadImagesAPI(formData).then((data): void => {
       console.log(data);
       if (data.error) {
-        if (data.error.message) {
-          updateSnackBarMessage(data.error.message);
-        } else {
-          updateSnackBarMessage(data.error);
-        }
+        updateSnackBarMessage(data.error);
       } else if (data.success) {
         updateSnackBarMessage(data.success);
       } else {
@@ -88,8 +76,8 @@ const ProfilePhoto = (): JSX.Element => {
           className={classes.backgroundMedia}
           component="img"
           src={
-            images.background
-              ? images.background
+            userState.background
+              ? userState.background
               : `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmFJpMlEV-41ZFT8U7iUsMJzaXVIL_hAtT9A&usqp=CAU`
           }
           title="Background Picture"
@@ -98,7 +86,7 @@ const ProfilePhoto = (): JSX.Element => {
         <CardMedia
           className={classes.media}
           component="img"
-          src={images.profile ? images.profile : `https://robohash.org/${loggedInUser?.email}.png`}
+          src={userState.profile ? userState.profile : `https://robohash.org/${loggedInUser?.email}.png`}
           title="User Profile Picture"
           alt="Your Profile"
         />
@@ -112,9 +100,9 @@ const ProfilePhoto = (): JSX.Element => {
       <CardContent className={classes.cardContent}>
         <Box>
           <Button variant="outlined" component="label" color="primary" className={classes.upload}>
-            {images.background === ''
+            {userState.background === ''
               ? `Select Your Background Image`
-              : images.profile === ''
+              : userState.profile === ''
               ? `Select Your Profile Image`
               : `Both Files are uploaded.`}
             <input type="file" hidden accept="image/*" onChange={handleImageUpload} />
