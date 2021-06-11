@@ -11,28 +11,27 @@ exports.createProfile = asyncHandler(async (req, res, next) => {
 
     // Needs check to ensure that info sender owns the profile,
     // and that there is no profile already there
-    profileData.save().then((err) => {
-        if (err) {
-            console.log(err);
-            res.send(err);
-        } else {
-            res.send(201);
-            res.json(newConvo._id);
-        }
-    });
-    User.updateOne(
-        { _id: userId },
-        { $set: { profile: profileData._id } },
-        (err) => {
-            if (err) {
-                console.log(err);
-                res.send(err);
-            } else {
-                res.json({ success: true, msg: "Message added" });
-            }
-        }
-    );
+    try {
+        await profileData.save().then(() => {
+            User.updateOne(
+                { _id: userId },
+                { $set: { profile: profileData._id } },
+                (err) => {
+                    if (err) {
+                        console.log(err);
+                        res.send(err);
+                    } else {
+                        res.json({ success: true, msg: "Message added" });
+                    }
+                }
+            );
+        });
+    } catch (err) {
+        console.log(err);
+        res.send(err);
+    }
 });
+// Edits a profile in user.profile
 
 // @route PUT /profile/:id
 // @Given an ID and new parameters, update the profile
@@ -66,10 +65,9 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
 });
 
 // @route GET /profile/:id
-// @Given an ID, return profile with that ID
+// @Given a user ID, return profile of that user
 exports.getOneProfile = asyncHandler(async (req, res, next) => {
-    const userId = req.body.id;
-    const profileId = req.params.id;
+    const userId = req.params.id;
 
     // validate id
     if (!ObjectId.isValid(userId)) {
@@ -89,16 +87,22 @@ exports.getOneProfile = asyncHandler(async (req, res, next) => {
 // @A list of profiles
 exports.getAllProfiles = asyncHandler(async (req, res, next) => {
     try {
-        const profiles = await User.find({
+        const users = [];
+        const allUsers = await User.find({
             _id: { $ne: req.user.id },
         }).populate({
             path: "profile",
             match: { isDogSitter: { $eq: true } },
         });
+        // Sets users to array of users with populated profiles
+        allUsers.map((user) => {
+            if (user.profile) {
+                users.push(user);
+            }
+        });
+        // Returns only users with profiles
         res.status(200).json({
-            success: {
-                profiles,
-            },
+            users,
         });
     } catch (e) {
         res.status(500);
