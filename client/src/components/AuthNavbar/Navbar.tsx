@@ -90,7 +90,7 @@ const NotificationPopper: React.FC<NotificationProps> = ({ titleAnchor, activeNo
 export default function AuthNavbar() {
   const classes = useStyles();
 
-  const { logout, loggedInUser } = useAuth();
+  const { logout } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);

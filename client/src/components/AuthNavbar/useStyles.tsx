@@ -50,11 +50,13 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: 'white',
     border: '1px solid lightgrey',
     borderRadius: '5px',
+    zIndex: 9999,
   },
   profilePopper: {
     backgroundColor: 'white',
     border: '1px solid lightgrey',
     borderRadius: '5px',
+    zIndex: 9999,
   },
   badgeIcon: {
     '& .MuiBadge-anchorOriginTopRightCircle': {

@@ -4,12 +4,12 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import { FormikHelpers } from 'formik';
 import Typography from '@material-ui/core/Typography';
+
 import useStyles from './useStyles';
 import register from '../../helpers/APICalls/register';
 import SignUpForm from './SignUpForm/SignUpForm';
 import { useAuth } from '../../context/useAuthContext';
 import { useSnackBar } from '../../context/useSnackbarContext';
-import { Link } from 'react-router-dom';
 import LandingNavbar from '../../components/LandingNavbar/LandingNavbar';
 
 export default function Register(): JSX.Element {
@@ -41,28 +41,20 @@ export default function Register(): JSX.Element {
   return (
     <>
       <LandingNavbar />
-      <Grid container component="main" className={classes.root}>
+      <Grid container component="main" className={classes.root} justify="center">
         <CssBaseline />
-        <Grid item xs={12} elevation={6} component={Paper} square>
-          <Box className={classes.authWrapper}>
-            <Box width="100%" maxWidth={450} p={3} alignSelf="center">
-              <Grid container>
-                <Grid item xs>
-                  <Typography className={classes.welcome} component="h1" variant="h5">
-                    Sign up
-                  </Typography>
-                </Grid>
+        <Grid item xs={12} sm={8} md={6} elevation={6} component={Paper} square>
+          <Box width="100%" maxWidth={350} p={3} marginY={0} marginX="auto">
+            <Grid container>
+              <Grid item xs>
+                <Typography className={classes.welcome} component="h1" variant="h5" align="center">
+                  SignUp
+                </Typography>
               </Grid>
-              <SignUpForm handleSubmit={handleSubmit} />
-            </Box>
-            <Grid className={classes.loginInfo}>
-              <Typography>{'Already have an account?'}</Typography>
-              <Link to="/login" className={classes.loginLink}>
-                Login
-              </Link>
             </Grid>
-            <Box p={1} alignSelf="center" />
+            <SignUpForm handleSubmit={handleSubmit} />
           </Box>
+          <Box p={1} alignSelf="center" />
         </Grid>
       </Grid>
     </>

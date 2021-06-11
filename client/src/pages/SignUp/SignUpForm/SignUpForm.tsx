@@ -3,7 +3,7 @@ import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
-import Typography from '@material-ui/core/Typography';
+import InputLabel from '@material-ui/core/InputLabel';
 import useStyles from './useStyles';
 import { CircularProgress } from '@material-ui/core';
 
@@ -32,13 +32,6 @@ interface Props {
 const SignUpForm = ({ handleSubmit }: Props): JSX.Element => {
   const classes = useStyles();
 
-  const generateDemoUser = (values: { username: string; email: string; password: string }) => {
-    const randomNum = Math.floor(10000 + Math.random() * 90000);
-    values.username = `testing${randomNum}`;
-    values.email = `testing${randomNum}@test.com`;
-    values.password = 'testing';
-  };
-
   return (
     <Formik
       initialValues={{
@@ -58,77 +51,68 @@ const SignUpForm = ({ handleSubmit }: Props): JSX.Element => {
     >
       {({ handleSubmit, handleChange, values, touched, errors, isSubmitting }) => (
         <form onSubmit={handleSubmit} className={classes.form} noValidate>
-          <Typography className={classes.label}>name</Typography>
+          <InputLabel className={classes.inputLabel} htmlFor="username">
+            Username
+          </InputLabel>
           <TextField
             id="username"
             fullWidth
+            margin="normal"
             InputLabelProps={{
               shrink: true,
             }}
-            InputProps={{
-              classes: { input: classes.inputs },
-            }}
             name="username"
             autoComplete="username"
+            placeholder="Create a username"
             autoFocus
             helperText={touched.username ? errors.username : ''}
             error={touched.username && Boolean(errors.username)}
             value={values.username}
-            onChange={handleChange}
             variant="outlined"
-            placeholder="Your name"
+            onChange={handleChange}
           />
-          <Typography className={classes.label}>Email address</Typography>
+          <InputLabel className={classes.inputLabel} htmlFor="email">
+            Email
+          </InputLabel>
           <TextField
             id="email"
             fullWidth
+            margin="normal"
             InputLabelProps={{
               shrink: true,
             }}
-            InputProps={{
-              classes: { input: classes.inputs },
-            }}
             name="email"
+            placeholder="Enter an email"
             autoComplete="email"
             helperText={touched.email ? errors.email : ''}
             error={touched.email && Boolean(errors.email)}
             value={values.email}
-            onChange={handleChange}
             variant="outlined"
-            placeholder="Your email"
+            onChange={handleChange}
           />
-          <Typography className={classes.label}>Password</Typography>
+          <InputLabel className={classes.inputLabel} htmlFor="password">
+            Password
+          </InputLabel>
           <TextField
             id="password"
             fullWidth
+            margin="normal"
             InputLabelProps={{
               shrink: true,
             }}
-            InputProps={{
-              classes: { input: classes.inputs },
-            }}
             type="password"
+            placeholder="Create a password"
             autoComplete="current-password"
             helperText={touched.password ? errors.password : ''}
             error={touched.password && Boolean(errors.password)}
             value={values.password}
-            onChange={handleChange}
             variant="outlined"
-            placeholder="Create a password"
+            onChange={handleChange}
           />
+
           <Box textAlign="center">
-            <Button type="submit" size="large" variant="contained" color="secondary" className={classes.submit}>
-              {isSubmitting ? <CircularProgress style={{ color: 'white' }} /> : 'SIGN UP'}
-            </Button>
-            <Button
-              type="submit"
-              size="large"
-              variant="contained"
-              color="secondary"
-              className={classes.submit}
-              onClick={() => generateDemoUser(values)}
-            >
-              {isSubmitting ? <CircularProgress style={{ color: 'white' }} /> : 'DEMO USER'}
+            <Button type="submit" size="large" variant="contained" color="primary" className={classes.submit}>
+              {isSubmitting ? <CircularProgress style={{ color: 'white' }} /> : 'Sign Up'}
             </Button>
           </Box>
         </form>
