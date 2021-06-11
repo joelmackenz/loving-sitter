@@ -1,26 +1,50 @@
 import { useState, useEffect, MouseEvent } from 'react';
 import clsx from 'clsx';
+import Box from '@material-ui/core/Box';
+import Drawer from '@material-ui/core/Drawer';
+import MenuIcon from '@material-ui/icons/Menu';
 import AppBar from '@material-ui/core/AppBar';
 import Badge from '@material-ui/core/Badge';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import Popper from '@material-ui/core/Popper';
 import { Link } from 'react-router-dom';
-import { Typography } from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import { useMediaQuery } from '@material-ui/core';
 
+import useStyles from './useStyles';
+import Logo from '../../Images/logo.png';
 import profileImage from '../../Images/775db5e79c5294846949f1f55059b53317f51e30.png';
-import logo from '../../Images/logo.png';
 import { useAuth } from '../../context/useAuthContext';
 import { useSnackBar } from '../../context/useSnackbarContext';
-import useStyles from './useStyles';
 import { getUnreadNotifications, updateReadStatus } from '../../helpers/APICalls/notification';
 import { Notification } from '../../interface/Notification';
+
+const headersData = [
+  {
+    label: 'Profile',
+    href: '/settings',
+  },
+  {
+    label: 'Notifications',
+    href: '/dasboard',
+  },
+  {
+    label: 'My Jobs',
+    href: '/dashboard',
+  },
+  {
+    label: 'Messages',
+    href: '/dashboard',
+  },
+  {
+    label: 'Logout',
+    href: '/login',
+  },
+];
 
 interface ActiveNotification {
   title: string | null;
@@ -63,15 +87,16 @@ const NotificationPopper: React.FC<NotificationProps> = ({ titleAnchor, activeNo
   );
 };
 
-const Navbar: React.FC = () => {
+export default function AuthNavbar() {
   const classes = useStyles();
 
-  const { logout } = useAuth();
+  const { logout, loggedInUser } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
 
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const isMobileView = useMediaQuery('(max-width:600px)');
   const [profilePopperAnchor, setProfilePopperAnchor] = useState<null | HTMLElement>(null);
   const [notificationsAnchor, setNotificationsAnchor] = useState<null | HTMLElement>(null);
-  const [mobilePopperAnchor, setMobilePopperAnchor] = useState<null | HTMLElement>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isNotificationRead, setIsNotificationRead] = useState(false);
 
@@ -110,6 +135,7 @@ const Navbar: React.FC = () => {
   };
 
   const handleLogout = () => {
+    setProfilePopperAnchor(null);
     logout();
   };
 
@@ -119,6 +145,55 @@ const Navbar: React.FC = () => {
     } else {
       setProfilePopperAnchor(target);
     }
+  };
+
+  const displayDesktop = () => {
+    return (
+      <Toolbar className={classes.toolbar}>
+        <Link to="/dashboard">
+          <img src={Logo} className={classes.logo} alt="logo" />
+        </Link>
+        <div className={classes.navbarDesktop}>{getMenuButtons()}</div>
+      </Toolbar>
+    );
+  };
+
+  const displayMobile = () => {
+    const handleDrawerOpen = () => setIsDrawerOpen(true);
+    const handleDrawerClose = () => setIsDrawerOpen(false);
+
+    return (
+      <Toolbar className={classes.mobileToolbar}>
+        <IconButton className={classes.mobileIcon} onClick={handleDrawerOpen}>
+          <MenuIcon />
+        </IconButton>
+
+        <Drawer anchor="right" open={isDrawerOpen} onClose={handleDrawerClose}>
+          <div className={classes.drawerContainer}>{getDrawerChoices()}</div>
+        </Drawer>
+
+        <Link to="/dashboard">
+          <img src={Logo} className={classes.logo} alt="logo" />
+        </Link>
+      </Toolbar>
+    );
+  };
+
+  const getDrawerChoices = () => {
+    const handleNavMenuClick = (labelArg: string) => {
+      setIsDrawerOpen(false);
+      if (labelArg !== 'Logout') return;
+      logout();
+    };
+    return headersData.map(({ label, href }) => {
+      return (
+        <MenuItem key={label} onClick={() => handleNavMenuClick(label)}>
+          <Link className={classes.linkItem} to={href}>
+            {label}
+          </Link>
+        </MenuItem>
+      );
+    });
   };
 
   const profilePopper = (
@@ -143,87 +218,41 @@ const Navbar: React.FC = () => {
     </Popper>
   );
 
-  const mobilePopper = (
-    <Popper
-      open={Boolean(mobilePopperAnchor)}
-      anchorEl={mobilePopperAnchor}
-      onClick={() => setMobilePopperAnchor(null)}
-    >
-      <MenuList autoFocusItem={Boolean(profilePopperAnchor)} onMouseLeave={() => setMobilePopperAnchor(null)}>
-        <MenuItem>
-          <Link to={`/notifications`} className={classes.linkItem}>
-            Notifications
-          </Link>
-        </MenuItem>
-        <MenuItem>
-          <Link to={`/myjobs`} className={classes.linkItem}>
-            My Jobs
-          </Link>
-        </MenuItem>
-        <MenuItem>
-          <Link to={`/messages`} className={classes.linkItem}>
-            Messages
-          </Link>
-        </MenuItem>
-      </MenuList>
-    </Popper>
-  );
+  const getMenuButtons = () => {
+    return (
+      <>
+        <MenuList className={classes.links}>
+          <MenuItem>
+            <div className={classes.linkItem} aria-haspopup="true" onClick={handleNotificationsClick}>
+              Notifications
+              <Badge
+                className={classes.badgeIcon}
+                color="primary"
+                overlap="circle"
+                variant="dot"
+                invisible={notifications.length && !isNotificationRead ? false : true}
+              />
+            </div>
+          </MenuItem>
+          <MenuItem>
+            <Link to={`/myjobs`} className={classes.linkItem}>
+              My Jobs
+            </Link>
+          </MenuItem>
+          <MenuItem>
+            <Link to={`/messages`} className={classes.linkItem}>
+              Messages
+            </Link>
+          </MenuItem>
+        </MenuList>
+        <IconButton onClick={(e) => handleToggleProfilePopper(e.currentTarget)}>
+          <Avatar src={profileImage} className={classes.avatar} />
+        </IconButton>
+        {profilePopper}
+        <NotificationPopper titleAnchor={notificationsAnchor} activeNotifications={notifications} />
+      </>
+    );
+  };
 
-  const renderMenu = (
-    <Grid className={classes.navbarDesktop}>
-      <MenuList className={classes.links}>
-        <MenuItem>
-          <div className={classes.linkItem} aria-haspopup="true" onClick={handleNotificationsClick}>
-            Notifications
-            <Badge
-              className={classes.badgeIcon}
-              color="primary"
-              overlap="circle"
-              variant="dot"
-              invisible={notifications.length && !isNotificationRead ? false : true}
-            />
-          </div>
-        </MenuItem>
-        <MenuItem>
-          <Link to={`/myjobs`} className={classes.linkItem}>
-            My Jobs
-          </Link>
-        </MenuItem>
-        <MenuItem>
-          <Link to={`/messages`} className={classes.linkItem}>
-            Messages
-          </Link>
-        </MenuItem>
-      </MenuList>
-      <IconButton onClick={(e) => handleToggleProfilePopper(e.currentTarget)}>
-        <Avatar src={profileImage} className={classes.avatar} />
-      </IconButton>
-      {profilePopper}
-      <NotificationPopper titleAnchor={notificationsAnchor} activeNotifications={notifications} />
-    </Grid>
-  );
-
-  const renderMobileMenu = (
-    <Grid className={classes.navbarMobile}>
-      <IconButton onMouseEnter={(e) => setMobilePopperAnchor(e.currentTarget)}>
-        <MoreHorizIcon />
-      </IconButton>
-      <IconButton onClick={(e) => setProfilePopperAnchor(e.currentTarget)}>
-        <Avatar src={profileImage} className={classes.avatar} />
-      </IconButton>
-      {mobilePopper}
-    </Grid>
-  );
-
-  return (
-    <AppBar className={classes.appBar}>
-      <Toolbar className={classes.navMain}>
-        <img src={logo} className={classes.logo} alt="logo" />
-        {renderMenu}
-        {renderMobileMenu}
-      </Toolbar>
-    </AppBar>
-  );
-};
-
-export default Navbar;
+  return <AppBar className={classes.header}>{isMobileView ? displayMobile() : displayDesktop()}</AppBar>;
+}

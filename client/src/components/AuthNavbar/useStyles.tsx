@@ -1,30 +1,9 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
-  appBar: {
-    position: 'static',
-  },
-  navMain: {
-    backgroundColor: 'white',
-    justifyContent: 'space-between',
-    position: 'static',
-  },
-  logo: {
-    margin: '1rem',
-  },
   navbarDesktop: {
     display: 'flex',
     alignItems: 'center',
-    [theme.breakpoints.down('sm')]: {
-      display: 'none',
-    },
-  },
-  navbarMobile: {
-    display: 'none',
-    alignItems: 'center',
-    [theme.breakpoints.down('sm')]: {
-      display: 'flex',
-    },
   },
   links: {
     display: 'flex',
@@ -77,9 +56,6 @@ const useStyles = makeStyles((theme) => ({
     border: '1px solid lightgrey',
     borderRadius: '5px',
   },
-  paper: {
-    backgroundColor: 'red',
-  },
   badgeIcon: {
     '& .MuiBadge-anchorOriginTopRightCircle': {
       left: 0,
@@ -96,6 +72,35 @@ const useStyles = makeStyles((theme) => ({
     marginRight: '1rem',
     width: theme.spacing(8),
     height: theme.spacing(8),
+  },
+  mobileIcon: {
+    edge: 'start',
+    color: 'black',
+    'aria-label': 'menu',
+    'aria-haspopup': 'true',
+  },
+  header: {
+    backgroundColor: 'white',
+    padding: '0 2rem',
+    '@media (max-width: 900px)': {
+      paddingLeft: 0,
+      paddingRight: 0,
+    },
+  },
+  logo: {
+    textAlign: 'left',
+  },
+  toolbar: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  drawerContainer: {
+    padding: '20px 30px',
+  },
+  mobileToolbar: {
+    display: 'flex',
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between',
   },
 }));
 

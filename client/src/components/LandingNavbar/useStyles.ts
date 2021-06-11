@@ -2,7 +2,19 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
-    flexGrow: 1,
+    padding: '0 2rem',
+    '@media (max-width: 900px)': {
+      paddingLeft: 0,
+      paddingRight: 0,
+    },
+    '@media (max-width: 600px)': {
+      position: 'relative',
+    },
+  },
+  menuItem: {
+    '&.MuiListItem-button:hover': {
+      backgroundColor: 'initial',
+    },
   },
   mainPageNavbar: {
     top: 0,
@@ -15,30 +27,34 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   otherSitterLink: {
     color: 'black',
+    textTransform: 'uppercase',
   },
   logo: {
-    flexGrow: 1,
+    textAlign: 'left',
   },
   sitterPage: {
     flexGrow: 0.05,
   },
   sitterLink: {
-    color: 'white',
+    color: 'black',
+    textTransform: 'uppercase',
   },
   login: {
     flexGrow: 0.01,
   },
   loginBtn: {
-    padding: '7px 30px',
-    color: 'white',
+    padding: theme.spacing(1.5, 3),
+    color: 'black',
+    textTransform: 'uppercase',
   },
   otherLoginBtn: {
     color: 'black',
-    padding: '7px 30px',
+    padding: theme.spacing(1.5, 3),
+    textTransform: 'uppercase',
   },
   signUpBtn: {
-    padding: '7px 30px',
-    background: '#f50057',
+    padding: theme.spacing(1.5, 3),
+    textTransform: 'uppercase',
   },
 }));
 export default useStyles;

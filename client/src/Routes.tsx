@@ -6,12 +6,14 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import Settings from './pages/Settings/Settings';
 import ProtectedRoute from './ProtectedRoute';
 import Main from './pages/Main/Main';
-// import LandingNavbar from './components/LandingNavbar/LandingNavbar';
+import AuthNavbar from './components/AuthNavbar/Navbar';
+import { useAuth } from './context/useAuthContext';
 
 const Routes = (): JSX.Element => {
+  const { loggedInUser } = useAuth();
   return (
     <>
-      {/* <LandingNavbar /> */}
+      {loggedInUser && <AuthNavbar />}
       <Switch>
         <Route exact path="/" component={Main} />
         <Route exact path="/login" component={Login} />
