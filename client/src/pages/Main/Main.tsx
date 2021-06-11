@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import clsx from 'clsx';
 import { Button, Grid, TextField, Typography } from '@material-ui/core';
+import InputLabel from '@material-ui/core/InputLabel';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import Box from '@material-ui/core/Box';
@@ -35,12 +37,28 @@ export default function Main(): JSX.Element {
                 </Box>
               </Typography>
               <form>
-                <Typography className={classes.searchText}>WHERE</Typography>
-                <TextField variant="outlined" placeholder="Anywhere" className={classes.searchInput} fullWidth />
-                <Typography className={classes.searchText}>DROP IN / DROP OFF</Typography>
+                <InputLabel htmlFor="search" className={classes.searchText}>
+                  WHERE
+                </InputLabel>
+                <TextField
+                  id="search"
+                  name="search"
+                  variant="outlined"
+                  placeholder="Anywhere"
+                  className={classes.searchInput}
+                  fullWidth
+                />
+                <InputLabel htmlFor="dropIn" className={clsx(classes.searchText, classes.inlineDisplay)}>
+                  DROP IN /
+                </InputLabel>
+                <InputLabel htmlFor="dropOff" className={clsx(classes.searchText, classes.inlineDisplay)}>
+                  &nbsp;DROP OFF
+                </InputLabel>
                 <Box className={classes.dateRangeContainer}>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
+                      id="dropIn"
+                      name="dropIn"
                       className={classes.dateRange}
                       variant="inline"
                       inputVariant="outlined"
@@ -52,6 +70,8 @@ export default function Main(): JSX.Element {
                   </MuiPickersUtilsProvider>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
+                      id="dropOff"
+                      name="dropOff"
                       className={classes.dateRange}
                       variant="inline"
                       inputVariant="outlined"

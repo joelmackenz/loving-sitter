@@ -109,7 +109,7 @@ export default function LandingNavbar(): JSX.Element {
 
   return (
     <AppBar
-      position="relative"
+      position="fixed"
       className={` ${pathname === '/' ? classes.mainPageNavbar : classes.otherPageNavbar} ${classes.root}`}
     >
       {isMobileView ? displayMobile() : displayDesktop}

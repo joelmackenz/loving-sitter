@@ -87,7 +87,7 @@ const NotificationPopper: React.FC<NotificationProps> = ({ titleAnchor, activeNo
   );
 };
 
-export default function AuthNavbar() {
+export default function AuthNavbar(): JSX.Element {
   const classes = useStyles();
 
   const { logout } = useAuth();

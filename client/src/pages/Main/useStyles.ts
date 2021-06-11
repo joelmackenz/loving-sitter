@@ -30,13 +30,18 @@ const useStyles = makeStyles((theme) => ({
     marginTop: '30px',
     marginBottom: '10px',
     textTransform: 'uppercase',
+    color: 'black',
   },
   dateRangeContainer: {
     display: 'flex',
   },
+  inlineDisplay: {
+    display: 'inline-block',
+  },
   searchInput: {
     '&.MuiFormControl-fullWidth': {
       width: '70%',
+      display: 'block',
     },
     '@media (max-width: 600px)': {
       '&.MuiFormControl-fullWidth': {
