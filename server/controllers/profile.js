@@ -3,6 +3,37 @@ const asyncHandler = require("express-async-handler");
 const Profile = require("../models/Profile");
 const User = require("../models/User");
 
+// @route POST /profile/:id
+// @descr Given a user ID and profile parameters, create a profile
+exports.createProfile = asyncHandler(async (req, res, next) => {
+    const userId = req.params.id;
+    const profileData = new Profile(req.body);
+
+    // Needs check to ensure that info sender owns the profile,
+    // and that there is no profile already there
+    profileData.save().then((err) => {
+        if (err) {
+            console.log(err);
+            res.send(err);
+        } else {
+            res.send(201);
+            res.json(newConvo._id);
+        }
+    });
+    User.updateOne(
+        { _id: userId },
+        { $set: { profile: profileData._id } },
+        (err) => {
+            if (err) {
+                console.log(err);
+                res.send(err);
+            } else {
+                res.json({ success: true, msg: "Message added" });
+            }
+        }
+    );
+});
+
 // @route PUT /profile/:id
 // @Given an ID and new parameters, update the profile
 exports.updateProfile = asyncHandler(async (req, res, next) => {
@@ -36,7 +67,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
 
 // @route GET /profile/:id
 // @Given an ID, return profile with that ID
-exports.getOneProfile = asyncHandler(async (res, res, next) => {
+exports.getOneProfile = asyncHandler(async (req, res, next) => {
     const userId = req.body.id;
     const profileId = req.params.id;
 
@@ -56,9 +87,9 @@ exports.getOneProfile = asyncHandler(async (res, res, next) => {
 
 // @route GET /profile
 // @A list of profiles
-exports.getAllProfiles = asyncHandler(async (res, res, next) => {
+exports.getAllProfiles = asyncHandler(async (req, res, next) => {
     try {
-        const sitterList = await User.find({
+        const profiles = await User.find({
             _id: { $ne: req.user.id },
         }).populate({
             path: "profile",
@@ -66,7 +97,7 @@ exports.getAllProfiles = asyncHandler(async (res, res, next) => {
         });
         res.status(200).json({
             success: {
-                sitterList,
+                profiles,
             },
         });
     } catch (e) {

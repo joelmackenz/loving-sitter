@@ -6,6 +6,9 @@ const auth = require("../middleware/auth");
 // Connect to profile controller
 const profileController = require("../controllers/profile");
 
+/* POST route to create profile within a user object - POST PROFILE operation. */
+router.post("/:id", auth, profileController.createProfile);
+
 /* PUT route to add a profile to a user - UPDATE PROFILE operation. */
 router.put("/:id", auth, profileController.updateProfile);
 
