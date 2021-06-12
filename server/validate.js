@@ -41,7 +41,8 @@ exports.validateCreateRequest = [
     if (!errors.isEmpty())
       return res.status(400).json({ errors: errors.array() });
     next();
-}
+  }
+]
   
 exports.validateCreateNotification = [
   check("user").isMongoId().withMessage("User must be valid mongo Object Id"),
