@@ -14,6 +14,7 @@ const userRouter = require("./routes/user");
 const s3Router = require("./routes/s3");
 const requestRouter = require('./routes/request');
 const notificationRouter = require("./routes/notification");
+const profileRouter = require("./routes/profile");
 
 const { json, urlencoded } = express;
 
@@ -49,6 +50,7 @@ app.use("/users", userRouter);
 app.use("/upload", s3Router);
 app.use("/request", requestRouter);
 app.use("/notification", notificationRouter);
+app.use("/profile", profileRouter);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "/client/build")));

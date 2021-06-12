@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 import Card from '@material-ui/core/Card';
@@ -9,7 +9,9 @@ import Tab from '@material-ui/core/Tab';
 import EditProfile from '../../components/EditProfile/EditProfile';
 import ProfilePhoto from '../../components/ProfilePhoto/ProfilePhoto';
 import PaymentMethods from '../../components/PaymentMethods/PaymentMethods';
+import { useUser } from '../../context/useUserContext';
 import useStyles from './useStyles';
+import { getOneProfile } from '../../helpers/APICalls/profileFields';
 
 const a11yProps = (index: number) => {
   return {
@@ -41,44 +43,64 @@ const TabPanel = (props: TabPanelProps) => {
 
 const Settings = (): JSX.Element => {
   const classes = useStyles();
+  const { userState, dispatchUserContext } = useUser();
+  const [loading, setLoading] = useState(false);
   const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
+
+  useEffect(() => {
+    getOneProfile().then((data) => {
+      if (data.error) {
+        console.log(data.error);
+      } else if (data.profile) {
+        dispatchUserContext({ type: 'UPDATE_EDIT_PROFILE_FIELDS', fields: data.profile });
+        setLoading(true);
+      }
+    });
+  }, []);
+
   // eslint-disable-next-line
   const handleTabIndexChange = (event: any, newValue: number): void => {
     setCurrentTabIndex(newValue);
   };
   return (
-    <Container className={classes.root}>
-      <Grid container component="main" justify="space-evenly">
-        <CssBaseline />
-        <Grid item xs={12} sm={8} md={2} component="section" className={classes.leftColumn}>
-          <Tabs
-            orientation="vertical"
-            value={currentTabIndex}
-            onChange={handleTabIndexChange}
-            aria-label="Vertical tabs"
-            centered
-            classes={{ indicator: classes.indicator }}
-          >
-            <Tab label="Edit Profile" className={classes.tab} {...a11yProps(0)} />
-            <Tab label="Profile Photo" className={classes.tab} {...a11yProps(1)} />
-            <Tab label="Payment" className={classes.tab} {...a11yProps(2)} />
-          </Tabs>
-        </Grid>
-        <Grid item xs={12} sm={8} md={7} component="section">
-          <Card elevation={6} square className={classes.rightColumn}>
-            <TabPanel value={currentTabIndex} index={0}>
-              <EditProfile />
-            </TabPanel>
-            <TabPanel value={currentTabIndex} index={1}>
-              <ProfilePhoto />
-            </TabPanel>
-            <TabPanel value={currentTabIndex} index={2}>
-              <PaymentMethods />
-            </TabPanel>
-          </Card>
-        </Grid>
-      </Grid>
-    </Container>
+    <>
+      {loading ? (
+        <Container className={classes.root}>
+          <Grid container component="main" justify="space-evenly">
+            <CssBaseline />
+            <Grid item xs={12} sm={8} md={2} component="section" className={classes.leftColumn}>
+              <Tabs
+                orientation="vertical"
+                value={currentTabIndex}
+                onChange={handleTabIndexChange}
+                aria-label="Vertical tabs"
+                centered
+                classes={{ indicator: classes.indicator }}
+              >
+                <Tab label="Edit Profile" className={classes.tab} {...a11yProps(0)} />
+                <Tab label="Profile Photo" className={classes.tab} {...a11yProps(1)} />
+                <Tab label="Payment" className={classes.tab} {...a11yProps(2)} />
+              </Tabs>
+            </Grid>
+            <Grid item xs={12} sm={8} md={7} component="section">
+              <Card elevation={6} square className={classes.rightColumn}>
+                <TabPanel value={currentTabIndex} index={0}>
+                  <EditProfile userState={userState} dispatchUserContext={dispatchUserContext} />
+                </TabPanel>
+                <TabPanel value={currentTabIndex} index={1}>
+                  <ProfilePhoto />
+                </TabPanel>
+                <TabPanel value={currentTabIndex} index={2}>
+                  <PaymentMethods />
+                </TabPanel>
+              </Card>
+            </Grid>
+          </Grid>
+        </Container>
+      ) : (
+        <p>Loading...</p>
+      )}
+    </>
   );
 };
 

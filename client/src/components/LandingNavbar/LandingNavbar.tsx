@@ -1,12 +1,14 @@
-import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../../Images/logo.png';
 import { AppBar, Button, Toolbar, Typography } from '@material-ui/core';
+
 import useStyles from './useStyles';
+import { useUser } from '../../context/useUserContext';
 
 export default function LandingNavbar(): JSX.Element {
   const classes = useStyles();
   const { pathname } = useLocation();
+  const { dispatchUserContext } = useUser();
   return (
     <div className={classes.root}>
       <AppBar position="static" className={` ${pathname === '/' ? classes.mainPageNavbar : classes.otherPageNavbar}`}>
@@ -17,7 +19,11 @@ export default function LandingNavbar(): JSX.Element {
             </Link>
           </div>
           <Typography className={classes.sitterPage}>
-            <Link to="#" className={` ${pathname === '/' ? classes.sitterLink : classes.otherSitterLink}`}>
+            <Link
+              to="/signup"
+              className={` ${pathname === '/' ? classes.sitterLink : classes.otherSitterLink}`}
+              onClick={() => dispatchUserContext({ type: 'SET_IS_DOG_SITTER' })}
+            >
               BECOME A SITTER
             </Link>
           </Typography>
