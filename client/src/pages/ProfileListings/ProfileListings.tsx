@@ -19,7 +19,7 @@ import { extendMoment } from 'moment-range';
 import getProfiles from '../../helpers/APICalls/getProfiles';
 
 // Temporary user data to show functionality
-import { User, users, Profile } from './dummyUserData';
+import { Profile } from '../../context/interface/Profile';
 
 export default function ProfileListings(): JSX.Element {
   const classes = useStyles();
@@ -28,19 +28,19 @@ export default function ProfileListings(): JSX.Element {
   const [calendarOpen, setCalendarOpen] = useState<true | false>(false);
   const [dateRange, setDateRange] = useState<Record<string, Date | null>>({ from: null, to: null });
   const [formattedDateRange, setFormattedDateRange] = useState<string>('any');
-  const [displayedUsers, setDisplayedUsers] = useState<Profile[]>(profiles.slice(0, 6));
+  const [displayedProfiles, setDisplayedProfiles] = useState<Profile[]>(profiles.slice(0, 6));
   const [snackbarOpen, setSnackbarOpen] = useState<true | false>(false);
   const [search, setSearch] = useState<string>('');
 
   const moment = extendMoment(Moment);
 
   const handleShowMore = () => {
-    const numberOfUsers = displayedUsers.length;
-    const lastUser = users[displayedUsers.length];
+    const numberOfUsers = displayedProfiles.length;
+    const lastUser = profiles[displayedProfiles.length];
     if (lastUser === undefined) {
       setSnackbarOpen(true);
     }
-    setDisplayedUsers(profiles.slice(0, numberOfUsers + 3));
+    setDisplayedProfiles(profiles.slice(0, numberOfUsers + 3));
   };
 
   const handleSnackbarClose = (event?: React.SyntheticEvent, reason?: string) => {
@@ -70,8 +70,8 @@ export default function ProfileListings(): JSX.Element {
 
   const profileCardGrid = (
     <Grid container className={classes.profilesContainer} xs={9}>
-      {displayedUsers.map((user) => (
-        <ProfileCard profile={user} key={user._id} />
+      {displayedProfiles.map((profile, index) => (
+        <ProfileCard profile={profile} key={`${profile._id}-${index}`} />
       ))}
       <Snackbar open={snackbarOpen} autoHideDuration={2000} onClose={handleSnackbarClose}>
         <Alert severity="info">No more users found</Alert>
@@ -81,18 +81,20 @@ export default function ProfileListings(): JSX.Element {
 
   useEffect(() => {
     getProfiles().then((data) => {
-      console.log('Data.users: ' + data.users);
-      const profileList: any = [];
-      data.users &&
-        data.users.map((user) => {
-          if (user.profile) {
-            console.log('User profile: ' + JSON.stringify(user.profile));
-            profileList.push(user.profile);
+      const profileList: any[] = [];
+      const users = data.users;
+      if (users) {
+        for (let i = 0; i < users.length; i++) {
+          // Will only add 20 users to the state profiles, and make a smaller list for displayed profiles
+          if (users[i].profile && profileList.length <= 20) {
+            profileList.push(users[i].profile);
+            setDisplayedProfiles(profileList.slice(0, 6));
+          } else {
+            break;
           }
-        });
+        }
+      }
       setProfiles(profileList);
-      console.log('Profiles (state): ' + profiles);
-      setDisplayedUsers(profileList.slice(0, 6));
     });
   }, []);
 
