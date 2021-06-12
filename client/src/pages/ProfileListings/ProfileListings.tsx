@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import InputBase from '@material-ui/core/InputBase';
@@ -16,17 +16,19 @@ import Alert from './alert';
 import useStyles from './useStyles';
 import * as Moment from 'moment';
 import { extendMoment } from 'moment-range';
+import getProfiles from '../../helpers/APICalls/getProfiles';
 
 // Temporary user data to show functionality
-import { User, users } from './dummyUserData';
+import { User, users, Profile } from './dummyUserData';
 
 export default function ProfileListings(): JSX.Element {
   const classes = useStyles();
 
+  const [profiles, setProfiles] = useState<Profile[]>([]);
   const [calendarOpen, setCalendarOpen] = useState<true | false>(false);
   const [dateRange, setDateRange] = useState<Record<string, Date | null>>({ from: null, to: null });
   const [formattedDateRange, setFormattedDateRange] = useState<string>('any');
-  const [displayedUsers, setDisplayedUsers] = useState<User[]>(users.slice(0, 6));
+  const [displayedUsers, setDisplayedUsers] = useState<Profile[]>(profiles.slice(0, 6));
   const [snackbarOpen, setSnackbarOpen] = useState<true | false>(false);
   const [search, setSearch] = useState<string>('');
 
@@ -38,7 +40,7 @@ export default function ProfileListings(): JSX.Element {
     if (lastUser === undefined) {
       setSnackbarOpen(true);
     }
-    setDisplayedUsers(users.slice(0, numberOfUsers + 3));
+    setDisplayedUsers(profiles.slice(0, numberOfUsers + 3));
   };
 
   const handleSnackbarClose = (event?: React.SyntheticEvent, reason?: string) => {
@@ -69,13 +71,30 @@ export default function ProfileListings(): JSX.Element {
   const profileCardGrid = (
     <Grid container className={classes.profilesContainer} xs={9}>
       {displayedUsers.map((user) => (
-        <ProfileCard user={user} key={user._id} />
+        <ProfileCard profile={user} key={user._id} />
       ))}
       <Snackbar open={snackbarOpen} autoHideDuration={2000} onClose={handleSnackbarClose}>
         <Alert severity="info">No more users found</Alert>
       </Snackbar>
     </Grid>
   );
+
+  useEffect(() => {
+    getProfiles().then((data) => {
+      console.log('Data.users: ' + data.users);
+      const profileList: any = [];
+      data.users &&
+        data.users.map((user) => {
+          if (user.profile) {
+            console.log('User profile: ' + JSON.stringify(user.profile));
+            profileList.push(user.profile);
+          }
+        });
+      setProfiles(profileList);
+      console.log('Profiles (state): ' + profiles);
+      setDisplayedUsers(profileList.slice(0, 6));
+    });
+  }, []);
 
   return (
     <Grid container className={classes.root}>

@@ -1,5 +1,22 @@
 // Dummy data
 
+export interface Profile {
+  _id: number;
+  image: string;
+  firstName: string;
+  lastName: string;
+  title: string;
+  rating: number;
+  description: string;
+  address: {
+    street: string;
+    city: string;
+    provinceState: string;
+  };
+  priceRate: number;
+  availableDates: string[];
+}
+
 export interface User {
   _id: number;
   image: string;
@@ -10,8 +27,8 @@ export interface User {
   description: string;
   city: string;
   provinceState: string;
-  rate: number;
-  availableDates: Date[];
+  priceRate: number;
+  availableDates: string[];
 }
 
 import image1 from '../../Images/68f55f7799df6c8078a874cfe0a61a5e6e9e1687.png';
@@ -25,8 +42,8 @@ const user1: User = {
   description: 'I provide dog walking and pet sitting services',
   city: 'Toronto',
   provinceState: 'Ontario',
-  rate: 15,
-  availableDates: [new Date('2021-06-01'), new Date('2021-06-02'), new Date('2021-06-03'), new Date('2021-06-04')],
+  priceRate: 15,
+  availableDates: ['mon', 'tues'],
 };
 import image2 from '../../Images/775db5e79c5294846949f1f55059b53317f51e30.png';
 const user2: User = {
@@ -39,8 +56,8 @@ const user2: User = {
   description: 'Dog sitting, cat sitting, pocket pet and bird care',
   city: 'Lethbridge',
   provinceState: 'Alberta',
-  rate: 16,
-  availableDates: [new Date('2021-06-04'), new Date('2021-06-05'), new Date('2021-06-06'), new Date('2021-06-07')],
+  priceRate: 16,
+  availableDates: ['mon', 'tues'],
 };
 import image3 from '../../Images/b1f0e680702e811aa8ba333cb19c0e0ea95e8e31.png';
 const user3: User = {
@@ -53,8 +70,8 @@ const user3: User = {
   description: 'I would love to work with your dog',
   city: "St. John's",
   provinceState: 'Newfoundland',
-  rate: 20,
-  availableDates: [new Date('2021-06-01'), new Date('2021-06-02'), new Date('2021-06-03'), new Date('2021-06-04')],
+  priceRate: 20,
+  availableDates: ['mon', 'tues'],
 };
 import image4 from '../../Images/d9fc84a0d1d545d77e78aaad39c20c11d3355074.png';
 const user4: User = {
@@ -67,8 +84,8 @@ const user4: User = {
   description: 'I have had dogs as pets for most of my life',
   city: 'Pitt Meadows',
   provinceState: 'BC',
-  rate: 22,
-  availableDates: [new Date('2021-06-08'), new Date('2021-06-09'), new Date('2021-06-10'), new Date('2021-06-11')],
+  priceRate: 22,
+  availableDates: ['mon', 'tues'],
 };
 const user5: User = {
   _id: 5,
@@ -80,8 +97,8 @@ const user5: User = {
   description: "I have four cats, and I think that's a normal thing",
   city: 'Seattle',
   provinceState: 'Washington',
-  rate: 25,
-  availableDates: [new Date('2021-06-08'), new Date('2021-06-09'), new Date('2021-06-10'), new Date('2021-06-11')],
+  priceRate: 25,
+  availableDates: ['mon', 'tues'],
 };
 const user6: User = {
   _id: 6,
@@ -93,8 +110,8 @@ const user6: User = {
   description: 'I have been doing this job for many years',
   city: 'Ottawa',
   provinceState: 'Ontario',
-  rate: 24,
-  availableDates: [new Date('2021-06-01'), new Date('2021-06-02'), new Date('2021-06-03'), new Date('2021-06-04')],
+  priceRate: 24,
+  availableDates: ['mon', 'tues'],
 };
 const user7: User = {
   _id: 7,
@@ -106,17 +123,8 @@ const user7: User = {
   description: "I'd love to walk your pitt bull",
   city: 'Quebec City',
   provinceState: 'Quebec',
-  rate: 18,
-  availableDates: [
-    new Date('2021-06-12'),
-    new Date('2021-06-13'),
-    new Date('2021-06-14'),
-    new Date('2021-06-15'),
-    new Date('2021-06-16'),
-    new Date('2021-06-17'),
-    new Date('2021-06-18'),
-    new Date('2021-06-19'),
-  ],
+  priceRate: 18,
+  availableDates: ['mon', 'tues'],
 };
 const user8: User = {
   _id: 8,
@@ -128,8 +136,8 @@ const user8: User = {
   description: "If you've got a guinea pig, I want to meet it!",
   city: 'Ottawa',
   provinceState: 'Ontario',
-  rate: 20,
-  availableDates: [new Date('2021-06-15'), new Date('2021-06-16'), new Date('2021-06-17'), new Date('2021-06-18')],
+  priceRate: 20,
+  availableDates: ['mon', 'tues'],
 };
 const user9: User = {
   _id: 9,
@@ -141,8 +149,8 @@ const user9: User = {
   description: 'Let me watch your cats!',
   city: 'Toronto',
   provinceState: 'Alberta',
-  rate: 14,
-  availableDates: [new Date('2021-06-18'), new Date('2021-06-19'), new Date('2021-06-20'), new Date('2021-06-21')],
+  priceRate: 14,
+  availableDates: ['mon', 'tues'],
 };
 const user10: User = {
   _id: 10,
@@ -154,17 +162,8 @@ const user10: User = {
   description: 'I love senior dogs',
   city: 'Vancouver',
   provinceState: 'BC',
-  rate: 26,
-  availableDates: [
-    new Date('2021-06-01'),
-    new Date('2021-06-02'),
-    new Date('2021-06-21'),
-    new Date('2021-06-22'),
-    new Date('2021-06-23'),
-    new Date('2021-06-24'),
-    new Date('2021-06-25'),
-    new Date('2021-06-26'),
-  ],
+  priceRate: 26,
+  availableDates: ['mon', 'tues'],
 };
 
 export const users: User[] = [user1, user2, user3, user4, user5, user6, user7, user8, user9, user10];

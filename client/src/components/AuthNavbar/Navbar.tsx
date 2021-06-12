@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
@@ -184,7 +185,9 @@ const Navbar: React.FC = () => {
   return (
     <AppBar className={classes.appBar}>
       <Toolbar className={classes.navMain}>
-        <img src={logo} className={classes.logo} alt="logo" />
+        <Link to="/">
+          <img src={logo} className={classes.logo} alt="logo" />
+        </Link>
         {renderMenu}
         {renderMobileMenu}
       </Toolbar>

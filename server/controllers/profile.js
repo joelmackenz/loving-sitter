@@ -84,7 +84,7 @@ exports.getOneProfile = asyncHandler(async (req, res, next) => {
 });
 
 // @route GET /profile
-// @A list of profiles
+// @descr Gets an array of users who have profiles
 exports.getAllProfiles = asyncHandler(async (req, res, next) => {
     try {
         const users = [];
