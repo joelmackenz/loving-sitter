@@ -34,7 +34,6 @@ const EditProfile: FC<IUseUser> = (props) => {
   const { userState, dispatchUserContext } = props;
   const { loggedInUser } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
-  console.log(userState);
 
   const handleSubmit = (values: FormValues, { setSubmitting }: FormikHelpers<FormValues>): void => {
     // handle form values;
@@ -91,18 +90,20 @@ const EditProfile: FC<IUseUser> = (props) => {
             firstName: Yup.string().required('First Name is required').max(30, 'First Name is too long'),
             lastName: Yup.string().required('Last Name is required').max(30, 'Last Name is too long'),
             email: Yup.string().required('Email is required').email('Email is not valid'),
-            description: Yup.string().required('Description is required.'),
+            description: loggedInUser?.isDogSitter ? Yup.string().required('Description is required.') : Yup.string(),
             city: Yup.string().required('City is required.'),
-            startDate: Yup.string().required('Start Date is required.'),
-            endDate: Yup.string().required('End Date is required.'),
+            startDate: loggedInUser?.isDogSitter ? Yup.string().required('Start Date is required.') : Yup.string(),
+            endDate: loggedInUser?.isDogSitter ? Yup.string().required('End Date is required.') : Yup.string(),
             phone: Yup.string()
               .required('Please, enter your phone number')
               .matches(/^[0-9]+$/, 'Must contain numbers only')
               .length(10, 'Number must be 10 digits'),
-            priceRate: Yup.string()
-              .required('Please, enter your phone number')
-              .matches(/^[0-9]+$/, 'Must contain numbers only')
-              .max(3, 'Value must br less than $100'),
+            priceRate: loggedInUser?.isDogSitter
+              ? Yup.string()
+                  .required('Please, enter your phone number')
+                  .matches(/^[0-9]+$/, 'Must contain numbers only')
+                  .max(3, 'Value must br less than $100')
+              : Yup.string(),
           })}
           onSubmit={handleSubmit}
         >

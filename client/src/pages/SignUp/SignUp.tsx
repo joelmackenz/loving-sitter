@@ -26,7 +26,7 @@ export default function Register(): JSX.Element {
   ) => {
     register(firstName, lastName, email, password, userState.isDogSitter).then((data) => {
       if (data.error) {
-        console.error({ error: data.error.message });
+        console.error({ error: data.error });
         setSubmitting(false);
         updateSnackBarMessage(data.error.message);
       } else if (data.success) {

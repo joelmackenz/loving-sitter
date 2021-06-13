@@ -90,6 +90,42 @@ exports.getOneProfile = asyncHandler(async (req, res, next) => {
   }
 });
 
+exports.addImageUrls = asyncHandler(async (req, res, next) => {
+  const userId = req.user.id;
+
+  // validate id
+  if (!ObjectId.isValid(userId)) {
+    return res.status(400).send(Error("User ID is invalid."));
+  }
+
+  try {
+    Profile.updateOne(
+      { userId },
+      { $set: { profileImg: req.body.profileImg, coverImg: req.body.coverImg } },
+      (error, profile) => {
+        if (error) {
+          return res.status(500).json({
+            error: error.message
+          })
+        }
+
+        return res.status(200).json({
+          success: 'Files are saved successfully.',
+          images: {
+            profileImg: req.body.profileImg,
+            coverImg: req.body.coverImg
+          }
+        })
+
+      }
+    )
+  } catch (error) {
+    res.status(500);
+    throw new Error(error.message);
+  }
+
+})
+
 // @route GET /profile
 // @A list of profiles
 exports.getAllProfile = asyncHandler(async (req, res, next) => {

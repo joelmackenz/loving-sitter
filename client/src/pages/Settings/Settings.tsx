@@ -44,16 +44,17 @@ const TabPanel = (props: TabPanelProps) => {
 const Settings = (): JSX.Element => {
   const classes = useStyles();
   const { userState, dispatchUserContext } = useUser();
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
 
   useEffect(() => {
     getOneProfile().then((data) => {
       if (data.error) {
         console.log(data.error);
+        setIsLoading(false);
       } else if (data.profile) {
         dispatchUserContext({ type: 'UPDATE_EDIT_PROFILE_FIELDS', fields: data.profile });
-        setLoading(true);
+        setIsLoading(false);
       }
     });
   }, []);
@@ -64,7 +65,7 @@ const Settings = (): JSX.Element => {
   };
   return (
     <>
-      {loading ? (
+      {!isLoading ? (
         <Container className={classes.root}>
           <Grid container component="main" justify="space-evenly">
             <CssBaseline />

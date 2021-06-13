@@ -10,15 +10,15 @@ export interface EditProfileFields {
 }
 
 export interface IUserContext extends EditProfileFields {
-  background: string;
-  profile: string;
+  coverImg: string;
+  profileImg: string;
   isDogSitter: boolean;
   isAvailable: boolean;
 }
 
 type Action =
-  | { type: 'UPLOAD_PROFILE'; profile: string }
-  | { type: 'UPLOAD_BACKGROUND'; background: string }
+  | { type: 'UPLOAD_PROFILE'; profileImg: string }
+  | { type: 'UPLOAD_BACKGROUND'; coverImg: string }
   | { type: 'EMPTY_IMAGES' }
   | { type: 'SET_IS_DOG_SITTER' }
   | { type: 'UPDATE_EDIT_PROFILE_FIELDS'; fields: EditProfileFields };
@@ -33,16 +33,21 @@ export interface IUseUser {
 const userReducer = (state: IUserContext, action: Action) => {
   switch (action.type) {
     case 'UPLOAD_PROFILE':
-      return { ...state, profile: action.profile };
+      return { ...state, profileImg: action.profileImg };
     case 'UPLOAD_BACKGROUND':
-      return { ...state, background: action.background };
+      return { ...state, coverImg: action.coverImg };
     case 'EMPTY_IMAGES':
-      return { ...state, background: '', profile: '' };
+      return { ...state, coverImg: '', profileImg: '' };
     case 'SET_IS_DOG_SITTER':
       return { ...state, isDogSitter: true };
     case 'UPDATE_EDIT_PROFILE_FIELDS':
       const { startDate, endDate, ...otherFields } = action.fields;
-      return { ...state, startDate: startDate.substring(0, 10), endDate: endDate.substring(0, 10), ...otherFields };
+      return {
+        ...state,
+        startDate: startDate !== null ? startDate.substring(0, 10) : '',
+        endDate: endDate !== null ? endDate.substring(0, 10) : '',
+        ...otherFields,
+      };
     default:
       throw new Error();
   }
@@ -52,8 +57,8 @@ const UserContext = createContext({});
 
 const UserProvider: FunctionComponent = ({ children }): JSX.Element => {
   const [userState, dispatchUserContext] = useReducer(userReducer, {
-    background: '',
-    profile: '',
+    coverImg: '',
+    profileImg: '',
     isDogSitter: false,
     isAvailable: false,
     phone: '',

@@ -16,8 +16,14 @@ const profileSchema = new Schema({
   phone: String,
   city: String,
   description: String,
-  profileImg: String,
-  coverImg: String,
+  profileImg: {
+    type: String,
+    default: ''
+  },
+  coverImg: {
+    type: String,
+    default: ''
+  },
   startDate: Date,
   endDate: Date,
   priceRate: Number,
