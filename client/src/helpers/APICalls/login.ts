@@ -1,5 +1,5 @@
-import { AuthApiData } from '../../interface/AuthApiData';
-import { FetchOptions } from '../../interface/FetchOptions';
+import { AuthApiData } from '../../context/interface/AuthApiData';
+import { FetchOptions } from '../../context/interface/FetchOptions';
 
 const login = async (email: string, password: string): Promise<AuthApiData> => {
   const fetchOptions: FetchOptions = {
