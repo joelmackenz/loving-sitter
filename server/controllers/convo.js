@@ -10,12 +10,12 @@ module.exports.createConvo = async (req, res, next) => {
     const alreadyExists = await Convo.findOne({
         users: users,
     });
-    try {
-        if (users[1]) {
-            if (!alreadyExists) {
-                const newConvo = new Convo({
-                    users: users,
-                });
+    if (users.length >= 1) {
+        if (!alreadyExists) {
+            const newConvo = new Convo({
+                users: users,
+            });
+            try {
                 newConvo.save().then((err) => {
                     if (err) {
                         console.log(err);
@@ -25,18 +25,16 @@ module.exports.createConvo = async (req, res, next) => {
                         res.json(newConvo._id);
                     }
                 });
-            } else {
-                res.status(400);
-                res.send("Conversation between these users already exists.");
+            } catch (err) {
+                res.status(400).send(err);
             }
         } else {
             res.status(400);
-            res.send(
-                "Conversation must include more than one user in user array."
-            );
+            res.send("Conversation between these users already exists.");
         }
-    } catch (err) {
-        res.send(err);
+    } else {
+        res.status(400);
+        res.send("Conversation must include more than one user in user array.");
     }
 };
 
