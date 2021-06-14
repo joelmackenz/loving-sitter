@@ -28,16 +28,15 @@ const ProfilePhoto = (): JSX.Element => {
   const { loggedInUser } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>): void => {
-    if (userState.background === '' && event.target.files?.length) {
-      const background = URL.createObjectURL(event.target.files[0]);
+    const files = event.target.files;
+    if (userState.background === '' && files?.length) {
+      const background = URL.createObjectURL(files[0]);
       dispatchUserContext({ type: 'UPLOAD_BACKGROUND', background });
-      // eslint-disable-next-line
-      setUploadImages((prevState) => ({ ...prevState, background: event.target.files![0] }));
-    } else if (userState.profile === '' && event.target.files?.length) {
-      const profile = URL.createObjectURL(event.target.files[0]);
+      setUploadImages((prevState) => ({ ...prevState, background: files[0] }));
+    } else if (userState.profile === '' && files?.length) {
+      const profile = URL.createObjectURL(files[0]);
       dispatchUserContext({ type: 'UPLOAD_PROFILE', profile });
-      // eslint-disable-next-line
-      setUploadImages((prevState) => ({ ...prevState, profile: event.target.files![0] }));
+      setUploadImages((prevState) => ({ ...prevState, profile: files[0] }));
     }
   };
 
