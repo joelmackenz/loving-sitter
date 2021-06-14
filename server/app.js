@@ -34,11 +34,6 @@ app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(join(__dirname, "public")));
 
-app.use((req, res, next) => {
-  req.io = io;
-  next();
-});
-
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
 app.use("/upload", s3Router);

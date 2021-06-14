@@ -65,7 +65,7 @@ exports.appSocket = (server) => {
     
     // on disconnect
     socket.on("disconnect", () => {
-      console.log(`Connection Disconnected !!! clientId => ${socketId}`);
+      console.log(`Connection Disconnected !!! clientId => ${socket.id}`);
     });
 
   });
