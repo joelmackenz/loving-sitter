@@ -84,16 +84,24 @@ exports.getOneProfile = asyncHandler(async (req, res, next) => {
 });
 
 // @route GET /profile
-// @descr Gets an array of users who have profiles
+// @descr Gets an array of users who have profiles, option to limit number returned (returns 200 by default)
 exports.getAllProfiles = asyncHandler(async (req, res, next) => {
+    const numberOfUsers = req.body.numberOfUsers
+        ? req.body.numberOfUsers + 1
+        : 200;
     try {
         const users = [];
         const allUsers = await User.find({
             _id: { $ne: req.user.id },
-        }).populate({
-            path: "profile",
-            match: { isDogSitter: { $eq: true } },
-        });
+            profile: {
+                $exists: true,
+            },
+        })
+            .limit(numberOfUsers)
+            .populate({
+                path: "profile",
+                match: { isDogSitter: { $eq: true } },
+            });
         // Sets users to array of users with populated profiles
         allUsers.map((user) => {
             if (user.profile) {
@@ -108,4 +116,46 @@ exports.getAllProfiles = asyncHandler(async (req, res, next) => {
         res.status(500);
         throw new Error(e.message);
     }
+});
+
+// @route GET /profile/citySearch
+// @descr Gets an array of users who have profiles based on a search for their city
+exports.getProfilesBySearch = asyncHandler(async (req, res, next) => {
+    search = req.body.search;
+    try {
+        const users = [];
+        const foundUsers = await User.find({
+            _id: { $ne: req.user.id },
+            profile: {
+                $exists: true,
+            },
+        }).populate({
+            path: "profile",
+            match: { isDogSitter: { $eq: true } },
+        });
+        // Sets users to array of users with populated profiles
+        foundUsers.map((user) => {
+            if (user.profile) {
+                const city = user.profile.address.city.toLowerCase();
+                console.log("City: " + city);
+                console.log("Search: " + search);
+                if (city.includes(search)) {
+                    users.push(user);
+                }
+            }
+        });
+        // Returns only users with profiles
+        res.status(200).json({
+            users,
+        });
+    } catch (e) {
+        res.status(500);
+        throw new Error(e.message);
+    }
+});
+
+// @route GET /profile/availRange
+// @descr Gets an array of users who have profiles based on a given availability range
+exports.getProfilesByDay = asyncHandler(async (req, res, next) => {
+    res.status(200).send("Hello");
 });

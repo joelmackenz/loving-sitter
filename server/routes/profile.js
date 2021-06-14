@@ -15,7 +15,13 @@ router.put("/:id", auth, profileController.updateProfile);
 /* GET route to get a single profile - GET SINGLE PROFILE operation. */
 router.get("/:id", auth, profileController.getOneProfile);
 
-/* GET route to get a single profile - GET ALL PROFILES operation. */
+/* GET route to get all profiles - GET ALL PROFILES operation. */
 router.get("/", auth, profileController.getAllProfiles);
+
+/* GET route to get all profiles by search terms - GET PROFILES BY SEARCH operation. */
+router.get("/search/city", auth, profileController.getProfilesBySearch);
+
+/* GET route to get all profiles by search terms - GET PROFILES BY DAY operation. */
+router.get("/search/day", profileController.getProfilesByDay);
 
 module.exports = router;
