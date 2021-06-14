@@ -44,8 +44,12 @@ const TabPanel = (props: TabPanelProps) => {
 const Settings = (): JSX.Element => {
   const classes = useStyles();
   const { userState, dispatchUserContext } = useUser();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
+  const [isChangedAnything, setIsChangedAnything] = useState<boolean>(false);
+
+  const handleChangedAnything = () => setIsChangedAnything(true);
+  const handleChangedAnythingToFalse = () => setIsChangedAnything(false);
 
   useEffect(() => {
     getOneProfile().then((data) => {
@@ -73,7 +77,17 @@ const Settings = (): JSX.Element => {
               <Tabs
                 orientation="vertical"
                 value={currentTabIndex}
-                onChange={handleTabIndexChange}
+                onChange={(event, newValue) => {
+                  if (isChangedAnything) {
+                    const result = confirm('You have unsaved changes. Are you sure you want to continue');
+                    if (result) {
+                      handleChangedAnythingToFalse();
+                      handleTabIndexChange(event, newValue);
+                    }
+                  } else {
+                    handleTabIndexChange(event, newValue);
+                  }
+                }}
                 aria-label="Vertical tabs"
                 centered
                 classes={{ indicator: classes.indicator }}
@@ -86,10 +100,20 @@ const Settings = (): JSX.Element => {
             <Grid item xs={12} sm={8} md={7} component="section">
               <Card elevation={6} square className={classes.rightColumn}>
                 <TabPanel value={currentTabIndex} index={0}>
-                  <EditProfile userState={userState} dispatchUserContext={dispatchUserContext} />
+                  <EditProfile
+                    userState={userState}
+                    dispatchUserContext={dispatchUserContext}
+                    handleChangedAnything={handleChangedAnything}
+                    handleChangedAnythingToFalse={handleChangedAnythingToFalse}
+                  />
                 </TabPanel>
                 <TabPanel value={currentTabIndex} index={1}>
-                  <ProfilePhoto />
+                  <ProfilePhoto
+                    userState={userState}
+                    dispatchUserContext={dispatchUserContext}
+                    handleChangedAnything={handleChangedAnything}
+                    handleChangedAnythingToFalse={handleChangedAnythingToFalse}
+                  />
                 </TabPanel>
                 <TabPanel value={currentTabIndex} index={2}>
                   <PaymentMethods />

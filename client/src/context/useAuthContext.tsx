@@ -1,5 +1,5 @@
 import { useState, useContext, createContext, FunctionComponent, useEffect, useCallback } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { AuthApiData, AuthApiDataSuccess } from './interface/AuthApiData';
 import { User } from './interface/User';
 import loginWithCookies from '../helpers/APICalls/loginWithCookies';

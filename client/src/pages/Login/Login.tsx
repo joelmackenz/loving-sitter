@@ -7,11 +7,9 @@ import Typography from '@material-ui/core/Typography';
 import useStyles from './useStyles';
 import login from '../../helpers/APICalls/login';
 import LoginForm from './LoginForm/LoginForm';
-import AuthHeader from '../../components/AuthHeader/AuthHeader';
 import { useAuth } from '../../context/useAuthContext';
 import { useSnackBar } from '../../context/useSnackbarContext';
 import { Link } from 'react-router-dom';
-import { Toolbar } from '@material-ui/core';
 import LandingNavbar from '../../components/LandingNavbar/LandingNavbar';
 
 export default function Login(): JSX.Element {

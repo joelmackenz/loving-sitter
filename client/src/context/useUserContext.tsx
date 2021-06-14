@@ -53,7 +53,24 @@ const userReducer = (state: IUserContext, action: Action) => {
   }
 };
 
-const UserContext = createContext({});
+const UserContext = createContext({
+  userState: {
+    coverImg: '',
+    profileImg: '',
+    isDogSitter: false,
+    isAvailable: false,
+    phone: '',
+    city: '',
+    description: '',
+    startDate: '',
+    endDate: '',
+    priceRate: '',
+  },
+  // eslint-disable-next-line
+  dispatchUserContext: (action: Action) => {
+    // any clear comments.
+  },
+});
 
 const UserProvider: FunctionComponent = ({ children }): JSX.Element => {
   const [userState, dispatchUserContext] = useReducer(userReducer, {
@@ -71,7 +88,7 @@ const UserProvider: FunctionComponent = ({ children }): JSX.Element => {
   return <UserContext.Provider value={{ userState, dispatchUserContext }}>{children}</UserContext.Provider>;
 };
 
-function useUser(): any {
+function useUser(): IUseUser {
   const context = useContext(UserContext);
   if (context === undefined) {
     throw new Error('useUser must be used within a UserProvider');

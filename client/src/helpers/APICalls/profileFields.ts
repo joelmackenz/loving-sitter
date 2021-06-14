@@ -3,21 +3,18 @@ import { EditProfileFields } from '../../context/useUserContext';
 
 interface AuthFieldsResult {
   error?: string;
+  success?: string;
 }
 
 interface ProfileFieldsResult extends AuthFieldsResult {
   success?: string;
   profile?: EditProfileFields;
 }
-export const updateAuthFields = async (
-  firstName: string,
-  lastName: string,
-  email: string,
-): Promise<AuthFieldsResult> => {
+export const updateAuthFields = async (firstName: string, lastName: string): Promise<AuthFieldsResult> => {
   const fetchOptions: FetchOptions = {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, firstName, lastName }),
+    body: JSON.stringify({ firstName, lastName }),
     credentials: 'include',
   };
   return await fetch(`/auth/update`, fetchOptions)

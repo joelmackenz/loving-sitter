@@ -29,28 +29,54 @@ interface FormValues {
   priceRate: string;
 }
 
-const EditProfile: FC<IUseUser> = (props) => {
+interface Props extends IUseUser {
+  handleChangedAnything: () => void;
+  handleChangedAnythingToFalse: () => void;
+}
+
+const EditProfile: FC<Props> = (props) => {
   const classes = useStyles();
-  const { userState, dispatchUserContext } = props;
+  const { userState, dispatchUserContext, handleChangedAnything, handleChangedAnythingToFalse } = props;
   const { loggedInUser } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
 
   const handleSubmit = (values: FormValues, { setSubmitting }: FormikHelpers<FormValues>): void => {
-    // handle form values;
+    // calling this function will not display confirm box to user
+    handleChangedAnythingToFalse();
     let authFieldsChange = true;
-    const { firstName, email, lastName, ...otherValues } = values;
-    if (loggedInUser?.firstName === firstName && loggedInUser?.email === email && loggedInUser?.lastName === lastName) {
+    let otherFieldsChange = true;
+    const { firstName, lastName, ...otherValues } = values;
+    // if any fields has changes only then we have to fire a request
+    if (loggedInUser?.firstName === firstName && loggedInUser?.lastName === lastName) {
       authFieldsChange = false;
+    }
+    // if any fields has changes only then we have to fire a request
+    if (
+      userState.phone === otherValues.phone &&
+      userState.city === otherValues.city &&
+      userState.description === otherValues.description &&
+      userState.startDate === otherValues.startDate &&
+      userState.endDate === otherValues.endDate &&
+      userState.priceRate === otherValues.priceRate
+    ) {
+      otherFieldsChange = false;
+      setSubmitting(false);
+      updateSnackBarMessage("Your don't changed any field values.");
     }
 
     if (authFieldsChange) {
-      updateAuthFields(firstName, lastName, email).then((data) => {
+      updateAuthFields(firstName, lastName).then((data) => {
         if (data.error) {
+          setSubmitting(false);
           updateSnackBarMessage(data.error);
+        } else if (data.success) {
+          setSubmitting(false);
+          // TODO: Also update local state of loggedInUser in AuthContext
+          updateSnackBarMessage(data.success);
         }
       });
     }
-
+    if (!otherFieldsChange) return;
     createOrUpdateProfileFields(otherValues).then((data) => {
       if (data.error) {
         setSubmitting(false);
@@ -126,7 +152,14 @@ const EditProfile: FC<IUseUser> = (props) => {
                     helperText={touched.firstName ? errors.firstName : ''}
                     error={touched.firstName && Boolean(errors.firstName)}
                     value={values.firstName}
-                    onChange={handleChange}
+                    onChange={(event) => {
+                      if (event.target.value !== loggedInUser?.firstName) {
+                        handleChangedAnything();
+                      } else {
+                        handleChangedAnythingToFalse();
+                      }
+                      return handleChange(event);
+                    }}
                     required
                   />
                 </Grid>
@@ -145,7 +178,14 @@ const EditProfile: FC<IUseUser> = (props) => {
                     helperText={touched.lastName ? errors.lastName : ''}
                     error={touched.lastName && Boolean(errors.lastName)}
                     value={values.lastName}
-                    onChange={handleChange}
+                    onChange={(event) => {
+                      if (event.target.value !== loggedInUser?.lastName) {
+                        handleChangedAnything();
+                      } else {
+                        handleChangedAnythingToFalse();
+                      }
+                      return handleChange(event);
+                    }}
                     required
                   />
                 </Grid>
@@ -165,7 +205,15 @@ const EditProfile: FC<IUseUser> = (props) => {
                     helperText={touched.email ? errors.email : ''}
                     error={touched.email && Boolean(errors.email)}
                     value={values.email}
-                    onChange={handleChange}
+                    onChange={(event) => {
+                      if (event.target.value !== loggedInUser?.email) {
+                        handleChangedAnything();
+                      } else {
+                        handleChangedAnythingToFalse();
+                      }
+                      return handleChange(event);
+                    }}
+                    disabled
                     required
                   />
                 </Grid>
@@ -185,7 +233,14 @@ const EditProfile: FC<IUseUser> = (props) => {
                     helperText={touched.phone ? errors.phone : ''}
                     error={touched.phone && Boolean(errors.phone)}
                     value={values.phone}
-                    onChange={handleChange}
+                    onChange={(event) => {
+                      if (event.target.value !== userState.phone) {
+                        handleChangedAnything();
+                      } else {
+                        handleChangedAnythingToFalse();
+                      }
+                      return handleChange(event);
+                    }}
                     required
                   />
                 </Grid>
@@ -204,7 +259,14 @@ const EditProfile: FC<IUseUser> = (props) => {
                     helperText={touched.city ? errors.city : ''}
                     error={touched.city && Boolean(errors.city)}
                     value={values.city}
-                    onChange={handleChange}
+                    onChange={(event) => {
+                      if (event.target.value !== userState.city) {
+                        handleChangedAnything();
+                      } else {
+                        handleChangedAnythingToFalse();
+                      }
+                      return handleChange(event);
+                    }}
                     required
                   />
                 </Grid>
@@ -232,7 +294,14 @@ const EditProfile: FC<IUseUser> = (props) => {
                         helperText={touched.description ? errors.description : ''}
                         error={touched.description && Boolean(errors.description)}
                         value={values.description}
-                        onChange={handleChange}
+                        onChange={(event) => {
+                          if (event.target.value !== userState.description) {
+                            handleChangedAnything();
+                          } else {
+                            handleChangedAnythingToFalse();
+                          }
+                          return handleChange(event);
+                        }}
                         required
                       />
                     </Grid>
@@ -260,7 +329,14 @@ const EditProfile: FC<IUseUser> = (props) => {
                         helperText={touched.startDate ? errors.startDate : ''}
                         error={touched.startDate && Boolean(errors.startDate)}
                         value={values.startDate}
-                        onChange={handleChange}
+                        onChange={(event) => {
+                          if (event.target.value !== userState.startDate) {
+                            handleChangedAnything();
+                          } else {
+                            handleChangedAnythingToFalse();
+                          }
+                          return handleChange(event);
+                        }}
                         required
                       />
                     </Grid>
@@ -288,7 +364,14 @@ const EditProfile: FC<IUseUser> = (props) => {
                         helperText={touched.endDate ? errors.endDate : ''}
                         error={touched.endDate && Boolean(errors.endDate)}
                         value={values.endDate}
-                        onChange={handleChange}
+                        onChange={(event) => {
+                          if (event.target.value !== userState.endDate) {
+                            handleChangedAnything();
+                          } else {
+                            handleChangedAnythingToFalse();
+                          }
+                          return handleChange(event);
+                        }}
                         required
                       />
                     </Grid>
@@ -313,7 +396,14 @@ const EditProfile: FC<IUseUser> = (props) => {
                         helperText={touched.priceRate ? errors.priceRate : ''}
                         error={touched.priceRate && Boolean(errors.priceRate)}
                         value={values.priceRate}
-                        onChange={handleChange}
+                        onChange={(event) => {
+                          if (event.target.value !== userState.priceRate) {
+                            handleChangedAnything();
+                          } else {
+                            handleChangedAnythingToFalse();
+                          }
+                          return handleChange(event);
+                        }}
                         required
                       />
                     </Grid>

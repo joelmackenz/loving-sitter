@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, FC } from 'react';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -8,9 +8,9 @@ import Typography from '@material-ui/core/Typography';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import { useAuth } from '../../context/useAuthContext';
 import { useSnackBar } from '../../context/useSnackbarContext';
-import { useUser } from '../../context/useUserContext';
 
 import useStyles from './useStyles';
+import { IUseUser } from '../../context/useUserContext';
 import uploadImagesAPI from '../../helpers/APICalls/uploadImages';
 
 interface UploadImagesState {
@@ -18,23 +18,30 @@ interface UploadImagesState {
   profileImg: string | File;
 }
 
-const ProfilePhoto = (): JSX.Element => {
+interface Props extends IUseUser {
+  handleChangedAnything: () => void;
+  handleChangedAnythingToFalse: () => void;
+}
+
+const ProfilePhoto: FC<Props> = (props) => {
   const [uploadImages, setUploadImages] = useState<UploadImagesState>({
     coverImg: '',
     profileImg: '',
   });
-  const { userState, dispatchUserContext } = useUser();
+  const { userState, dispatchUserContext, handleChangedAnything, handleChangedAnythingToFalse } = props;
   const classes = useStyles();
   const { loggedInUser } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>): void => {
     if (userState.coverImg === '' && event.target.files?.length) {
       const coverImg = URL.createObjectURL(event.target.files[0]);
+      handleChangedAnything();
       dispatchUserContext({ type: 'UPLOAD_BACKGROUND', coverImg });
       // eslint-disable-next-line
       setUploadImages((prevState) => ({ ...prevState, coverImg: event.target.files![0] }));
     } else if (userState.profileImg === '' && event.target.files?.length) {
       const profileImg = URL.createObjectURL(event.target.files[0]);
+      handleChangedAnything();
       dispatchUserContext({ type: 'UPLOAD_PROFILE', profileImg });
       // eslint-disable-next-line
       setUploadImages((prevState) => ({ ...prevState, profileImg: event.target.files![0] }));
@@ -43,6 +50,7 @@ const ProfilePhoto = (): JSX.Element => {
 
   const handleDeleteIcon = (): void => {
     dispatchUserContext({ type: 'EMPTY_IMAGES' });
+    handleChangedAnything();
     setUploadImages({
       profileImg: '',
       coverImg: '',
@@ -51,6 +59,7 @@ const ProfilePhoto = (): JSX.Element => {
 
   const handleImageUploads = (): void => {
     if (!uploadImages.coverImg && !uploadImages.profileImg) return;
+    handleChangedAnythingToFalse();
     const formData = new FormData();
     formData.set('background', uploadImages.coverImg);
     formData.set('profile', uploadImages.profileImg);

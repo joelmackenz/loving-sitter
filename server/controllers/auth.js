@@ -117,22 +117,21 @@ exports.logoutUser = asyncHandler(async (req, res, next) => {
 });
 
 exports.updateUserFields = asyncHandler(async (req, res, next) => {
-  const { firstName, lastName, email } = req.body;
-  const emailExists = await User.findOne({ email });
+  const { firstName, lastName } = req.body;
+  // const emailExists = await User.findOne({ email });
 
-  if (emailExists) {
-    res.status(400).json({
-      error: 'A user with that email already exists',
-    });
-  }
+  // if (emailExists) {
+  //   return res.status(400).json({
+  //     error: 'A user with that email already exists',
+  //   });
+  // }
 
   User.findOneAndUpdate(
     { _id: req.user.id },
     { $set: 
       {
         firstName,
-        lastName,
-        email,
+        lastName
       },
     },
     (error, user) => {
@@ -142,7 +141,9 @@ exports.updateUserFields = asyncHandler(async (req, res, next) => {
         })
       }
 
-      return res.status(204)
+      return res.status(200).json({
+        success: "Profile Updated Successfully."
+      })
 
     }
   )
