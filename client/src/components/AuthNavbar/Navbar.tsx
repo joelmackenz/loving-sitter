@@ -49,7 +49,7 @@ const NotificationPopper: React.FC<NotificationProps> = ({ titleAnchor, activeNo
           <Link className={classes.linkItem} to="/notifications">
             {activeNotifications.map((notification, index) =>
               notification.title !== null ? (
-                <Grid key={index} className={classes.notificationContainer}>
+                <Grid key={`${notification.title}-${index}`} className={classes.notificationContainer}>
                   <Typography className={classes.notificationTitle}>{notification.title}</Typography>
                   <Typography className={classes.notificationSubtitle}>{notification.subtitle}</Typography>
                   <Typography className={classes.notificationDate}>{notification.date}</Typography>

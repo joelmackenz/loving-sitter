@@ -25,7 +25,7 @@ module.exports.addMessage = async (req, res, next) => {
     }).exec((err) => {
         if (err) {
             console.log(err);
-            res.send(err);
+            res.status(400).send(err);
         } else {
             // Ensures author is a member of the conversation
             if (convoUsers.includes(newMessage.author)) {
@@ -51,8 +51,7 @@ module.exports.addMessage = async (req, res, next) => {
 
 // PUT -- Edit Message
 module.exports.editMessage = async (req, res, next) => {
-    const convoId = req.params.convoId;
-    const messageId = req.params.messageId;
+    const { convoId, messageId } = req.params.convoId;
     newMessageBody = req.body.message.body;
     try {
         let result = await Convo.findByIdAndUpdate(

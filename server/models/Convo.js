@@ -5,7 +5,12 @@ const Convo = new mongoose.Schema({
     messages: {
         unique: false,
         sparse: true,
-        type: [mongoose.Schema.Types.Mixed],
+        type: [
+            {
+                type: mongoose.Schema.Types.Mixed,
+                ref: "messages",
+            },
+        ],
     },
 });
 
