@@ -2,6 +2,7 @@ const multer = require("multer");
 const express = require("express");
 const router = express.Router();
 
+const protect = require('../middleware/auth');
 const { uploadImage } = require("../controllers/s3")
 
 const upload = multer({
@@ -12,6 +13,6 @@ const upload = multer({
   .array('photos', 5);
 
 
-router.post("/uploadimage", upload, uploadImage);
+router.post("/uploadimage", protect, upload, uploadImage);
 
 module.exports = router;
