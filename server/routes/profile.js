@@ -19,9 +19,9 @@ router.get("/:id", auth, profileController.getOneProfile);
 router.get("/", auth, profileController.getAllProfiles);
 
 /* GET route to get all profiles by search terms - GET PROFILES BY SEARCH operation. */
-router.get("/search/city", auth, profileController.getProfilesBySearch);
+router.get("/search/city/:search", auth, profileController.getProfilesBySearch);
 
 /* GET route to get all profiles by search terms - GET PROFILES BY DAY operation. */
-router.get("/search/day", profileController.getProfilesByDay);
+router.get("/search/day/:search", auth, profileController.getProfilesByDay);
 
 module.exports = router;

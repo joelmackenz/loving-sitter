@@ -31,7 +31,6 @@ exports.createProfile = asyncHandler(async (req, res, next) => {
         res.send(err);
     }
 });
-// Edits a profile in user.profile
 
 // @route PUT /profile/:id
 // @Given an ID and new parameters, update the profile
@@ -84,11 +83,11 @@ exports.getOneProfile = asyncHandler(async (req, res, next) => {
 });
 
 // @route GET /profile
-// @descr Gets an array of users who have profiles, option to limit number returned (returns 200 by default)
+// @descr Gets an array of users who have profiles, option to limit number returned (returns 100 by default)
 exports.getAllProfiles = asyncHandler(async (req, res, next) => {
     const numberOfUsers = req.body.numberOfUsers
         ? req.body.numberOfUsers + 1
-        : 200;
+        : 100;
     try {
         const users = [];
         const allUsers = await User.find({
@@ -118,12 +117,11 @@ exports.getAllProfiles = asyncHandler(async (req, res, next) => {
     }
 });
 
-// @route GET /profile/citySearch
+// @route GET /profile/search/city/:search
 // @descr Gets an array of users who have profiles based on a search for their city
 exports.getProfilesBySearch = asyncHandler(async (req, res, next) => {
-    search = req.body.search;
+    const search = req.params.search;
     try {
-        const users = [];
         const foundUsers = await User.find({
             _id: { $ne: req.user.id },
             profile: {
@@ -134,11 +132,10 @@ exports.getProfilesBySearch = asyncHandler(async (req, res, next) => {
             match: { isDogSitter: { $eq: true } },
         });
         // Sets users to array of users with populated profiles
+        const users = [];
         foundUsers.map((user) => {
             if (user.profile) {
                 const city = user.profile.address.city.toLowerCase();
-                console.log("City: " + city);
-                console.log("Search: " + search);
                 if (city.includes(search)) {
                     users.push(user);
                 }
@@ -154,8 +151,39 @@ exports.getProfilesBySearch = asyncHandler(async (req, res, next) => {
     }
 });
 
-// @route GET /profile/availRange
-// @descr Gets an array of users who have profiles based on a given availability range
+// @route GET /profile/search/day/:search
+// @descr Gets an array of users who have profiles based on given availability days
 exports.getProfilesByDay = asyncHandler(async (req, res, next) => {
-    res.status(200).send("Hello");
+    const search = req.params.search.split(",");
+    try {
+        const foundUsers = await User.find({
+            _id: { $ne: req.user.id },
+            profile: {
+                $exists: true,
+            },
+        }).populate({
+            path: "profile",
+            match: { isDogSitter: { $eq: true } },
+        });
+        // Sets users to array of users whos availability includes a day in the search array
+        const users = [];
+        foundUsers.map((user) => {
+            if (user.profile) {
+                const availableDays = user.profile.availableDates;
+                search.map((day) => {
+                    if (availableDays.includes(day)) {
+                        users.push(user);
+                        foundUsers.pop(user);
+                    }
+                });
+            }
+        });
+        // Returns only users with profiles
+        res.status(200).json({
+            users,
+        });
+    } catch (e) {
+        res.status(500);
+        throw new Error(e.message);
+    }
 });
