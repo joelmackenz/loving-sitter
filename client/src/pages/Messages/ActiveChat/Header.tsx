@@ -11,21 +11,20 @@ import { useMediaQuery } from '@material-ui/core';
 import BadgeAvatar from '../Sidebar/BadgeAvatar';
 import Sidebar from '../Sidebar/Sidebar';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     alignItems: 'center',
     marginTop: '1rem',
     justifyContent: 'space-between',
     height: 89,
-    // marginBottom: '1rem',
     boxShadow: '0 2px 20px 0 rgba(88,133,196,0.10)',
   },
   content: {
     display: 'flex',
     alignItems: 'center',
     marginLeft: 24,
-    '@media (max-width: 600px)': {
+    [theme.breakpoints.down('xs')]: {
       marginLeft: 0,
     },
   },

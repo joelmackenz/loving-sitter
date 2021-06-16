@@ -1,17 +1,16 @@
-let mongoose = require("mongoose");
+const mongoose = require("mongoose");
+
+const Messages = require("./Message");
+
+const { ObjectId } = mongoose.Schema;
 
 const Convo = new mongoose.Schema({
-    users: [mongoose.ObjectId],
-    messages: {
-        unique: false,
-        sparse: true,
-        type: [
-            {
-                type: mongoose.Schema.Types.Mixed,
-                ref: "messages",
-            },
-        ],
-    },
+    users: [{
+        type: ObjectId,
+        ref: "user",
+        required: true
+    }],
+    messages: [Messages],
 });
 
 module.exports = mongoose.model("Convo", Convo);

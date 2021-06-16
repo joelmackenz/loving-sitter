@@ -19,13 +19,17 @@ module.exports.createConvo = async (req, res, next) => {
                 users: users,
             });
             try {
-                newConvo.save().then((err) => {
+                newConvo.save((err, convo) => {
                     if (err) {
                         console.log(err);
-                        res.send(err);
+                        res.status(400).json({
+                            error: err.message
+                        });
                     } else {
-                        res.send(201);
-                        res.json(newConvo._id);
+                        res.status(201).json({
+                            _id: convo._id,
+                            success: "Created successfully."
+                        });
                     }
                 });
             } catch (err) {
@@ -47,18 +51,29 @@ module.exports.createConvo = async (req, res, next) => {
 // @desc Fetch all convos that user is a member of
 // @access Private
 module.exports.getAllConvos = async (req, res, next) => {
-    const userId = ObjectId(req.user.id);
+    const userId = req.user.id;
     try {
         const foundConvos = await Convo.find({
             users: userId,
-        });
-        if (!foundConvos) {
-            res.status(200).send("No conversations found.");
+        })
+        .select("-__v -messages")
+        .populate({
+            path: "users",
+            select: "firstName lastName",
+            match: {  _id: {$ne: userId} }
+        })
+        if (!foundConvos || foundConvos.length <= 0) {
+            return res.status(200).json({
+                error: "No conversations found."
+            });
         } else {
-            res.status(200).send(foundConvos);
+            return res.status(200).json({
+                success: "Retrieved successfully",
+                conversations: foundConvos
+            });
         }
     } catch (err) {
-        res.send(err);
+        return res.send(err);
     }
 };
 

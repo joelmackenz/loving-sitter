@@ -47,7 +47,7 @@ export default function Sidebar(props: any): JSX.Element {
   ];
   return (
     <Paper elevation={2} className={classes.root}>
-      <Box className="">
+      <Box className={classes.sidebarConvoContainer}>
         <Typography className={classes.title}>Inbox Messages</Typography>
         {conversations.map((conversation: any) => {
           return <Chat conversation={conversation} key={conversation.otherUser.username} />;

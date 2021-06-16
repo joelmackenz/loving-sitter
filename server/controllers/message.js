@@ -3,7 +3,6 @@ const router = express.Router();
 const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 const Convo = require("../models/convo");
-const Message = require("../models/message");
 const ObjectId = require("mongodb").ObjectId;
 
 // @route POST /message
@@ -11,20 +10,21 @@ const ObjectId = require("mongodb").ObjectId;
 // @access Private
 module.exports.addMessage = async (req, res, next) => {
     const convoId = req.params.convoId;
-    const newMessage = new Message(req.body);
 
     try {
         const convos = await Convo.findById(convoId);
         const convoUsers = convos.users;
-
-        if (convoUsers.includes(newMessage.author)) {
-            Convo.updateOne(
-                { _id: convoId },
-                { $push: { messages: newMessage } },
-                () => {
-                    res.json({ success: true, msg: "Message added" });
+        
+        if (convoUsers.includes(req.body.author)) {
+            convos.messages.push(req.body);
+            convos.save((error, convo) => {
+                if (error) {
+                    return res.status(400).json({
+                        error: error.message
+                    })
                 }
-            );
+                return res.json({ success: true, msg: "Message added" });
+            });
         } else {
             res.status(400).send("Message sender not a conversation user!");
         }

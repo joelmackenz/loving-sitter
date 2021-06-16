@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     height: '6rem',
     boxShadow: '0px -4px 3px rgba(50, 50, 50, 0.1)',
     backgroundColor: 'white',
-    '@media (max-width: 600px)': {
+    [theme.breakpoints.down('xs')]: {
       height: '3rem',
     },
   },
@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     right: '5%',
     bottom: '10%',
-    '@media (max-width: 600px)': {
+    [theme.breakpoints.down('xs')]: {
       width: 90,
       height: 35,
       right: 0,

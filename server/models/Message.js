@@ -1,9 +1,18 @@
 let mongoose = require("mongoose");
 
-const Message = new mongoose.Schema({
-    author: mongoose.ObjectId,
-    body: { type: String, default: " " },
-    time: { type: Date, default: Date.now },
-});
+const { Schema } = mongoose;
+const { ObjectId } = Schema;
 
-module.exports = mongoose.model("Message", Message);
+const Message = new mongoose.Schema({
+    author: {
+        type: ObjectId,
+        ref: 'user',
+        required: true
+    },
+    text: {
+        type: String,
+        required: true
+    },
+},{ timestamps: true });
+
+module.exports = Message;
