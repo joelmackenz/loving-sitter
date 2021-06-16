@@ -1,5 +1,5 @@
 import { FetchOptions } from '../../context/interface/FetchOptions';
-import { ProfilesApiData } from '../../context/interface/Profile';
+import { ProfilesApiData } from '../../interface/Profile';
 
 const searchProfilesByCity = async (search: string): Promise<ProfilesApiData> => {
   const fetchOptions: FetchOptions = {

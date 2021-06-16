@@ -16,10 +16,10 @@ import getProfiles from '../../helpers/APICalls/getProfiles';
 import searchProfilesByCity from '../../helpers/APICalls/searchProfilesByCity';
 import searchProfilesByDay from '../../helpers/APICalls/searchProfilesByDay';
 
-import { User } from '../../context/interface/User';
+import { User } from '../../interface/User';
 
 // Temporary user data to show functionality
-import { Profile } from '../../context/interface/Profile';
+import { Profile } from '../../interface/Profile';
 
 export default function ProfileListings(): JSX.Element {
   const classes = useStyles();
@@ -133,7 +133,7 @@ export default function ProfileListings(): JSX.Element {
   };
 
   const profileCardGrid = (
-    <Grid container className={classes.profilesContainer} xs={9}>
+    <Grid item className={classes.profilesContainer} xs={9}>
       {displayedProfiles.map((profile, index) => (
         <ProfileCard profile={profile} key={`${profile._id}-${index}`} />
       ))}
@@ -186,7 +186,7 @@ export default function ProfileListings(): JSX.Element {
           </Grid>
         </Grid>
       </Grid>
-      {profileCardGrid}
+      <Grid container>{profileCardGrid}</Grid>
       {!search && daySearchDisplay === 'any' && (
         <Button onClick={handleShowMore} variant="outlined" className={classes.showMore}>
           Show More

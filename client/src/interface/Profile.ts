@@ -2,8 +2,8 @@ import { User } from './User';
 
 export interface Profile {
   _id: string;
-  isDogSitter: { type: Boolean; require: true; default: false };
-  isAvailable: { type: Boolean; require: true; default: false };
+  isDogSitter: { type: Boolean };
+  isAvailable: { type: Boolean };
   firstName: { type: string; require: true };
   lastName: { type: string; require: true };
   gender: string;

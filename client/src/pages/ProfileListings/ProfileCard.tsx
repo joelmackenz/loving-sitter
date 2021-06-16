@@ -9,7 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import useStyles from './useStyles';
 
-import { Profile } from '../../context/interface/Profile';
+import { Profile } from '../../interface/Profile';
 
 interface ProfileCardProps {
   profile: Profile;
