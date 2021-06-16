@@ -6,52 +6,38 @@ const Convo = require("../models/convo");
 const Message = require("../models/message");
 const ObjectId = require("mongodb").ObjectId;
 
-// POST -- Add Message
+// @route POST /message
+// @desc Add message
+// @access Private
 module.exports.addMessage = async (req, res, next) => {
     const convoId = req.params.convoId;
-
     const newMessage = new Message(req.body);
 
-    let convoUsers;
+    try {
+        const convos = await Convo.findById(convoId);
+        const convoUsers = convos.users;
 
-    // Gets users involved in conversation
-    Convo.findById(convoId, (err, convo) => {
-        if (err) {
-            console.log(err);
-            res.send(err);
+        if (convoUsers.includes(newMessage.author)) {
+            Convo.updateOne(
+                { _id: convoId },
+                { $push: { messages: newMessage } },
+                () => {
+                    res.json({ success: true, msg: "Message added" });
+                }
+            );
         } else {
-            convoUsers = convo.users;
+            res.status(400).send("Message sender not a conversation user!");
         }
-    }).exec((err) => {
-        if (err) {
-            console.log(err);
-            res.status(400).send(err);
-        } else {
-            // Ensures author is a member of the conversation
-            if (convoUsers.includes(newMessage.author)) {
-                Convo.updateOne(
-                    { _id: convoId },
-                    { $push: { messages: newMessage } },
-                    (err) => {
-                        if (err) {
-                            console.log(err);
-                            res.send(err);
-                        } else {
-                            res.json({ success: true, msg: "Message added" });
-                        }
-                    }
-                );
-            } else {
-                res.status(400);
-                res.send("Message sender not a conversation user!");
-            }
-        }
-    });
+    } catch (err) {
+        res.status(400).send(err);
+    }
 };
 
-// PUT -- Edit Message
+// @route PUT /message/:convoId/:messageId
+// @desc Edit message
+// @access Private
 module.exports.editMessage = async (req, res, next) => {
-    const { convoId, messageId } = req.params.convoId;
+    const { convoId, messageId } = req.params;
     newMessageBody = req.body.message.body;
     try {
         let result = await Convo.findByIdAndUpdate(
@@ -75,10 +61,11 @@ module.exports.editMessage = async (req, res, next) => {
     }
 };
 
-// DELETE -- Delete Message
+// @route DELETE /message/:convoId/:messageId
+// @desc Delete message
+// @access Private
 module.exports.deleteMessage = async (req, res, next) => {
-    const convoId = req.params.convoId;
-    const messageId = req.params.messageId;
+    const { convoId, messageId } = req.params;
     try {
         let result = await Convo.findByIdAndUpdate(
             convoId,
