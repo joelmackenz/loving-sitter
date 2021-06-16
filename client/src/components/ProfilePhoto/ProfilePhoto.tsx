@@ -71,7 +71,7 @@ const ProfilePhoto: FC<Props> = (props) => {
   };
 
   const handleImageUploads = (): void => {
-    if (!uploadImages.coverImg && !uploadImages.profileImg) return;
+    if (userState.coverImg === '' || userState.profileImg === '') return;
     handleChangedAnythingToFalse();
     const formData = new FormData();
     formData.set('background', uploadImages.coverImg);
