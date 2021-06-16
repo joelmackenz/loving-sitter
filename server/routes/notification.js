@@ -8,14 +8,11 @@ const {
   getUnreadNotification,
   createNotification,
   updateReadNotification,
-  getNotificationById
 } = require("../controllers/notification");
-
-router.param("notificationId", getNotificationById);
 
 router.get("/", protect, getAllNotification);
 router.get("/unread", protect, getUnreadNotification);
 router.post("/create", protect, validateCreateNotification, createNotification);
-router.put("/update/:notificationId", protect, updateReadNotification);
+router.put("/updatereadstatus", protect, updateReadNotification);
 
 module.exports = router;

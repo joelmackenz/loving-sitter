@@ -58,6 +58,12 @@ const useStyles = makeStyles((theme) => ({
     textTransform: 'uppercase',
     fontWeight: 'bold',
   },
+  radio: {
+    '&$checked': {
+      color: '#f04040',
+    },
+  },
+  checked: {},
 }));
 
 export default useStyles;

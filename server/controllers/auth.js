@@ -118,13 +118,6 @@ exports.logoutUser = asyncHandler(async (req, res, next) => {
 
 exports.updateUserFields = asyncHandler(async (req, res, next) => {
   const { firstName, lastName } = req.body;
-  // const emailExists = await User.findOne({ email });
-
-  // if (emailExists) {
-  //   return res.status(400).json({
-  //     error: 'A user with that email already exists',
-  //   });
-  // }
 
   User.findOneAndUpdate(
     { _id: req.user.id },

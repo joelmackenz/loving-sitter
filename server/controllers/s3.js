@@ -13,16 +13,16 @@ exports.uploadImage = (req, res) => {
 
   let locationUrls = [];
 
-  const fieldNames = ['background', 'profile'];
+  const entries = Object.entries(req.files);
 
-  for (let index = 0; index < fieldNames.length; index++) {
-    const fieldName = fieldNames[index];
-    const file = req.files[fieldName];
+  for (let index = 0; index < entries.length; index++) {
+    const fieldName = entries[index];
+    const file = fieldName[1][0];
     const params = {
       Bucket: process.env.BUCKET_NAME,
-      Body: file[0].buffer,
-      ContentType: file[0].mimetype,
-      Key: `${req.user.id}/${file[0].fieldname}`,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+      Key: `${req.user.id}/${file.fieldname}`,
       ACL: 'public-read',
     };
     s3.upload(params, (error, data) => {
@@ -37,7 +37,7 @@ exports.uploadImage = (req, res) => {
         // store locationUrl in Database;
         const locationUrl = data.Location;
         locationUrls.push({ locationUrl, key: data.key });
-        if (locationUrls.length === fieldNames.length) {
+        if (locationUrls.length === entries.length) {
           req.body.coverImg = locationUrls[0].locationUrl;
           req.body.profileImg = locationUrls[1].locationUrl;
 
