@@ -1,5 +1,4 @@
 const express = require("express");
-const router = express.Router();
 const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 const Convo = require("../models/convo");
