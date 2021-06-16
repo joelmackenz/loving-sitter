@@ -1,5 +1,4 @@
 const express = require("express");
-const router = express.Router();
 const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 const Convo = require("../models/convo");
@@ -11,7 +10,7 @@ const ObjectId = require("mongodb").ObjectId;
 // @access Private
 module.exports.addMessage = async (req, res, next) => {
     const convoId = req.params.convoId;
-    const newMessage = new Message(req.body);
+    const newMessage = req.body;
 
     try {
         const convos = await Convo.findById(convoId);
