@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, BaseSyntheticEvent } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 import Card from '@material-ui/core/Card';
@@ -42,8 +42,7 @@ const TabPanel = (props: TabPanelProps) => {
 const Settings = (): JSX.Element => {
   const classes = useStyles();
   const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
-  // eslint-disable-next-line
-  const handleTabIndexChange = (event: any, newValue: number) => {
+  const handleTabIndexChange = (event: BaseSyntheticEvent, newValue: number): void => {
     setCurrentTabIndex(newValue);
   };
   return (
