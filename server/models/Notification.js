@@ -22,7 +22,7 @@ const notificationSchema = new Schema({
   title: {
     type: String,
     required: true,
-    maxlength: 50
+    maxlength: 200
   },
   description: {
     type: String,
@@ -32,7 +32,7 @@ const notificationSchema = new Schema({
   readStatus: {
     type: Boolean,
     default: false
-  }
+  },
 }, { timestamps: true });
 
 module.exports =  mongoose.model("Notification", notificationSchema);
