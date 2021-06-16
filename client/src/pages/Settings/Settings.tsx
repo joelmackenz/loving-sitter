@@ -50,7 +50,7 @@ const Settings = (): JSX.Element => {
 
   const handleChangedAnything = () => setIsChangedAnything(true);
   const handleChangedAnythingToFalse = () => setIsChangedAnything(false);
-
+  console.log({ userState });
   useEffect(() => {
     getOneProfile().then((data) => {
       if (data.error) {

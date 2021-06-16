@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Sidebar from './Sidebar/Sidebar';
 import ActiveChat from './ActiveChat/ActiveChat';
 import { useSnackBar } from '../../context/useSnackbarContext';
+import { useUser } from '../../context/useUserContext';
 import { getAllConvosWithoutMessages } from '../../helpers/APICalls/conversation';
 
 const useStyles = makeStyles((theme) => ({
@@ -21,17 +22,19 @@ const useStyles = makeStyles((theme) => ({
 export default function Messages() {
   const classes = useStyles();
   const { updateSnackBarMessage } = useSnackBar();
+  const { userState } = useUser();
   const [conversations, setConversations] = useState<any>([]);
   const [activeConversation, setActiveConversation] = useState<string>('');
-  // useEffect(() => {
-  //   getAllConvosWithoutMessages().then((data) => {
-  //     if (data.error) {
-  //       updateSnackBarMessage(data.error);
-  //     } else if (data.success) {
-  //       setConversations(data.users);
-  //     }
-  //   });
-  // }, []);
+  useEffect(() => {
+    getAllConvosWithoutMessages(userState.profileId ? userState.profileId : '').then((data) => {
+      console.log(data);
+      if (data.error) {
+        updateSnackBarMessage(data.error);
+      } else if (data.success) {
+        // setConversations(data.users);
+      }
+    });
+  }, []);
 
   return (
     <Grid container component="main" className={classes.root}>

@@ -9,14 +9,14 @@ const ObjectId = require("mongodb").ObjectId;
 // @desc Create convo
 // @access Private
 module.exports.createConvo = async (req, res, next) => {
-    const { users } = req.body;
+    const { profiles } = req.body;
     const alreadyExists = await Convo.findOne({
-        users: users,
+        profiles
     });
-    if (users.length >= 1) {
+    if (profiles.length >= 1) {
         if (!alreadyExists) {
             const newConvo = new Convo({
-                users: users,
+                profiles,
             });
             try {
                 newConvo.save((err, convo) => {
@@ -51,16 +51,15 @@ module.exports.createConvo = async (req, res, next) => {
 // @desc Fetch all convos that user is a member of
 // @access Private
 module.exports.getAllConvos = async (req, res, next) => {
-    const userId = req.user.id;
+    const profileId = req.params.profileId;
     try {
         const foundConvos = await Convo.find({
-            users: userId,
+            profiles: profileId,
         })
         .select("-__v -messages")
         .populate({
-            path: "users",
-            select: "firstName lastName",
-            match: {  _id: {$ne: userId} }
+            path: "profiles",
+            match: {  _id: {$ne: profileId} }
         })
         if (!foundConvos || foundConvos.length <= 0) {
             return res.status(200).json({

@@ -28,13 +28,13 @@ export const createConvo = async (userOneId: string, userTwoId: string): Promise
     }));
 };
 
-export const getAllConvosWithoutMessages = async (): Promise<getConvosApiData> => {
+export const getAllConvosWithoutMessages = async (profileId: string): Promise<getConvosApiData> => {
   const fetchOptions: FetchOptions = {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
   };
-  return await fetch(`/convo`, fetchOptions)
+  return await fetch(`/convo/${profileId}`, fetchOptions)
     .then((res) => res.json())
     .catch(() => ({
       error: { message: 'Unable to connect to server. Please try again' },

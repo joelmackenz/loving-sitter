@@ -78,9 +78,11 @@ exports.getOneProfile = asyncHandler(async (req, res, next) => {
   }
 
   try {
-    const profile = await Profile.findOne({ userId }, { _id: 0, userId: 0, __v: 0 });
+    const profile = await Profile.findOne({ userId }, { userId: 0, __v: 0 });
     if (profile) {
-      return res.status(200).json({ profile });
+      return res.status(200).json({
+        profile
+      });
     } else {
       return res.status(400).json({ error: 'Unable to Fetch User Profile' })
     }
