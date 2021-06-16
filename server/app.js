@@ -2,7 +2,6 @@ const colors = require("colors");
 const path = require("path");
 const http = require("http");
 const express = require("express");
-const socketio = require("socket.io");
 const { notFound, errorHandler } = require("./middleware/error");
 const connectDB = require("./db");
 const { join } = require("path");
@@ -19,19 +18,15 @@ const notificationRouter = require("./routes/notification");
 
 const { json, urlencoded } = express;
 
+// socket connection
+const { appSocket } = require("./socket");
+
 connectDB();
 const app = express();
 const server = http.createServer(app);
 
-const io = socketio(server, {
-    cors: {
-        origin: "*",
-    },
-});
-
-io.on("connection", (socket) => {
-    console.log("Socket connected");
-});
+// initialized socket
+appSocket(server);
 
 if (process.env.NODE_ENV === "development") {
     app.use(logger("dev"));
@@ -40,11 +35,6 @@ app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(join(__dirname, "public")));
-
-app.use((req, res, next) => {
-    req.io = io;
-    next();
-});
 
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
