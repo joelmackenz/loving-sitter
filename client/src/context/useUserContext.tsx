@@ -8,7 +8,8 @@ interface IUserContext {
 type Action =
   | { type: 'UPLOAD_PROFILE'; profile: string }
   | { type: 'UPLOAD_BACKGROUND'; background: string }
-  | { type: 'EMPTY_IMAGES' };
+  | { type: 'REMOVE_BACKGROUND' }
+  | { type: 'REMOVE_PROFILE' };
 
 const userReducer = (state: IUserContext, action: Action) => {
   switch (action.type) {
@@ -16,8 +17,10 @@ const userReducer = (state: IUserContext, action: Action) => {
       return { ...state, profile: action.profile };
     case 'UPLOAD_BACKGROUND':
       return { ...state, background: action.background };
-    case 'EMPTY_IMAGES':
-      return { ...state, background: '', profile: '' };
+    case 'REMOVE_BACKGROUND':
+      return { ...state, background: '' };
+    case 'REMOVE_PROFILE':
+      return { ...state, profile: '' };
     default:
       throw new Error();
   }

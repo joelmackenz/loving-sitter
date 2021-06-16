@@ -5,6 +5,9 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import { useAuth } from '../../context/useAuthContext';
 import { useSnackBar } from '../../context/useSnackbarContext';
@@ -23,29 +26,42 @@ const ProfilePhoto = (): JSX.Element => {
     background: '',
     profile: '',
   });
+  const [radioButtonValue, setRadioButtonValue] = useState<string>('Background');
   const { userState, dispatchUserContext } = useUser();
   const classes = useStyles();
   const { loggedInUser } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
+
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>): void => {
     const files = event.target.files;
-    if (userState.background === '' && files?.length) {
+
+    if (userState.background === '' && files?.length && radioButtonValue === 'Background') {
       const background = URL.createObjectURL(files[0]);
       dispatchUserContext({ type: 'UPLOAD_BACKGROUND', background });
       setUploadImages((prevState) => ({ ...prevState, background: files[0] }));
-    } else if (userState.profile === '' && files?.length) {
+    }
+
+    if (userState.profile === '' && files?.length && radioButtonValue === 'Profile') {
       const profile = URL.createObjectURL(files[0]);
       dispatchUserContext({ type: 'UPLOAD_PROFILE', profile });
       setUploadImages((prevState) => ({ ...prevState, profile: files[0] }));
     }
   };
 
+  const handleRadioButtonChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setRadioButtonValue((event.target as HTMLInputElement).value);
+  };
+
   const handleDeleteIcon = (): void => {
-    dispatchUserContext({ type: 'EMPTY_IMAGES' });
-    setUploadImages({
-      background: '',
-      profile: '',
-    });
+    if (radioButtonValue === 'Background') {
+      dispatchUserContext({ type: 'REMOVE_BACKGROUND' });
+      setUploadImages((prevState) => ({ ...prevState, background: '' }));
+    }
+
+    if (radioButtonValue === 'Profile') {
+      dispatchUserContext({ type: 'REMOVE_PROFILE' });
+      setUploadImages((prevState) => ({ ...prevState, profile: '' }));
+    }
   };
 
   const handleImageUploads = (): void => {
@@ -97,19 +113,29 @@ const ProfilePhoto = (): JSX.Element => {
         </Box>
       </Typography>
       <CardContent className={classes.cardContent}>
+        <RadioGroup aria-label="Images" name="Images" value={radioButtonValue} onChange={handleRadioButtonChange}>
+          <FormControlLabel
+            value="Background"
+            control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />}
+            label="Background"
+          />
+          <FormControlLabel
+            value="Profile"
+            control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />}
+            label="Profile"
+          />
+        </RadioGroup>
         <Box>
           <Button variant="outlined" component="label" color="primary" className={classes.upload}>
-            {userState.background === ''
-              ? `Select Your Background Image`
-              : userState.profile === ''
-              ? `Select Your Profile Image`
+            {userState.background === '' || userState.profile === ''
+              ? `Select Your ${radioButtonValue} Image`
               : `Both Files are uploaded.`}
             <input type="file" hidden accept="image/*" onChange={handleImageUpload} />
           </Button>
         </Box>
         <Button type="button" disableFocusRipple disableRipple onClick={handleDeleteIcon}>
           <DeleteOutlineIcon />
-          <Typography color="textSecondary">Delete photos</Typography>
+          <Typography color="textSecondary">Delete {radioButtonValue}</Typography>
         </Button>
         <Box textAlign="center">
           <Button
