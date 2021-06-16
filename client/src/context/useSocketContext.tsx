@@ -31,5 +31,5 @@ export function useSocket(): ISocketContext {
   if (context === undefined) {
     throw new Error('useSocket must be used within a SocketProvider');
   }
-  return useContext(SocketContext);
+  return context;
 }
