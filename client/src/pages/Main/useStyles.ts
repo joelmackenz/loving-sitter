@@ -12,14 +12,14 @@ const useStyles = makeStyles((theme) => ({
   },
   subBox: {
     padding: '30px 120px',
-    '@media (max-width: 600px)': {
+    [theme.breakpoints.down('xs')]: {
       padding: theme.spacing(6, 6, 0, 6),
     },
   },
   mainText: {
     fontWeight: 900,
     whiteSpace: 'nowrap',
-    '@media (max-width: 600px)': {
+    [theme.breakpoints.down('xs')]: {
       marginTop: '2rem',
       fontSize: '1.5rem',
       textAlign: 'center',
@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
       width: '70%',
       display: 'block',
     },
-    '@media (max-width: 600px)': {
+    [theme.breakpoints.down('xs')]: {
       '&.MuiFormControl-fullWidth': {
         width: '100%',
       },
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   },
   dateRange: {
     width: '35%',
-    '@media (max-width: 600px)': {
+    [theme.breakpoints.down('xs')]: {
       width: '100%',
     },
   },
@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
   mainPhoto: {
     width: '100%',
     height: '100vh',
-    '@media (max-width: 600px)': {
+    [theme.breakpoints.down('xs')]: {
       display: 'none',
     },
   },

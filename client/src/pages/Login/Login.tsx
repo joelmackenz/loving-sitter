@@ -43,7 +43,7 @@ export default function Login(): JSX.Element {
       <Grid container component="main" className={classes.root} justify="center">
         <CssBaseline />
         <Grid item xs={12} sm={8} md={6} elevation={6} component={Paper} square>
-          <Box width="100%" maxWidth={350} p={3} marginY={0} marginX="auto">
+          <Box width="100%" maxWidth={350} p={3} margin="auto">
             <Grid container>
               <Grid item xs>
                 <Typography className={classes.welcome} component="h1" variant="h5" align="center">

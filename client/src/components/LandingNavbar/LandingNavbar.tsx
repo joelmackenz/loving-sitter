@@ -35,6 +35,8 @@ export default function LandingNavbar(): JSX.Element {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const isMobileView = useMediaQuery('(max-width:600px)');
 
+  const handleDrawerClose = () => setIsDrawerOpen(false);
+
   const displayDesktop = (
     <Toolbar className={toolbar}>
       <Link to="/">
@@ -74,7 +76,6 @@ export default function LandingNavbar(): JSX.Element {
 
   const displayMobile = () => {
     const handleDrawerOpen = () => setIsDrawerOpen(true);
-    const handleDrawerClose = () => setIsDrawerOpen(false);
     return (
       <Toolbar className={mobileToolbar}>
         <IconButton className={mobileIcon} onClick={handleDrawerOpen}>
@@ -93,12 +94,9 @@ export default function LandingNavbar(): JSX.Element {
   };
 
   const getDrawserChoices = () => {
-    const handleNavMenuClick = () => {
-      setIsDrawerOpen(false);
-    };
     return headersData.map(({ label, href }) => {
       return (
-        <MenuItem key={label} onClick={handleNavMenuClick}>
+        <MenuItem key={label} onClick={handleDrawerClose}>
           <Link className={linkItem} to={href}>
             {label}
           </Link>

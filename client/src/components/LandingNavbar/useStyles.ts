@@ -3,16 +3,16 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     padding: '0 2rem',
-    '@media (max-width: 900px)': {
+    [theme.breakpoints.down('sm')]: {
       paddingLeft: 0,
       paddingRight: 0,
     },
-    '@media (max-width: 600px)': {
+    [theme.breakpoints.down('xs')]: {
       position: 'relative',
     },
   },
   menuItem: {
-    '&.MuiListItem-button:hover': {
+    '&:hover': {
       backgroundColor: 'initial',
     },
   },
