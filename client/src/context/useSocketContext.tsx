@@ -27,5 +27,9 @@ export const SocketProvider: FunctionComponent = ({ children }): JSX.Element => 
 };
 
 export function useSocket(): ISocketContext {
-  return useContext(SocketContext);
+  const context = useContext(SocketContext);
+  if (context === undefined) {
+    throw new Error('useSocket must be used within a SocketProvider');
+  }
+  return context;
 }

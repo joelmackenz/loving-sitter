@@ -4,12 +4,12 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import { FormikHelpers } from 'formik';
 import Typography from '@material-ui/core/Typography';
+
 import useStyles from './useStyles';
 import login from '../../helpers/APICalls/login';
 import LoginForm from './LoginForm/LoginForm';
 import { useAuth } from '../../context/useAuthContext';
 import { useSnackBar } from '../../context/useSnackbarContext';
-import { Link } from 'react-router-dom';
 import LandingNavbar from '../../components/LandingNavbar/LandingNavbar';
 
 export default function Login(): JSX.Element {
@@ -38,32 +38,23 @@ export default function Login(): JSX.Element {
   };
 
   return (
-    <div>
+    <>
       <LandingNavbar />
-      <Grid container component="main" className={classes.root}>
+      <Grid container component="main" className={classes.root} justify="center">
         <CssBaseline />
-        <Grid item xs={12} elevation={6} component={Paper} square>
-          <Box className={classes.authWrapper}>
-            <Box width="100%" maxWidth={450} p={3} alignSelf="center">
-              <Grid container>
-                <Grid item xs>
-                  <Typography className={classes.welcome} component="h1" variant="h5">
-                    Welcome back!
-                  </Typography>
-                </Grid>
+        <Grid item xs={12} sm={8} md={6} elevation={6} component={Paper} square>
+          <Box width="100%" maxWidth={350} p={3} margin="auto">
+            <Grid container>
+              <Grid item xs>
+                <Typography className={classes.welcome} component="h1" variant="h5" align="center">
+                  Login
+                </Typography>
               </Grid>
-              <LoginForm handleSubmit={handleSubmit} />
-            </Box>
-            <Grid className={classes.signUpInfo}>
-              <Typography>{"Don't have an account?"}</Typography>
-              <Link to="/signup" className={classes.signUpLink}>
-                Create account
-              </Link>
             </Grid>
-            <Box p={1} alignSelf="center" />
+            <LoginForm handleSubmit={handleSubmit} />
           </Box>
         </Grid>
       </Grid>
-    </div>
+    </>
   );
 }

@@ -19,8 +19,9 @@ export interface IUserContext extends EditProfileFields {
 type Action =
   | { type: 'UPLOAD_PROFILE'; profileImg: string }
   | { type: 'UPLOAD_BACKGROUND'; coverImg: string }
-  | { type: 'EMPTY_IMAGES' }
   | { type: 'SET_IS_DOG_SITTER' }
+  | { type: 'REMOVE_BACKGROUND' }
+  | { type: 'REMOVE_PROFILE' }
   | { type: 'UPDATE_EDIT_PROFILE_FIELDS'; fields: EditProfileFields };
 
 type Dispatch = (action: Action) => void;
@@ -36,8 +37,6 @@ const userReducer = (state: IUserContext, action: Action) => {
       return { ...state, profileImg: action.profileImg };
     case 'UPLOAD_BACKGROUND':
       return { ...state, coverImg: action.coverImg };
-    case 'EMPTY_IMAGES':
-      return { ...state, coverImg: '', profileImg: '' };
     case 'SET_IS_DOG_SITTER':
       return { ...state, isDogSitter: true };
     case 'UPDATE_EDIT_PROFILE_FIELDS':
@@ -48,6 +47,10 @@ const userReducer = (state: IUserContext, action: Action) => {
         endDate: endDate !== null ? endDate.substring(0, 10) : '',
         ...otherFields,
       };
+    case 'REMOVE_BACKGROUND':
+      return { ...state, coverImg: '' };
+    case 'REMOVE_PROFILE':
+      return { ...state, profileImg: '' };
     default:
       throw new Error();
   }

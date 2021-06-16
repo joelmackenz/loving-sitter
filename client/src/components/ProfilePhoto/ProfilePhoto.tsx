@@ -5,6 +5,9 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import { useAuth } from '../../context/useAuthContext';
 import { useSnackBar } from '../../context/useSnackbarContext';
@@ -28,33 +31,43 @@ const ProfilePhoto: FC<Props> = (props) => {
     coverImg: '',
     profileImg: '',
   });
-  const { userState, dispatchUserContext, handleChangedAnything, handleChangedAnythingToFalse } = props;
+  const { handleChangedAnything, handleChangedAnythingToFalse, userState, dispatchUserContext } = props;
+  const [radioButtonValue, setRadioButtonValue] = useState<string>('Background');
   const classes = useStyles();
   const { loggedInUser } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
+
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>): void => {
-    if (userState.coverImg === '' && event.target.files?.length) {
-      const coverImg = URL.createObjectURL(event.target.files[0]);
+    const files = event.target.files;
+    if (userState.coverImg === '' && files?.length && radioButtonValue === 'Background') {
+      const coverImg = URL.createObjectURL(files[0]);
       handleChangedAnything();
       dispatchUserContext({ type: 'UPLOAD_BACKGROUND', coverImg });
-      // eslint-disable-next-line
-      setUploadImages((prevState) => ({ ...prevState, coverImg: event.target.files![0] }));
-    } else if (userState.profileImg === '' && event.target.files?.length) {
-      const profileImg = URL.createObjectURL(event.target.files[0]);
+      setUploadImages((prevState) => ({ ...prevState, coverImg: files[0] }));
+    }
+
+    if (userState.profileImg === '' && files?.length && radioButtonValue === 'Profile') {
+      const profileImg = URL.createObjectURL(files[0]);
       handleChangedAnything();
       dispatchUserContext({ type: 'UPLOAD_PROFILE', profileImg });
-      // eslint-disable-next-line
-      setUploadImages((prevState) => ({ ...prevState, profileImg: event.target.files![0] }));
+      setUploadImages((prevState) => ({ ...prevState, profileImg: files[0] }));
     }
   };
 
+  const handleRadioButtonChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setRadioButtonValue((event.target as HTMLInputElement).value);
+  };
+
   const handleDeleteIcon = (): void => {
-    dispatchUserContext({ type: 'EMPTY_IMAGES' });
-    handleChangedAnything();
-    setUploadImages({
-      profileImg: '',
-      coverImg: '',
-    });
+    if (radioButtonValue === 'Background') {
+      dispatchUserContext({ type: 'REMOVE_BACKGROUND' });
+      setUploadImages((prevState) => ({ ...prevState, coverImg: '' }));
+    }
+
+    if (radioButtonValue === 'Profile') {
+      dispatchUserContext({ type: 'REMOVE_PROFILE' });
+      setUploadImages((prevState) => ({ ...prevState, profileImg: '' }));
+    }
   };
 
   const handleImageUploads = (): void => {
@@ -108,19 +121,29 @@ const ProfilePhoto: FC<Props> = (props) => {
         </Box>
       </Typography>
       <CardContent className={classes.cardContent}>
+        <RadioGroup aria-label="Images" name="Images" value={radioButtonValue} onChange={handleRadioButtonChange}>
+          <FormControlLabel
+            value="Background"
+            control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />}
+            label="Background"
+          />
+          <FormControlLabel
+            value="Profile"
+            control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />}
+            label="Profile"
+          />
+        </RadioGroup>
         <Box>
           <Button variant="outlined" component="label" color="primary" className={classes.upload}>
-            {userState.coverImg === ''
-              ? `Select Your Background Image`
-              : userState.profileImg === ''
-              ? `Select Your Profile Image`
+            {userState.coverImg === '' || userState.profileImg === ''
+              ? `Select Your ${radioButtonValue} Image`
               : `Both Files are uploaded.`}
             <input type="file" hidden accept="image/*" onChange={handleImageUpload} />
           </Button>
         </Box>
         <Button type="button" disableFocusRipple disableRipple onClick={handleDeleteIcon}>
           <DeleteOutlineIcon />
-          <Typography color="textSecondary">Delete photos</Typography>
+          <Typography color="textSecondary">Delete {radioButtonValue}</Typography>
         </Button>
         <Box textAlign="center">
           <Button
