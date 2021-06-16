@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   mediaContainer: {
+    position: 'relative',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -24,9 +25,19 @@ const useStyles = makeStyles((theme) => ({
       marginTop: '1rem',
     },
   },
+  backgroundMedia: {
+    maxHeight: '300px',
+  },
   media: {
+    position: 'absolute',
     width: '25%',
+    bottom: '-23%',
+    border: '4px solid white',
     borderRadius: '6rem',
+  },
+  profileMediaInfo: {
+    textAlign: 'center',
+    marginTop: '5rem',
   },
   upload: {
     margin: theme.spacing(2, 2, 2),
@@ -37,6 +48,22 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'bold',
     fontSize: '0.8rem',
   },
+  submit: {
+    margin: theme.spacing(3, 2, 2),
+    padding: 10,
+    width: 160,
+    height: 56,
+    borderRadius: theme.shape.borderRadius,
+    marginTop: 49,
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+  },
+  radio: {
+    '&$checked': {
+      color: '#f04040',
+    },
+  },
+  checked: {},
 }));
 
 export default useStyles;
