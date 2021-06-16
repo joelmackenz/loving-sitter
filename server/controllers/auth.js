@@ -6,7 +6,7 @@ const generateToken = require("../utils/generateToken");
 // @desc Register user
 // @access Public
 exports.registerUser = asyncHandler(async (req, res, next) => {
-  const { username, email, password } = req.body;
+  const { firstName, lastName, email, password, isDogSitter } = req.body;
 
   const emailExists = await User.findOne({ email });
 
@@ -15,17 +15,12 @@ exports.registerUser = asyncHandler(async (req, res, next) => {
     throw new Error("A user with that email already exists");
   }
 
-  const usernameExists = await User.findOne({ username });
-
-  if (usernameExists) {
-    res.status(400);
-    throw new Error("A user with that username already exists");
-  }
-
   const user = await User.create({
-    username,
+    firstName,
+    lastName,
     email,
-    password
+    password,
+    isDogSitter
   });
 
   if (user) {
@@ -40,9 +35,11 @@ exports.registerUser = asyncHandler(async (req, res, next) => {
     res.status(201).json({
       success: {
         user: {
-          id: user._id,
-          username: user.username,
-          email: user.email
+          _id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          isDogSitter: user.isDogSitter,
         }
       }
     });
@@ -72,9 +69,11 @@ exports.loginUser = asyncHandler(async (req, res, next) => {
     res.status(200).json({
       success: {
         user: {
-          id: user._id,
-          username: user.username,
-          email: user.email
+          _id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          isDogSitter: user.isDogSitter,
         }
       }
     });
@@ -98,9 +97,11 @@ exports.loadUser = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: {
       user: {
-        id: user._id,
-        username: user.username,
-        email: user.email
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        isDogSitter: user.isDogSitter,
       }
     }
   });
@@ -114,3 +115,37 @@ exports.logoutUser = asyncHandler(async (req, res, next) => {
 
   res.send("You have successfully logged out");
 });
+
+exports.updateUserFields = asyncHandler(async (req, res, next) => {
+  const { firstName, lastName } = req.body;
+  // const emailExists = await User.findOne({ email });
+
+  // if (emailExists) {
+  //   return res.status(400).json({
+  //     error: 'A user with that email already exists',
+  //   });
+  // }
+
+  User.findOneAndUpdate(
+    { _id: req.user.id },
+    { $set: 
+      {
+        firstName,
+        lastName
+      },
+    },
+    (error, user) => {
+      if (error) {
+        return res.status(400).json({
+          error: "Unable to update the User Auth Fields"
+        })
+      }
+
+      return res.status(200).json({
+        success: "Profile Updated Successfully."
+      })
+
+    }
+  )
+
+})

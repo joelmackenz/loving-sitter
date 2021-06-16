@@ -1,6 +1,9 @@
 export interface User {
   email: string;
-  username: string;
+  _id: string;
+  firstName: string;
+  lastName: string;
+  isDogSitter: boolean;
 }
 
 export interface SearchUsersApiData {
