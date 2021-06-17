@@ -54,18 +54,10 @@ export default function ProfileListings(): JSX.Element {
 
   const initializeProfiles = () => {
     getProfiles().then((data) => {
-      /* 
-      I've tried making the type of profileList into Profile[], but receive this error: 
-      Argument of type 'Profile | undefined' is not assignable to parameter of type 'Profile' 
-      It recognizes that the returned profile could be undefined, which would not be allowed in the array.
-      I have checks to ensure that the profile *is* defined, but the error still occurs.
-      I have also tried changing the profile interface to include undefined, to no avail.
-      */
       const profileList: any = [];
       const users = data.users;
       if (users) {
         for (let i = 0; i < users.length; i++) {
-          // Will only add 20 users to the state profiles, and make a smaller list for displayed profiles
           if (users[i].profile) {
             profileList.push(users[i].profile);
             setDisplayedProfiles(profileList.slice(0, 6));
@@ -95,12 +87,6 @@ export default function ProfileListings(): JSX.Element {
       const searchResults: Profile[] = [];
       setDisplayedProfiles([]);
       const data = await searchProfilesByCity(search);
-      /*   
-      If I make the below users: User[], I get this error: Type 'User[] | undefined' is not assignable to type 'User[]'
-      It is recognizing that the returned data.users can include undefined entries
-      I've tried adding a check to ensure that users is not undefined, and changing the user interface to allow for undefined,
-      to no avail.
-      */
       const users: any = data.users;
       if (users) {
         users.map((user: User) => {
@@ -119,7 +105,6 @@ export default function ProfileListings(): JSX.Element {
     } else {
       const searchResults: Profile[] = [];
       const data = await searchProfilesByDay(selectedDays);
-      //   Re: any, see note above
       const users: any = data.users;
       if (users) {
         users.map((user: User) => {
@@ -133,9 +118,11 @@ export default function ProfileListings(): JSX.Element {
   };
 
   const profileCardGrid = (
-    <Grid item className={classes.profilesContainer} xs={9}>
-      {displayedProfiles.map((profile, index) => (
-        <ProfileCard profile={profile} key={`${profile._id}-${index}`} />
+    <Grid container className={classes.profilesContainer}>
+      {displayedProfiles.map((profile) => (
+        <Grid item key={profile._id}>
+          <ProfileCard profile={profile} />
+        </Grid>
       ))}
       <Snackbar open={snackbarOpen} autoHideDuration={2000} onClose={handleSnackbarClose}>
         <Alert severity="info">No more users found</Alert>
@@ -186,7 +173,7 @@ export default function ProfileListings(): JSX.Element {
           </Grid>
         </Grid>
       </Grid>
-      <Grid container>{profileCardGrid}</Grid>
+      {profileCardGrid}
       {!search && daySearchDisplay === 'any' && (
         <Button onClick={handleShowMore} variant="outlined" className={classes.showMore}>
           Show More

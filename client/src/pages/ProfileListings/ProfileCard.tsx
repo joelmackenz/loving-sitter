@@ -13,7 +13,7 @@ import { Profile } from '../../interface/Profile';
 
 interface ProfileCardProps {
   profile: Profile;
-  key: string;
+  key?: string;
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ profile }) => {
