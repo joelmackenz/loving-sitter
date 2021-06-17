@@ -22,6 +22,9 @@ const useStyles = makeStyles((theme) => ({
     position: 'sticky',
     bottom: '1%',
     backgroundColor: 'white',
+    [theme.breakpoints.down('xs')]: {
+      bottom: '0%',
+    },
   },
   input: {
     height: '3.5rem',

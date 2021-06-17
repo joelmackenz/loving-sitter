@@ -13,12 +13,16 @@ interface Props extends IRecipientUser {
   currentUserId: string;
 }
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   chatSubContainer: {
     paddingLeft: 41,
     paddingRight: 41,
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: 11,
+      paddingRight: 11,
+    },
   },
-});
+}));
 
 const Messages: FC<Props> = (props) => {
   const classes = useStyles();

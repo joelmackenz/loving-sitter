@@ -36,6 +36,11 @@ const useStyles = makeStyles((theme) => ({
     top: '12.6%',
     zIndex: 7,
     backgroundColor: 'white',
+    [theme.breakpoints.down('xs')]: {
+      marginTop: '0',
+      marginBottom: '4rem',
+      top: '9%',
+    },
   },
   content: {
     display: 'flex',
