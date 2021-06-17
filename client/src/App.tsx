@@ -5,8 +5,6 @@ import { AuthProvider } from './context/useAuthContext';
 import { SocketProvider } from './context/useSocketContext';
 import { SnackBarProvider } from './context/useSnackbarContext';
 import Routes from './Routes';
-import ManageBookings from './pages/ManageBookings/ManageBookings';
-
 import './App.css';
 
 function App(): JSX.Element {
@@ -16,7 +14,7 @@ function App(): JSX.Element {
         <SnackBarProvider>
           <AuthProvider>
             <SocketProvider>
-              <ManageBookings />
+              <Routes />
             </SocketProvider>
           </AuthProvider>
         </SnackBarProvider>
