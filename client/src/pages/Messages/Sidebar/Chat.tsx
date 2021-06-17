@@ -1,8 +1,18 @@
+import { FC } from 'react';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 
 import BadgeAvatar from './BadgeAvatar';
 import ChatContent from './ChatContent';
+import { IConversations } from '../index';
+
+export interface IConversation {
+  conversation: IConversations;
+}
+
+interface Props extends IConversation {
+  handleActiveConversation: (conversationId: string) => void;
+}
 
 const useStyles = makeStyles({
   root: {
@@ -17,18 +27,19 @@ const useStyles = makeStyles({
   },
 });
 
-const Chat = (props: any) => {
+const Chat: FC<Props> = (props) => {
   const classes = useStyles();
-  const otherUser = props.conversation.otherUser;
+  const { conversation, handleActiveConversation } = props;
+  const recipientUser = conversation.recipientUser;
+
   return (
-    <Box
-      // onClick={() => this.handleClick(this.props.conversation)}
-      className={classes.root}
-    >
+    <Box onClick={() => handleActiveConversation(conversation.conversationId)} className={classes.root}>
       <BadgeAvatar
-        photoUrl={otherUser.photoUrl}
-        username={otherUser.username}
-        online={otherUser.online}
+        photoUrl={
+          recipientUser.profileImg ? recipientUser.profileImg : `https://robohash.org/${recipientUser?.email}.png`
+        }
+        fullName={recipientUser.fullName}
+        online={recipientUser.online}
         sidebar={true}
       />
       <ChatContent conversation={props.conversation} />

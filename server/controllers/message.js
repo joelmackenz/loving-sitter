@@ -12,7 +12,7 @@ module.exports.addMessage = async (req, res, next) => {
 
     try {
         const convos = await Convo.findById(convoId);
-        const convoUsers = convos.profiles;
+        const convoUsers = convos.users;
         
         if (convoUsers.includes(req.body.author)) {
             convos.messages.push(req.body);

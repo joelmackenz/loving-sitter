@@ -24,6 +24,7 @@ type Action =
   | { type: 'SET_IS_DOG_SITTER' }
   | { type: 'REMOVE_BACKGROUND' }
   | { type: 'REMOVE_PROFILE' }
+  | { type: 'EMPTY_IMAGES' }
   | { type: 'UPDATE_EDIT_PROFILE_FIELDS'; fields: EditProfileFields };
 
 type Dispatch = (action: Action) => void;
@@ -39,6 +40,8 @@ const userReducer = (state: IUserContext, action: Action) => {
       return { ...state, profileImg: action.profileImg };
     case 'UPLOAD_BACKGROUND':
       return { ...state, coverImg: action.coverImg };
+    case 'EMPTY_IMAGES':
+      return { ...state, coverImg: '', profileImg: '' };
     case 'SET_IS_DOG_SITTER':
       return { ...state, isDogSitter: true };
     case 'UPDATE_EDIT_PROFILE_FIELDS':

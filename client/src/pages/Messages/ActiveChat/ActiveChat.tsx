@@ -1,9 +1,29 @@
+import { FC, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 
+import Spinner from '../../../components/Spinner/Spinner';
 import Header from './Header';
 import Messages from './Messages';
 import Input from './Input';
+import { IConversations } from '../index';
+import { getConvoMessages } from '../../../helpers/APICalls/conversation';
+import { useSnackBar } from '../../../context/useSnackbarContext';
+import { useAuth } from '../../../context/useAuthContext';
+import { useMessage } from '../../../context/useMessageContext';
+
+export interface IMessages {
+  _id: string;
+  author: string;
+  text: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Props {
+  activeConversation: string;
+  conversation?: IConversations | null;
+}
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -19,46 +39,47 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const ActiveChat = (props: any) => {
+const ActiveChat: FC<Props> = (props) => {
   const classes = useStyles();
-  const user = {
-    id: 1,
-  };
-  const conversation = props.conversation || {
-    messages: [
-      { senderId: 1, text: 'hello how are you', createdAt: '12121', id: 1212 },
-      { senderId: 2, text: 'I am good', createdAt: '12121', id: 122 },
-      { senderId: 2, text: 'I am good', createdAt: '12121', id: 123 },
-      { senderId: 2, text: 'I am good', createdAt: '12121', id: 124 },
-      { senderId: 1, text: 'hello how are you', createdAt: '12121', id: 1213 },
-      { senderId: 1, text: 'hello how are you', createdAt: '12121', id: 1214 },
-      { senderId: 1, text: 'hello how are you', createdAt: '12121', id: 1215 },
-      { senderId: 1, text: 'hello how are you', createdAt: '12121', id: 1216 },
-      { senderId: 1, text: 'hello how are you', createdAt: '12121', id: 1217 },
-      { senderId: 1, text: 'hello how are you', createdAt: '12121', id: 1218 },
-      { senderId: 2, text: 'I am good', createdAt: '12121', id: 124 },
-      { senderId: 2, text: 'I am good', createdAt: '12121', id: 125 },
-      { senderId: 2, text: 'I am good', createdAt: '12121', id: 126 },
-      { senderId: 2, text: 'I am good', createdAt: '12121', id: 127 },
-    ],
-    otherUser: {
-      id: 2,
-      username: 'thomas',
-      online: true,
-      photoUrl: 'https://res.cloudinary.com/dmlvthmqr/image/upload/v1607914467/messenger/thomas_kwzerk.png',
-    },
-  };
+  const { updateSnackBarMessage } = useSnackBar();
+  const { loggedInUser } = useAuth();
+  const { dispatchMessages, messages } = useMessage();
+  const { activeConversation, conversation } = props;
+
+  useEffect(() => {
+    if (activeConversation === '' || messages[activeConversation] !== undefined) return;
+    getConvoMessages(activeConversation).then((data) => {
+      if (data.error) {
+        updateSnackBarMessage(data.error);
+      } else if (data.success) {
+        dispatchMessages({ type: 'UPDATE_MESSAGES', activeConversation, messages: data.messages });
+      } else {
+        updateSnackBarMessage('Unexpected Error Occurred. Please try again!');
+      }
+    });
+  }, [activeConversation]);
 
   return (
     <Box className={classes.root}>
-      {conversation.otherUser && (
+      {messages[activeConversation] && conversation?.recipientUser ? (
         <>
-          <Header username={conversation.otherUser.username} otherUser={conversation.otherUser} />
+          <Header recipientUser={conversation.recipientUser} />
           <Box className={classes.chatContainer}>
-            <Messages messages={conversation.messages} otherUser={conversation.otherUser} userId={user.id} />
+            <Messages
+              messages={messages[activeConversation]}
+              recipientUser={conversation.recipientUser}
+              currentUserId={loggedInUser?._id ? loggedInUser._id : ''}
+            />
           </Box>
-          <Input otherUser={conversation.otherUser} conversationId={conversation.id} user={user} />
+          <Input
+            recipientUser={conversation.recipientUser}
+            conversationId={activeConversation}
+            dispatchMessages={dispatchMessages}
+            currentUserId={loggedInUser?._id ? loggedInUser._id : ''}
+          />
         </>
+      ) : (
+        <Spinner />
       )}
     </Box>
   );

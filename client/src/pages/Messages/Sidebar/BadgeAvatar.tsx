@@ -1,8 +1,16 @@
+import { FC } from 'react';
 import Box from '@material-ui/core/Box';
 import Badge from '@material-ui/core/Badge';
 import Avatar from '@material-ui/core/Avatar';
 
 import { makeStyles } from '@material-ui/core/styles';
+
+interface Props {
+  sidebar: boolean;
+  fullName: string;
+  photoUrl: string;
+  online: boolean;
+}
 
 const useStyles = makeStyles(() => ({
   profilePic: {
@@ -24,9 +32,9 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const UserAvatar = (props: any) => {
+const UserAvatar: FC<Props> = (props) => {
   const classes = useStyles();
-  const { sidebar, username, photoUrl, online } = props;
+  const { sidebar, fullName, photoUrl, online } = props;
 
   return (
     <Box className={sidebar ? classes.sidebar : ''}>
@@ -36,7 +44,7 @@ const UserAvatar = (props: any) => {
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         overlap="circle"
       >
-        <Avatar alt={username} src={photoUrl} className={classes.profilePic}></Avatar>
+        <Avatar alt={fullName} src={photoUrl} className={classes.profilePic}></Avatar>
       </Badge>
     </Box>
   );

@@ -1,7 +1,15 @@
+import { FC } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
+
+import { IRecipientUser } from './Header';
+
+interface Props extends IRecipientUser {
+  text: string;
+  time: string;
+}
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -31,16 +39,18 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const OtherUserBubble = (props: any) => {
+const OtherUserBubble: FC<Props> = (props) => {
   const classes = useStyles();
-  const { text, time, otherUser } = props;
+  const { text, time, recipientUser } = props;
   return (
     <Box className={classes.root}>
-      <Avatar alt={otherUser.username} src={otherUser.photoUrl} className={classes.avatar}></Avatar>
+      <Avatar
+        alt={recipientUser.fullName}
+        src={recipientUser.profileImg ? recipientUser.profileImg : `https://robohash.org/${recipientUser?.email}.png`}
+        className={classes.avatar}
+      ></Avatar>
       <Box>
-        <Typography className={classes.usernameDate}>
-          {otherUser.username} {time}
-        </Typography>
+        <Typography className={classes.usernameDate}>{time}</Typography>
         <Box className={classes.bubble}>
           <Typography className={classes.text}>{text}</Typography>
         </Box>

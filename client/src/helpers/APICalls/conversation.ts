@@ -1,4 +1,6 @@
 import { FetchOptions } from '../../context/interface/FetchOptions';
+import { IConversations } from '../../pages/Messages';
+import { IMessages } from '../../pages/Messages/ActiveChat/ActiveChat';
 
 interface ApiData {
   error?: string;
@@ -10,8 +12,11 @@ interface CreateConvoApiData extends ApiData {
 }
 
 interface getConvosApiData extends ApiData {
-  _id?: string;
-  users: [{ _id: string; firstName: string; lastName: string }];
+  conversations: IConversations[];
+}
+
+interface getConvoMessagesApiData extends ApiData {
+  messages: IMessages[];
 }
 
 export const createConvo = async (userOneId: string, userTwoId: string): Promise<CreateConvoApiData> => {
@@ -28,13 +33,26 @@ export const createConvo = async (userOneId: string, userTwoId: string): Promise
     }));
 };
 
-export const getAllConvosWithoutMessages = async (profileId: string): Promise<getConvosApiData> => {
+export const getAllConvosWithoutMessages = async (): Promise<getConvosApiData> => {
   const fetchOptions: FetchOptions = {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
   };
-  return await fetch(`/convo/${profileId}`, fetchOptions)
+  return await fetch(`/convo/`, fetchOptions)
+    .then((res) => res.json())
+    .catch(() => ({
+      error: { message: 'Unable to connect to server. Please try again' },
+    }));
+};
+
+export const getConvoMessages = async (convoId: string): Promise<getConvoMessagesApiData> => {
+  const fetchOptions: FetchOptions = {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+  };
+  return await fetch(`/convo/messages/${convoId}`, fetchOptions)
     .then((res) => res.json())
     .catch(() => ({
       error: { message: 'Unable to connect to server. Please try again' },

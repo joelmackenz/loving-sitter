@@ -1,18 +1,25 @@
+import { FC } from 'react';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Chat from './Chat';
+import { IConversations } from '../index';
+import Spinner from '../../../components/Spinner/Spinner';
+
+export interface Props {
+  conversations: IConversations[];
+  handleActiveConversation: (conversationId: string) => void;
+}
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: '97%',
-    marginTop: '1rem',
+    height: '100%',
   },
   sidebarConvoContainer: {
     position: 'sticky',
-    top: 0,
+    top: '14%',
     zIndex: 10,
   },
   title: {
@@ -25,34 +32,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Sidebar(props: any): JSX.Element {
+const Sidebar: FC<Props> = (props) => {
   const classes = useStyles();
-  const conversations = props.conversations || [
-    {
-      latestMessageText: 'I am good',
-      otherUser: {
-        username: 'thomas',
-        online: true,
-        photoUrl: 'https://res.cloudinary.com/dmlvthmqr/image/upload/v1607914467/messenger/thomas_kwzerk.png',
-      },
-    },
-    {
-      latestMessageText: 'Heyy good',
-      otherUser: {
-        username: 'Santiago',
-        online: false,
-        photoUrl: 'https://res.cloudinary.com/dmlvthmqr/image/upload/v1607914467/messenger/thomas_kwzerk.png',
-      },
-    },
-  ];
+  const { conversations, handleActiveConversation } = props;
   return (
-    <Paper elevation={2} className={classes.root}>
-      <Box className={classes.sidebarConvoContainer}>
-        <Typography className={classes.title}>Inbox Messages</Typography>
-        {conversations.map((conversation: any) => {
-          return <Chat conversation={conversation} key={conversation.otherUser.username} />;
-        })}
-      </Box>
+    <Paper elevation={3} className={classes.root}>
+      {conversations.length ? (
+        <Box className={classes.sidebarConvoContainer}>
+          <Typography className={classes.title}>Inbox Messages</Typography>
+          {conversations.map((conversation: IConversations) => {
+            return (
+              <Chat
+                conversation={conversation}
+                key={conversation.recipientUser.recipientUserId}
+                handleActiveConversation={handleActiveConversation}
+              />
+            );
+          })}
+        </Box>
+      ) : (
+        <Spinner />
+      )}
     </Paper>
   );
-}
+};
+
+export default Sidebar;

@@ -12,6 +12,7 @@ import PaymentMethods from '../../components/PaymentMethods/PaymentMethods';
 import { useUser } from '../../context/useUserContext';
 import useStyles from './useStyles';
 import { getOneProfile } from '../../helpers/APICalls/profileFields';
+import Spinner from '../../components/Spinner/Spinner';
 
 const a11yProps = (index: number) => {
   return {
@@ -50,7 +51,7 @@ const Settings = (): JSX.Element => {
 
   const handleChangedAnything = () => setIsChangedAnything(true);
   const handleChangedAnythingToFalse = () => setIsChangedAnything(false);
-  console.log({ userState });
+
   useEffect(() => {
     getOneProfile().then((data) => {
       if (data.error) {
@@ -122,7 +123,7 @@ const Settings = (): JSX.Element => {
           </Grid>
         </Container>
       ) : (
-        <p>Loading...</p>
+        <Spinner />
       )}
     </>
   );

@@ -1,6 +1,12 @@
+import { FC } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
+
+interface Props {
+  text: string;
+  time: string;
+}
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -27,7 +33,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const SenderBubble = (props: any) => {
+const SenderBubble: FC<Props> = (props) => {
   const classes = useStyles();
   const { time, text } = props;
   return (

@@ -4,24 +4,45 @@ import FilledInput from '@material-ui/core/FilledInput';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { IRecipientUser } from '../ActiveChat/Header';
+import { DispatchMessages } from '../../../context/useMessageContext';
+import { addMessage } from '../../../helpers/APICalls/message';
+
+interface Props extends IRecipientUser {
+  conversationId: string;
+  currentUserId: string;
+  dispatchMessages: DispatchMessages;
+}
+
 const useStyles = makeStyles((theme) => ({
   root: {
     justifySelf: 'flex-end',
     marginTop: 15,
+    marginLeft: '4px',
     position: 'sticky',
-    bottom: 0,
-    zIndex: 10,
+    bottom: '1%',
+    backgroundColor: 'white',
   },
   input: {
-    height: '6rem',
+    height: '3.5rem',
     boxShadow: '0px -4px 3px rgba(50, 50, 50, 0.1)',
     backgroundColor: 'white',
     [theme.breakpoints.down('xs')]: {
       height: '3rem',
     },
+    '&:focused': {
+      backgroundColor: 'white',
+    },
   },
   formControl: {
     position: 'relative',
+    zIndex: 99,
+  },
+  filledInput: {
+    boxShadow: 'none',
+    '&:hover': {
+      backgroundColor: 'white',
+    },
   },
   submit: {
     margin: theme.spacing(3, 2, 2),
@@ -32,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'bold',
     position: 'absolute',
     right: '5%',
-    bottom: '10%',
+    bottom: '-35%',
     [theme.breakpoints.down('xs')]: {
       width: 90,
       height: 35,
@@ -42,35 +63,32 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface InputProps {
-  otherUser: {
-    id: number;
-  };
-  conversationId: number;
-  // user: {};
-  classes: {
-    root: string;
-    input: string;
-  };
-  // postMessage(reqBody: object): void;
-}
-
-const Input = (props: any) => {
-  const { user, otherUser, conversationId } = props;
+const Input: FC<Props> = (props) => {
+  const { currentUserId, recipientUser, conversationId, dispatchMessages } = props;
   const [text, setText] = useState<string>('');
   const classes = useStyles();
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => setText(event.target.value);
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (text === '') return;
     // add sender user info if posting to a brand new convo, so that the other user will have access to username, profile pic, etc.
-    const reqBody = {
+    const message = {
+      _id: Math.random().toString(),
       text: text,
-      recipientId: otherUser.id,
-      conversationId: conversationId,
-      sender: conversationId ? null : user,
+      author: currentUserId,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
-    // await props.postMessage(reqBody);
+    window.scrollTo(0, document.body.scrollHeight);
+    dispatchMessages({ type: 'ADD_NEW_MESSAGE', activeConversation: conversationId, message });
+    addMessage(conversationId, currentUserId, text).then((data) => {
+      if (data.error) {
+        console.error(data.error);
+      } else if (data.success) {
+        console.log(data);
+      }
+    });
     setText('');
   };
 
@@ -80,9 +98,10 @@ const Input = (props: any) => {
         <FilledInput
           classes={{ root: classes.input }}
           disableUnderline
-          placeholder={`Reply to ${otherUser.username}`}
+          placeholder={`Reply to ${recipientUser.fullName}`}
           value={text}
           name="text"
+          className={classes.filledInput}
           onChange={handleChange}
         />
         <Button type="submit" size="large" variant="contained" color="primary" className={classes.submit}>

@@ -1,6 +1,7 @@
 const ObjectId = require("mongoose").Types.ObjectId;
 const asyncHandler = require("express-async-handler");
 const Profile = require("../models/Profile");
+const User = require("../models/User");
 
 // @route PUT /profile/:id
 // @Given an ID and new parameters, update the profile
@@ -43,6 +44,8 @@ exports.createProfile = asyncHandler(async (req, res, next) => {
     return updatedProfile(req, res);
   }
 
+
+
   const profile = new Profile({
     userId: req.user.id,
     ...req.body
@@ -54,7 +57,20 @@ exports.createProfile = asyncHandler(async (req, res, next) => {
       })
     }
 
-    profile._id = undefined;
+    // Add profile id to User Schema
+    User.updateOne(
+      { _id: req.user.id },
+      { $set: { profileId: profile._id } },
+      { upsert: true }
+    ).exec((error, user) => {
+      if (error) {
+        return res.status(400).json({
+          error: "Error in saving profile id to User"
+        })
+      };
+    })
+
+
     profile.__v = undefined;
     profile.userId = undefined;
 
@@ -104,6 +120,7 @@ exports.addImageUrls = asyncHandler(async (req, res, next) => {
     Profile.updateOne(
       { userId },
       { $set: { profileImg: req.body.profileImg, coverImg: req.body.coverImg } },
+      { upsert: true },
       (error, profile) => {
         if (error) {
           return res.status(500).json({

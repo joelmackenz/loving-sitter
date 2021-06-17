@@ -7,10 +7,10 @@ const convoController = require("../controllers/convo");
 
 router.post("/", auth, convoController.createConvo);
 
-router.get("/:profileId", auth, convoController.getAllConvos);
+router.get("/", auth, convoController.getAllConvos);
 
 router.get("/:convoId", auth, convoController.getSingleConvo);
 
-router.get("/messages/:id", auth, convoController.getConvoMessages);
+router.get("/messages/:convoId", auth, convoController.getConvoMessages);
 
 module.exports = router;

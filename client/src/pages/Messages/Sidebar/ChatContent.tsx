@@ -1,8 +1,12 @@
+import { FC } from 'react';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import { format, parseISO } from 'date-fns';
 
-const useStyles = makeStyles((theme) => ({
+import { IConversation } from './Chat';
+
+const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -35,20 +39,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ChatContent = (props: any) => {
+const ChatContent: FC<IConversation> = (props) => {
   const classes = useStyles();
 
   const { conversation } = props;
-  const { latestMessageText, otherUser } = conversation;
+  const { latestMessage, recipientUser } = conversation;
 
   return (
     <Box className={classes.root}>
       <Box>
-        <Typography className={classes.username}>{otherUser.username}</Typography>
-        <Typography className={classes.previewText}>{latestMessageText}</Typography>
+        <Typography className={classes.username}>{recipientUser.fullName}</Typography>
+        <Typography className={classes.previewText}>{latestMessage?.latestMessageText}</Typography>
       </Box>
       <Box>
-        <Typography className={classes.previewText}>10:22 AM</Typography>
+        <Typography className={classes.previewText}>
+          {latestMessage?.createdAt ? format(parseISO(latestMessage?.createdAt), 'H:mm') : ''}
+        </Typography>
       </Box>
     </Box>
   );

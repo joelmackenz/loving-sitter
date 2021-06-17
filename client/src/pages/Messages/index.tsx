@@ -5,12 +5,27 @@ import { makeStyles } from '@material-ui/core/styles';
 import Sidebar from './Sidebar/Sidebar';
 import ActiveChat from './ActiveChat/ActiveChat';
 import { useSnackBar } from '../../context/useSnackbarContext';
-import { useUser } from '../../context/useUserContext';
+import { useMessage } from '../../context/useMessageContext';
 import { getAllConvosWithoutMessages } from '../../helpers/APICalls/conversation';
+
+export interface IConversations {
+  conversationId: string;
+  latestMessage: {
+    latestMessageText: string;
+    createdAt: string;
+  };
+  recipientUser: {
+    fullName: string;
+    email: string;
+    online: boolean;
+    recipientUserId: string;
+    profileImg?: string;
+  };
+}
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: '100vh',
+    height: '99.5vh',
   },
   gridSidebar: {
     [theme.breakpoints.down('xs')]: {
@@ -19,30 +34,34 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Messages() {
+export default function Messages(): JSX.Element {
   const classes = useStyles();
   const { updateSnackBarMessage } = useSnackBar();
-  const { userState } = useUser();
-  const [conversations, setConversations] = useState<any>([]);
-  const [activeConversation, setActiveConversation] = useState<string>('');
+  const { dispatchConversations, conversations, activeConversation, handleActiveConversation } = useMessage();
+
   useEffect(() => {
-    getAllConvosWithoutMessages(userState.profileId ? userState.profileId : '').then((data) => {
-      console.log(data);
+    getAllConvosWithoutMessages().then((data) => {
       if (data.error) {
         updateSnackBarMessage(data.error);
       } else if (data.success) {
-        // setConversations(data.users);
+        dispatchConversations({ type: 'UPDATE_CONVOS', conversations: data.conversations });
+        handleActiveConversation(data.conversations[0].conversationId);
       }
     });
   }, []);
 
+  const conversation =
+    conversations.length > 0
+      ? conversations.find((conversation) => conversation.conversationId === activeConversation)
+      : null;
+
   return (
     <Grid container component="main" className={classes.root}>
       <Grid item md={3} sm={4} className={classes.gridSidebar}>
-        <Sidebar />
+        <Sidebar conversations={conversations} handleActiveConversation={handleActiveConversation} />
       </Grid>
       <Grid item md={9} sm={8} xs={12}>
-        <ActiveChat />
+        <ActiveChat conversation={conversation} activeConversation={activeConversation} />
       </Grid>
     </Grid>
   );

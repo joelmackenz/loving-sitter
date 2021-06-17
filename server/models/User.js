@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
 const { Schema } = mongoose;
+const { ObjectId } = Schema;
 
 const userSchema = new Schema({
   firstName: {
@@ -25,6 +26,10 @@ const userSchema = new Schema({
     type: Boolean, 
     default: false 
   },
+  profileId: {
+    type: ObjectId,
+    ref: "profile"
+  }
 }, { timestamps: true });
 
 userSchema.methods.matchPassword = async function (enteredPassword) {

@@ -5,6 +5,7 @@ import { AuthProvider } from './context/useAuthContext';
 import { SocketProvider } from './context/useSocketContext';
 import { SnackBarProvider } from './context/useSnackbarContext';
 import { UserProvider } from './context/useUserContext';
+import { MessageProvider } from './context/useMessageContext';
 import Routes from './Routes';
 
 import './App.css';
@@ -17,7 +18,9 @@ function App(): JSX.Element {
           <AuthProvider>
             <SocketProvider>
               <UserProvider>
-                <Routes />
+                <MessageProvider>
+                  <Routes />
+                </MessageProvider>
               </UserProvider>
             </SocketProvider>
           </AuthProvider>

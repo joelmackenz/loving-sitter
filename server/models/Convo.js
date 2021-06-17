@@ -5,9 +5,9 @@ const Messages = require("./Message");
 const { ObjectId } = mongoose.Schema;
 
 const Convo = new mongoose.Schema({
-    profiles: [{
+    users: [{
         type: ObjectId,
-        ref: "profile",
+        ref: "user",
         required: true
     }],
     messages: [Messages],

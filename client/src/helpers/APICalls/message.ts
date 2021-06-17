@@ -4,7 +4,7 @@ interface AddMsgApiData {
   msg?: string;
   error?: string;
   success?: string;
-};
+}
 
 export const addMessage = async (convoId: string, author: string, text: string): Promise<AddMsgApiData> => {
   const fetchOptions: FetchOptions = {
@@ -19,4 +19,3 @@ export const addMessage = async (convoId: string, author: string, text: string):
       error: { message: 'Unable to connect to server. Please try again' },
     }));
 };
-

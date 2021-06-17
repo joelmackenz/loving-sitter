@@ -1,31 +1,38 @@
+import { FC } from 'react';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
+import { format, parseISO } from 'date-fns';
 
 import SenderBubble from './SenderBubble';
 import OtherUserBubble from './OtherUserBubble';
+import { IMessages } from './ActiveChat';
+import { IRecipientUser } from './Header';
+
+interface Props extends IRecipientUser {
+  messages: IMessages[];
+  currentUserId: string;
+}
 
 const useStyles = makeStyles({
   chatSubContainer: {
     paddingLeft: 41,
     paddingRight: 41,
-    overflow: 'auto',
   },
 });
 
-const Messages = (props: any) => {
+const Messages: FC<Props> = (props) => {
   const classes = useStyles();
-  const { messages, otherUser, userId } = props;
+  const { messages, recipientUser, currentUserId } = props;
 
   return (
     <Box className={classes.chatSubContainer}>
-      {messages.map((message: any) => {
-        // const time = moment(message.createdAt).format("h:mm");
-        const time = '';
+      {messages.map((message: IMessages) => {
+        const time = format(parseISO(message.createdAt), 'H:mm');
 
-        return message.senderId === userId ? (
-          <SenderBubble key={message.id} text={message.text} time={time} />
+        return message.author === currentUserId ? (
+          <SenderBubble key={message._id} text={message.text} time={time} />
         ) : (
-          <OtherUserBubble key={message.id} text={message.text} time={time} otherUser={otherUser} />
+          <OtherUserBubble key={message._id} text={message.text} time={time} recipientUser={recipientUser} />
         );
       })}
     </Box>

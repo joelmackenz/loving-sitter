@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, FC } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Drawer from '@material-ui/core/Drawer';
@@ -10,15 +10,32 @@ import { useMediaQuery } from '@material-ui/core';
 
 import BadgeAvatar from '../Sidebar/BadgeAvatar';
 import Sidebar from '../Sidebar/Sidebar';
+import { useMessage } from '../../../context/useMessageContext';
+
+export interface IRecipientUser {
+  recipientUser: {
+    fullName: string;
+    email: string;
+    online: boolean;
+    recipientUserId: string;
+    profileImg?: string;
+  };
+}
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     alignItems: 'center',
-    marginTop: '1rem',
+    marginTop: '5rem',
+    marginBottom: '1rem',
+    marginLeft: '4px',
     justifyContent: 'space-between',
     height: 89,
     boxShadow: '0 2px 20px 0 rgba(88,133,196,0.10)',
+    position: 'sticky',
+    top: '12.6%',
+    zIndex: 7,
+    backgroundColor: 'white',
   },
   content: {
     display: 'flex',
@@ -63,10 +80,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Header = (props: any) => {
+const Header: FC<IRecipientUser> = (props) => {
   const classes = useStyles();
+  const { conversations, handleActiveConversation } = useMessage();
   const isMobileView = useMediaQuery('(max-width:600px)');
-  const { username, otherUser } = props;
+  const { recipientUser } = props;
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const handleDrawerOpen = () => setIsDrawerOpen(true);
   const handleDrawerClose = () => setIsDrawerOpen(false);
@@ -78,18 +96,20 @@ const Header = (props: any) => {
             <MenuIcon />
           </IconButton>
           <Drawer anchor="left" open={isDrawerOpen} onClose={handleDrawerClose}>
-            <Sidebar />
+            <Sidebar conversations={conversations} handleActiveConversation={handleActiveConversation} />
           </Drawer>
         </>
       )}
       <Box className={classes.content}>
         <BadgeAvatar
-          photoUrl={otherUser.photoUrl}
-          username={otherUser.username}
-          online={otherUser.online}
+          photoUrl={
+            recipientUser.profileImg ? recipientUser.profileImg : `https://robohash.org/${recipientUser?.email}.png`
+          }
+          fullName={recipientUser.fullName}
+          online={recipientUser.online}
           sidebar={isMobileView ? false : true}
         />
-        <Typography className={classes.username}>{username}</Typography>
+        <Typography className={classes.username}>{recipientUser.fullName}</Typography>
       </Box>
       <MoreHorizIcon classes={{ root: classes.ellipsis }} />
     </Box>
