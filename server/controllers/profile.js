@@ -11,25 +11,20 @@ exports.createProfile = asyncHandler(async (req, res, next) => {
 
     // Needs check to ensure that info sender owns the profile,
     // and that there is no profile already there
-    try {
-        await profileData.save().then(() => {
-            User.updateOne(
-                { _id: userId },
-                { $set: { profile: profileData._id } },
-                (err) => {
-                    if (err) {
-                        console.log(err);
-                        res.send(err);
-                    } else {
-                        res.json({ success: true, msg: "Message added" });
-                    }
+    await profileData.save().then(() => {
+        User.updateOne(
+            { _id: userId },
+            { $set: { profile: profileData._id } },
+            (err) => {
+                if (err) {
+                    console.log(err);
+                    res.send(err);
+                } else {
+                    res.json({ success: true, msg: "Message added" });
                 }
-            );
-        });
-    } catch (err) {
-        console.log(err);
-        res.send(err);
-    }
+            }
+        );
+    });
 });
 
 // @route PUT /profile/:id
