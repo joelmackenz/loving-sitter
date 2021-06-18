@@ -4,6 +4,7 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import { FormikHelpers } from 'formik';
 import Typography from '@material-ui/core/Typography';
+import { RouteComponentProps } from 'react-router-dom';
 
 import useStyles from './useStyles';
 import register from '../../helpers/APICalls/register';
@@ -12,9 +13,9 @@ import { useAuth } from '../../context/useAuthContext';
 import { useSnackBar } from '../../context/useSnackbarContext';
 import LandingNavbar from '../../components/LandingNavbar/LandingNavbar';
 
-export default function Register(): JSX.Element {
+export default function Register(props: RouteComponentProps): JSX.Element {
   const classes = useStyles();
-  const { updateLoginContext } = useAuth();
+  const { updateLoginContext, loggedInUser } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
 
   const handleSubmit = (
@@ -37,6 +38,10 @@ export default function Register(): JSX.Element {
       }
     });
   };
+
+  if (loggedInUser?.email) {
+    props.history.push('/dashboard');
+  }
 
   return (
     <>

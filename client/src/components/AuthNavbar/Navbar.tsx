@@ -25,7 +25,7 @@ import { Notification } from '../../interface/Notification';
 
 const headersData = [
   {
-    label: 'Profile',
+    label: 'Settings',
     href: '/settings',
   },
   {
@@ -118,6 +118,12 @@ export default function AuthNavbar(): JSX.Element {
     });
   }, []);
 
+  const handleLinkClick = () => {
+    setTimeout(() => {
+      localStorage.setItem('page_location', location.pathname);
+    }, 400);
+  };
+
   const handleNotificationsClick = (event: MouseEvent<HTMLDivElement>) => {
     setNotificationsAnchor((prevState) => {
       if (!prevState) {
@@ -150,7 +156,7 @@ export default function AuthNavbar(): JSX.Element {
   const displayDesktop = () => {
     return (
       <Toolbar className={classes.toolbar}>
-        <Link to="/dashboard">
+        <Link to="/dashboard" onClick={handleLinkClick}>
           <img src={Logo} className={classes.logo} alt="logo" />
         </Link>
         <div className={classes.navbarDesktop}>{getMenuButtons()}</div>
@@ -205,8 +211,8 @@ export default function AuthNavbar(): JSX.Element {
     >
       <MenuList autoFocusItem={Boolean(profilePopperAnchor)} onMouseLeave={() => setProfilePopperAnchor(null)}>
         <MenuItem onClick={() => setProfilePopperAnchor(null)}>
-          <Link className={classes.linkItem} to="/settings">
-            Profile
+          <Link className={classes.linkItem} to="/settings" onClick={handleLinkClick}>
+            Settings
           </Link>
         </MenuItem>
         <MenuItem onClick={() => setProfilePopperAnchor(null)}>
@@ -235,12 +241,12 @@ export default function AuthNavbar(): JSX.Element {
             </div>
           </MenuItem>
           <MenuItem>
-            <Link to={`/myjobs`} className={classes.linkItem}>
+            <Link to={`/myjobs`} className={classes.linkItem} onClick={handleLinkClick}>
               My Jobs
             </Link>
           </MenuItem>
           <MenuItem>
-            <Link to={`/messages`} className={classes.linkItem}>
+            <Link to={`/messages`} className={classes.linkItem} onClick={handleLinkClick}>
               Messages
             </Link>
           </MenuItem>

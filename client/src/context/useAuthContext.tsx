@@ -25,7 +25,12 @@ export const AuthProvider: FunctionComponent = ({ children }): JSX.Element => {
   const updateLoginContext = useCallback(
     (data: AuthApiDataSuccess) => {
       setLoggedInUser(data.user);
-      history.push('/dashboard');
+      const lastLocation = localStorage.getItem('page_location');
+      if (lastLocation) {
+        history.push(lastLocation);
+      } else {
+        history.push('/dashboard');
+      }
     },
     [history],
   );
@@ -36,6 +41,7 @@ export const AuthProvider: FunctionComponent = ({ children }): JSX.Element => {
       .then(() => {
         history.push('/login');
         setLoggedInUser(null);
+        localStorage.removeItem('page_location');
       })
       .catch((error) => console.error(error));
   }, [history]);
@@ -46,11 +52,17 @@ export const AuthProvider: FunctionComponent = ({ children }): JSX.Element => {
       await loginWithCookies().then((data: AuthApiData) => {
         if (data.success) {
           updateLoginContext(data.success);
-          history.push('/dashboard');
+          const lastLocation = localStorage.getItem('page_location');
+          if (lastLocation) {
+            history.push(lastLocation);
+          } else {
+            history.push('/dashboard');
+          }
         } else {
           // don't need to provide error feedback as this just means user doesn't have saved cookies or the cookies have not been authenticated on the backend
           setLoggedInUser(null);
           history.push('/login');
+          localStorage.removeItem('page_location');
         }
       });
     };
