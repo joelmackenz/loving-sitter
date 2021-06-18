@@ -47,18 +47,26 @@ exports.appSocket = (server) => {
 
     // when a user comes online
     socket.on("comes-online", id => {
-      if (!onlineUsers.includes(id)) {
-        onlineUsers.push(id);
+      if (!onlineUsers[id]) {
+        onlineUsers[id] = socket.id;
       };
       // send the user who just went online to everyone else who is already online
       socket.broadcast.emit("add-online-user", id);
     });
 
+    socket.on("new-message", (data) => {
+      // retrieve socket id of recipient user
+      const recipientSocketId = onlineUsers[data.recipientUserId];
+      socket.to(recipientSocketId).emit("new-message", {
+        message: data.message,
+        activeConversation: data.activeConversation,
+      })
+    })
+
     // when a user goes logout or goes offline
     socket.on("logout", (id) => {
-      if (onlineUsers.includes(id)) {
-        userIndex = onlineUsers.indexOf(id);
-        onlineUsers.splice(userIndex, 1);
+      if (onlineUsers[id]) {
+        delete onlineUsers[id];
         socket.broadcast.emit("remove-offline-user", id);
       }
     });
