@@ -1,8 +1,6 @@
 import { useReducer, useContext, createContext, FunctionComponent } from 'react';
 
 export interface EditProfileFields {
-  _id?: string;
-  profileId?: string;
   phone: string;
   city: string;
   description: string;
@@ -16,6 +14,7 @@ export interface IUserContext extends EditProfileFields {
   profileImg: string;
   isDogSitter: boolean;
   isAvailable: boolean;
+  [key: string]: string | boolean;
 }
 
 type Action =
@@ -45,12 +44,12 @@ const userReducer = (state: IUserContext, action: Action) => {
     case 'SET_IS_DOG_SITTER':
       return { ...state, isDogSitter: true };
     case 'UPDATE_EDIT_PROFILE_FIELDS':
-      const { _id, startDate, endDate, ...otherFields } = action.fields;
+      const { startDate, endDate, priceRate, ...otherFields } = action.fields;
       return {
         ...state,
-        profileId: _id,
         startDate: startDate !== null ? startDate.substring(0, 10) : '',
         endDate: endDate !== null ? endDate.substring(0, 10) : '',
+        priceRate: `${priceRate}`,
         ...otherFields,
       };
     case 'REMOVE_BACKGROUND':

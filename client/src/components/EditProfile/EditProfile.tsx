@@ -27,6 +27,7 @@ interface FormValues {
   startDate: string;
   endDate: string;
   priceRate: string;
+  [key: string]: string;
 }
 
 interface Props extends IUseUser {
@@ -51,17 +52,18 @@ const EditProfile: FC<Props> = (props) => {
       authFieldsChange = false;
     }
     // if any fields has changes only then we have to fire a request
-    if (
-      userState.phone === otherValues.phone &&
-      userState.city === otherValues.city &&
-      userState.description === otherValues.description &&
-      userState.startDate === otherValues.startDate &&
-      userState.endDate === otherValues.endDate &&
-      userState.priceRate === otherValues.priceRate
-    ) {
-      otherFieldsChange = false;
-      setSubmitting(false);
-      updateSnackBarMessage("Your don't changed any field values.");
+    for (const key in userState) {
+      if (
+        key !== 'coverImg' &&
+        key !== 'profileImg' &&
+        key !== 'isDogSitter' &&
+        key !== 'isAvailable' &&
+        userState[key] === otherValues[key]
+      ) {
+        otherFieldsChange = false;
+      } else if (key !== 'coverImg' && key !== 'profileImg' && key !== 'isDogSitter' && key !== 'isAvailable') {
+        otherFieldsChange = true;
+      }
     }
 
     if (authFieldsChange) {
@@ -76,7 +78,12 @@ const EditProfile: FC<Props> = (props) => {
         }
       });
     }
-    if (!otherFieldsChange) return;
+    if (!otherFieldsChange) {
+      setSubmitting(false);
+      updateSnackBarMessage("Your don't changed any field values.");
+      otherFieldsChange = true;
+      return;
+    }
     createOrUpdateProfileFields(otherValues).then((data) => {
       if (data.error) {
         setSubmitting(false);
