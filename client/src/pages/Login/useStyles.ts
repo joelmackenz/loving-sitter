@@ -6,14 +6,6 @@ const useStyles = makeStyles(() => ({
     marginTop: '6rem',
     marginBottom: '3rem',
   },
-  authWrapper: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    flexDirection: 'column',
-    minHeight: '100vh',
-    paddingTop: 23,
-  },
   welcome: {
     fontSize: 26,
     paddingBottom: 20,

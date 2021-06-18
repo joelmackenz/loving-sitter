@@ -1,13 +1,12 @@
 import { MuiThemeProvider } from '@material-ui/core';
-import { theme } from './themes/theme';
 import { BrowserRouter } from 'react-router-dom';
+
+import { theme } from './themes/theme';
 import { AuthProvider } from './context/useAuthContext';
 import { SocketProvider } from './context/useSocketContext';
 import { SnackBarProvider } from './context/useSnackbarContext';
 import { UserProvider } from './context/useUserContext';
 import Routes from './Routes';
-
-import './App.css';
 
 function App(): JSX.Element {
   return (
