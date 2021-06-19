@@ -50,7 +50,6 @@ export const AuthProvider: FunctionComponent = ({ children }): JSX.Element => {
   useEffect(() => {
     const checkLoginWithCookies = async () => {
       await loginWithCookies().then((data: AuthApiData) => {
-        console.log({ data });
         if (data.success) {
           updateLoginContext(data.success);
           const lastLocation = localStorage.getItem('page_location');
