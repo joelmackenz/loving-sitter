@@ -74,6 +74,11 @@ exports.appSocket = (server) => {
     // on disconnect
     socket.on("disconnect", () => {
       console.log(`Connection Disconnected !!! clientId => ${socket.id}`);
+      for (const key in onlineUsers) {
+        if (onlineUsers[key] === socket.id) {
+          delete onlineUsers[key];
+        }
+      }
     });
 
   });
