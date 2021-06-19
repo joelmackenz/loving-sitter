@@ -194,9 +194,13 @@ export default function AuthNavbar(): JSX.Element {
     return headersData.map(({ label, href }) => {
       return (
         <MenuItem key={label} onClick={() => handleNavMenuClick(label)}>
-          <Link className={classes.linkItem} to={href}>
-            {label}
-          </Link>
+          {label === 'Logout' ? (
+            <div className={classes.linkItem}>{label}</div>
+          ) : (
+            <Link className={classes.linkItem} to={href}>
+              {label}
+            </Link>
+          )}
         </MenuItem>
       );
     });
@@ -215,10 +219,13 @@ export default function AuthNavbar(): JSX.Element {
             Settings
           </Link>
         </MenuItem>
-        <MenuItem onClick={() => setProfilePopperAnchor(null)}>
-          <Link className={classes.linkItem} onClick={handleLogout} to="/">
-            Logout
-          </Link>
+        <MenuItem
+          onClick={() => {
+            setProfilePopperAnchor(null);
+            handleLogout();
+          }}
+        >
+          <div className={classes.linkItem}>Logout</div>
         </MenuItem>
       </MenuList>
     </Popper>

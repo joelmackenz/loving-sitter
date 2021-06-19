@@ -7,18 +7,9 @@ const ProtectedRoute = ({ children, component: Component, ...routeProps }: Route
     <Route
       {...routeProps}
       render={({ location, ...restProps }: RouteComponentProps) =>
-        loggedInUser && children ? (
-          children
-        ) : loggedInUser && Component ? (
-          <Component {...restProps} location={location} />
-        ) : (
-          <Redirect
-            to={{
-              pathname: '/login',
-              state: { from: location },
-            }}
-          />
-        )
+        loggedInUser && children
+          ? children
+          : loggedInUser && Component && <Component {...restProps} location={location} />
       }
     />
   );

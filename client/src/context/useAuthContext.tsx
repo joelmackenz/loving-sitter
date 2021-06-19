@@ -39,9 +39,9 @@ export const AuthProvider: FunctionComponent = ({ children }): JSX.Element => {
     // needed to remove token cookie
     await logoutAPI()
       .then(() => {
-        history.push('/login');
         setLoggedInUser(null);
         localStorage.removeItem('page_location');
+        history.push('/login');
       })
       .catch((error) => console.error(error));
   }, [history]);
@@ -50,6 +50,7 @@ export const AuthProvider: FunctionComponent = ({ children }): JSX.Element => {
   useEffect(() => {
     const checkLoginWithCookies = async () => {
       await loginWithCookies().then((data: AuthApiData) => {
+        console.log({ data });
         if (data.success) {
           updateLoginContext(data.success);
           const lastLocation = localStorage.getItem('page_location');
