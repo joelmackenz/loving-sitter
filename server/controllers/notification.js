@@ -1,21 +1,5 @@
 const Notification = require("../models/Notification");
 
-exports.getNotificationById = (req, res, next, notificationId) => {
-  Notification
-    .findById(notificationId)
-    .exec((error, notification) => {
-      if (error) {
-        return res.status(400).json({
-          error: "Unable to get Notification from DB"
-        })
-      }
-
-      req.notification = notification;
-      next();
-
-    })
-}
-
 exports.createNotification = (req, res) => {
   if (req.user.id === req.body.user) {
     return res.status(401).json({
@@ -39,28 +23,30 @@ exports.createNotification = (req, res) => {
 };
 
 exports.updateReadNotification = (req, res) => {
-  if (req.notification.user.toString() !== req.user.id) {
-    return res.status(401).json({
-      error: "User is not authorized to update read request."
-    })
-  }
+  const operations = req.body.notifications.map((notification) => {
+    if(notification.user.toString() !== req.user.id) {
+      return res.status(401).json({
+        error: "User is not authorized to update read status."
+      });
+    };
 
-  Notification.findOneAndUpdate(
-    { _id: req.params.notificationId },
-    { $set: { readStatus: true } },
-    (error, notification) => {
-      if (error) {
-        return res.status(400).json({
-          error: "Unable to update the notification status"
-        })
+    return {
+      updateOne: {
+        filter: { _id: notification._id },
+        update: { $set: { readStatus: true } }
       }
+    };
+  });
 
-      return res.status(204).json({
-        success: "Read Status updated successfully."
-      })
-
+  Notification.bulkWrite(operations, {}, (error, notification) => {
+    if (error) {
+      return res.status(400).json({
+        error: "Unable to update the notification status.",
+        message: error.message
+      });
     }
-  )
+    return res.status(204);
+  })
 };
 
 exports.getAllNotification = (req, res) => {
@@ -78,17 +64,26 @@ exports.getAllNotification = (req, res) => {
         })
       }
 
-      return res.status(200).json({ notifications: notification })
+      return res.status(200).json({ 
+        notifications: notification,
+        success: "Retrieved successfully."
+      })
 
     })
 };
 
 exports.getUnreadNotification = (req, res) => {
   Notification
-    .find({ 
-      readStatus: { $eq: false },
-      user: req.user.id
-    })
+    .find(
+      { 
+        readStatus: { $eq: false },
+        user: req.user.id,
+      },
+      {
+        __v: 0,
+        updatedAt: 0
+      }
+    )
     .exec((error, notification) => {
       if (error) {
         return res.status(400).json({
@@ -97,7 +92,8 @@ exports.getUnreadNotification = (req, res) => {
       }
 
       return res.status(200).json({
-        notifications: notification
+        notifications: notification,
+        success: "Retrieved successfully."
       })
     })
 };

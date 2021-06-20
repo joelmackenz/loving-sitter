@@ -2,33 +2,25 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(() => ({
   root: {
-    minHeight: '100vh',
-    width: '100%',
-    '& .MuiInput-underline:before': {
-      borderBottom: '1.2px solid rgba(0, 0, 0, 0.2)',
-    },
+    minHeight: '60vh',
+    marginTop: '6rem',
+    marginBottom: '3rem',
   },
   authWrapper: {
     display: 'flex',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
     flexDirection: 'column',
+    minHeight: '100vh',
     paddingTop: 23,
   },
   welcome: {
-    fontSize: '40px',
+    fontSize: 26,
     paddingBottom: 20,
     color: '#000000',
+    margin: '1rem 0',
     fontWeight: 700,
     fontFamily: "'Open Sans'",
-    textAlign: 'center',
-  },
-  signUpInfo: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  signUpLink: {
-    color: 'red',
   },
 }));
 

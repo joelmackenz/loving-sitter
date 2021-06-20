@@ -4,8 +4,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/useAuthContext';
 import { SocketProvider } from './context/useSocketContext';
 import { SnackBarProvider } from './context/useSnackbarContext';
+import { UserProvider } from './context/useUserContext';
 import Routes from './Routes';
-import ProfileListings from './pages/ProfileListings/ProfileListings';
 
 import './App.css';
 
@@ -16,7 +16,9 @@ function App(): JSX.Element {
         <SnackBarProvider>
           <AuthProvider>
             <SocketProvider>
-              <ProfileListings />
+              <UserProvider>
+                <Routes />
+              </UserProvider>
             </SocketProvider>
           </AuthProvider>
         </SnackBarProvider>
