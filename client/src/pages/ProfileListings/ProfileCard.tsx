@@ -9,13 +9,14 @@ import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import useStyles from './useStyles';
 
-import { User } from './dummyUserData';
+import { Profile } from '../../interface/Profile';
 
 interface ProfileCardProps {
-  user: User;
+  profile: Profile;
+  key?: string;
 }
 
-const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
+const ProfileCard: React.FC<ProfileCardProps> = ({ profile }) => {
   const classes = useStyles();
 
   const handleClickCard = () => {
@@ -26,14 +27,14 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
     <Card className={classes.card} onClick={handleClickCard} raised={true}>
       <CardActionArea>
         <CardContent className={classes.cardContentUpper}>
-          <Avatar className={classes.cardUserAvatar} src={user.image} alt="" />
+          <Avatar className={classes.cardUserAvatar} src={profile.profileImg} alt="" />
           <Typography gutterBottom variant="h5" component="h2" className={classes.cardUserName}>
-            {user.firstName} {user.lastName}
+            {profile.firstName} {profile.lastName}
           </Typography>
-          <Typography className={classes.cardUserTitle}>{user.title}</Typography>
-          <Rating className={classes.cardUserRating} name="read-only" value={user.rating} readOnly />
+          <Typography className={classes.cardUserTitle}>{profile.title}</Typography>
+          <Rating className={classes.cardUserRating} name="read-only" /*value={ Rating value }*/ readOnly />
           <Typography variant="body2" color="textSecondary" className={classes.cardUserDesc}>
-            {user.description}
+            {profile.description}
           </Typography>
         </CardContent>
         <Grid>
@@ -43,10 +44,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
           <Grid className={classes.cityContainer}>
             <RoomIcon className={classes.roomIcon} />
             <Typography className={classes.cardUserLocation}>
-              {user.city}, {user.provinceState}
+              {profile.address.city}, {profile.address.provinceState}
             </Typography>
           </Grid>
-          <Typography className={classes.cardUserRate}>${user.rate}/hr</Typography>
+          <Typography className={classes.cardUserRate}>${profile.priceRate}/hr</Typography>
         </CardContent>
       </CardActionArea>
     </Card>
