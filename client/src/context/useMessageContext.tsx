@@ -32,7 +32,7 @@ export type DispatchMessages = (action: ActionMessages) => void;
 type ActionConvos =
   | { type: 'UPDATE_CONVOS'; conversations: IConversations[] }
   | { type: 'ADD_ONLINE_USER'; recipientUserId: string }
-  | { type: 'REMOVE_ONLINE_USER'; recipientUserId: string }
+  | { type: 'REMOVE_OFFLINE_USER'; recipientUserId: string }
   | { type: 'UPDATE_LATEST_MESSAGE'; activeConversation: string; message: string; createdAt: string };
 
 export type DispatchConvos = (action: ActionConvos) => void;
@@ -82,7 +82,7 @@ const convoReducer = (state: IConversations[], action: ActionConvos) => {
           return convo;
         }
       });
-    case 'REMOVE_ONLINE_USER':
+    case 'REMOVE_OFFLINE_USER':
       return state.map((convo) => {
         if (convo.recipientUser.recipientUserId === action.recipientUserId) {
           convo.recipientUser.online = false;

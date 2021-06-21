@@ -74,21 +74,33 @@ const Input: FC<Props> = (props) => {
   const classes = useStyles();
   const { socket } = useSocket();
 
+  // dispatches the new message and latest Message
+  const dispatchNewMessage = (data: {
+    message: {
+      _id: string;
+      text: string;
+      author: string;
+      createdAt: string;
+      updatedAt: string;
+    };
+    activeConversation: string;
+  }) => {
+    dispatchMessages({ type: 'ADD_NEW_MESSAGE', activeConversation: data.activeConversation, message: data.message });
+    dispatchConversations({
+      type: 'UPDATE_LATEST_MESSAGE',
+      activeConversation: data.activeConversation,
+      message: data.message.text,
+      createdAt: data.message.createdAt,
+    });
+  };
+
   useEffect(() => {
     if (socket === undefined || currentUserId === '') return;
 
-    socket.on('new-message', (data) => {
-      dispatchMessages({ type: 'ADD_NEW_MESSAGE', activeConversation: data.activeConversation, message: data.message });
-      dispatchConversations({
-        type: 'UPDATE_LATEST_MESSAGE',
-        activeConversation: data.activeConversation,
-        message: data.message.text,
-        createdAt: new Date().toISOString(),
-      });
-    });
+    socket.on('new-message', dispatchNewMessage);
 
     return () => {
-      socket.off('new-message');
+      socket.off('new-message', dispatchNewMessage);
     };
   }, [socket, currentUserId]);
 
@@ -109,8 +121,13 @@ const Input: FC<Props> = (props) => {
     };
     window.scrollTo(0, document.body.scrollHeight);
 
-    // dispatch message to local context
-    dispatchMessages({ type: 'ADD_NEW_MESSAGE', activeConversation: conversationId, message });
+    const data = {
+      message,
+      activeConversation: conversationId,
+    };
+
+    // dispatch message to local context and dispatch latest message to conversation sidebar
+    dispatchNewMessage(data);
 
     // emit message to recipient user
     socket?.emit('new-message', {
@@ -118,14 +135,6 @@ const Input: FC<Props> = (props) => {
       recipientUserId: recipientUser.recipientUserId,
       currentUserId,
       activeConversation: conversationId,
-    });
-
-    // dispatch latest message to conversation sidebar
-    dispatchConversations({
-      type: 'UPDATE_LATEST_MESSAGE',
-      activeConversation: conversationId,
-      message: text,
-      createdAt,
     });
 
     // add message to backend

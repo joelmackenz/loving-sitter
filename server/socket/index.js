@@ -64,10 +64,15 @@ exports.appSocket = (server) => {
     })
 
     // when a user goes logout or goes offline
-    socket.on("logout", (id) => {
-      if (onlineUsers[id]) {
-        delete onlineUsers[id];
-        socket.broadcast.emit("remove-offline-user", id);
+    socket.on("logout", ({ currentUserId, otherUsersInConvo }) => {
+      if (onlineUsers[currentUserId]) {
+        delete onlineUsers[currentUserId];
+        if (otherUsersInConvo.length) {
+          otherUsersInConvo.forEach((recipientUserId) => {
+            const socketId = onlineUsers[recipientUserId];
+            socket.to(socketId).emit("remove-offline-user", currentUserId);
+          })
+        }
       }
     });
     

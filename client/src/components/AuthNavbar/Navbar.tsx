@@ -21,6 +21,7 @@ import { useAuth } from '../../context/useAuthContext';
 import { useSnackBar } from '../../context/useSnackbarContext';
 import { useSocket } from '../../context/useSocketContext';
 import { useUser, IUserContext } from '../../context/useUserContext';
+import { useMessage } from '../../context/useMessageContext';
 import { User } from '../../context/interface/User';
 import { getUnreadNotifications, updateReadStatus } from '../../helpers/APICalls/notification';
 import { Notification } from '../../interface/Notification';
@@ -106,6 +107,7 @@ export default function AuthNavbar(): JSX.Element {
   const { logout, loggedInUser } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
   const { userState, dispatchUserContext } = useUser();
+  const { conversations } = useMessage();
   const { socket } = useSocket();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -152,7 +154,14 @@ export default function AuthNavbar(): JSX.Element {
   const handleLogout = () => {
     setProfilePopperAnchor(null);
     logout();
-    socket?.emit('logout', loggedInUser?._id);
+    const currentUserId = loggedInUser?._id;
+    const otherUsersInConvo: string[] = [];
+    conversations.forEach((convo) => {
+      return otherUsersInConvo.push(convo.recipientUser.recipientUserId);
+    });
+    if (otherUsersInConvo.length === conversations.length) {
+      socket?.emit('logout', { currentUserId, otherUsersInConvo });
+    }
     dispatchUserContext({ type: 'EMPTY_IMAGES' });
   };
 

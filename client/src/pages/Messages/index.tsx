@@ -60,7 +60,7 @@ export default function Messages(): JSX.Element {
     });
 
     socket.on('remove-offline-user', (recipientUserId) => {
-      dispatchConversations({ type: 'REMOVE_ONLINE_USER', recipientUserId });
+      dispatchConversations({ type: 'REMOVE_OFFLINE_USER', recipientUserId });
     });
 
     return () => {
