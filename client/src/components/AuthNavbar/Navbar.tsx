@@ -1,4 +1,5 @@
 import { useState, useEffect, MouseEvent } from 'react';
+import { useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import Box from '@material-ui/core/Box';
 import Drawer from '@material-ui/core/Drawer';
@@ -64,7 +65,11 @@ const NotificationPopper: React.FC<NotificationProps> = ({ titleAnchor, activeNo
       <Box className={classes.notificationContainer}>
         {activeNotifications.length ? (
           activeNotifications.map((notification, index) => (
-            <Link to="/dashboard" className={clsx(classes.linkItem, classes.linkFlexContainer)} key={index}>
+            <Link
+              to={{ pathname: '/dashboard', state: { previousPath: '/dashboard' } }}
+              className={clsx(classes.linkItem, classes.linkFlexContainer)}
+              key={index}
+            >
               <Avatar src={profileImage} variant="square" className={clsx(classes.avatar, classes.avatarSize)} />
               <Box>
                 <Typography className={classes.notificationTitle}>{notification.title}</Typography>
@@ -90,6 +95,7 @@ const NotificationPopper: React.FC<NotificationProps> = ({ titleAnchor, activeNo
 export default function AuthNavbar(): JSX.Element {
   const classes = useStyles();
 
+  const location = useLocation();
   const { logout } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
 
@@ -117,12 +123,6 @@ export default function AuthNavbar(): JSX.Element {
       }
     });
   }, []);
-
-  const handleLinkClick = () => {
-    setTimeout(() => {
-      localStorage.setItem('page_location', location.pathname);
-    }, 400);
-  };
 
   const handleNotificationsClick = (event: MouseEvent<HTMLDivElement>) => {
     setNotificationsAnchor((prevState) => {
@@ -156,7 +156,7 @@ export default function AuthNavbar(): JSX.Element {
   const displayDesktop = () => {
     return (
       <Toolbar className={classes.toolbar}>
-        <Link to="/dashboard" onClick={handleLinkClick}>
+        <Link to={{ pathname: '/dashboard', state: { previousPath: location.pathname } }}>
           <img src={Logo} className={classes.logo} alt="logo" />
         </Link>
         <div className={classes.navbarDesktop}>{getMenuButtons()}</div>
@@ -178,7 +178,7 @@ export default function AuthNavbar(): JSX.Element {
           <div className={classes.drawerContainer}>{getDrawerChoices()}</div>
         </Drawer>
 
-        <Link to="/dashboard">
+        <Link to={{ pathname: '/dashboard', state: { previousPath: location.pathname } }}>
           <img src={Logo} className={classes.logo} alt="logo" />
         </Link>
       </Toolbar>
@@ -197,7 +197,7 @@ export default function AuthNavbar(): JSX.Element {
           {label === 'Logout' ? (
             <div className={classes.linkItem}>{label}</div>
           ) : (
-            <Link className={classes.linkItem} to={href}>
+            <Link className={classes.linkItem} to={{ pathname: href, state: { previousPath: location.pathname } }}>
               {label}
             </Link>
           )}
@@ -215,7 +215,7 @@ export default function AuthNavbar(): JSX.Element {
     >
       <MenuList autoFocusItem={Boolean(profilePopperAnchor)} onMouseLeave={() => setProfilePopperAnchor(null)}>
         <MenuItem onClick={() => setProfilePopperAnchor(null)}>
-          <Link className={classes.linkItem} to="/settings" onClick={handleLinkClick}>
+          <Link className={classes.linkItem} to={{ pathname: '/settings', state: { previousPath: location.pathname } }}>
             Settings
           </Link>
         </MenuItem>
@@ -248,12 +248,15 @@ export default function AuthNavbar(): JSX.Element {
             </div>
           </MenuItem>
           <MenuItem>
-            <Link to={`/myjobs`} className={classes.linkItem} onClick={handleLinkClick}>
+            <Link to={{ pathname: '/myjobs', state: { previousPath: location.pathname } }} className={classes.linkItem}>
               My Jobs
             </Link>
           </MenuItem>
           <MenuItem>
-            <Link to={`/messages`} className={classes.linkItem} onClick={handleLinkClick}>
+            <Link
+              to={{ pathname: '/messages', state: { previousPath: location.pathname } }}
+              className={classes.linkItem}
+            >
               Messages
             </Link>
           </MenuItem>

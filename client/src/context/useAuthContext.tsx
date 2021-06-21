@@ -22,26 +22,19 @@ export const AuthProvider: FunctionComponent = ({ children }): JSX.Element => {
   const [loggedInUser, setLoggedInUser] = useState<User | null | undefined>();
   const history = useHistory();
 
-  const updateLoginContext = useCallback(
-    (data: AuthApiDataSuccess) => {
-      setLoggedInUser(data.user);
-      const lastLocation = localStorage.getItem('page_location');
-      if (lastLocation) {
-        history.push(lastLocation);
-      } else {
-        history.push('/dashboard');
-      }
-    },
-    [history],
-  );
+  const updateLoginContext = useCallback((data: AuthApiDataSuccess) => {
+    setLoggedInUser(data.user);
+  }, []);
 
   const logout = useCallback(async () => {
     // needed to remove token cookie
     await logoutAPI()
       .then(() => {
         setLoggedInUser(null);
-        localStorage.removeItem('page_location');
-        history.push('/login');
+        history.push({
+          pathname: '/login',
+          state: { previousPath: location.pathname },
+        });
       })
       .catch((error) => console.error(error));
   }, [history]);
@@ -52,17 +45,13 @@ export const AuthProvider: FunctionComponent = ({ children }): JSX.Element => {
       await loginWithCookies().then((data: AuthApiData) => {
         if (data.success) {
           updateLoginContext(data.success);
-          const lastLocation = localStorage.getItem('page_location');
-          if (lastLocation) {
-            history.push(lastLocation);
-          } else {
-            history.push('/dashboard');
-          }
         } else {
           // don't need to provide error feedback as this just means user doesn't have saved cookies or the cookies have not been authenticated on the backend
           setLoggedInUser(null);
-          history.push('/login');
-          localStorage.removeItem('page_location');
+          history.push({
+            pathname: '/login',
+            state: { previousPath: location.pathname },
+          });
         }
       });
     };
