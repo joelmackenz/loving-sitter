@@ -9,37 +9,23 @@ import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
 import useStyles from './useStyles';
 import Alert from './alert';
+import DaySelect from './DaySelectForm';
 
 interface DateSelectProps {
   open: true | false;
   handleOpen: () => void;
-  handleUpdate: (dateFrom: Date | null, dateTo: Date | null) => void;
+  handleUpdate: (dateArray: string[]) => void;
 }
 
 const DateSelectPopover: React.FC<DateSelectProps> = ({ open, handleOpen, handleUpdate }) => {
   const classes = useStyles();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [dateFrom, setDateFrom] = useState<Date | null>(null);
-  const [dateTo, setDateTo] = useState<Date | null>(null);
+  const [dayArray, setDayArray] = useState<string[]>([]);
 
-  const handleDateFromChange = (date: Date | null) => {
-    setDateFrom(date);
-  };
-
-  const handleDateToChange = (date: Date | null) => {
-    if (date && dateFrom && date < dateFrom) {
-      setSnackbarOpen(true);
-    } else {
-      setDateTo(date);
-    }
-  };
-
-  const updateDateRange = (dateFrom: Date | null, dateTo: Date | null) => {
-    handleUpdate(dateFrom, dateTo);
+  const updateDayArray = (updatedDayArray: string[]) => {
+    setDayArray(updatedDayArray);
   };
 
   const handleSnackbarClose = (event?: React.SyntheticEvent, reason?: string) => {
@@ -72,43 +58,16 @@ const DateSelectPopover: React.FC<DateSelectProps> = ({ open, handleOpen, handle
           }
         />
         <Typography variant="h5" className={classes.datePickerTitle}>
-          Select date range
+          Select available days
         </Typography>
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-          <KeyboardDatePicker
-            className={classes.datePicker}
-            disableToolbar
-            format="MM/dd/yyyy"
-            margin="normal"
-            id="date-picker-dialog-from"
-            label="From"
-            value={dateFrom instanceof Date ? dateFrom : null}
-            onChange={handleDateFromChange}
-            KeyboardButtonProps={{
-              'aria-label': 'change date',
-            }}
-          />
-          <KeyboardDatePicker
-            className={classes.datePicker}
-            disableToolbar
-            format="MM/dd/yyyy"
-            margin="normal"
-            id="date-picker-dialog-to"
-            label="to"
-            value={dateTo instanceof Date ? dateFrom : null}
-            onChange={handleDateToChange}
-            KeyboardButtonProps={{
-              'aria-label': 'change date',
-            }}
-          />
-        </MuiPickersUtilsProvider>
+        <DaySelect handleUpdate={updateDayArray} />
         <CardActions>
           <Grid container className={classes.datePickerActions}>
             <Button
               className={classes.datePickerButton}
               onClick={() => {
                 handleOpen();
-                updateDateRange(dateFrom, dateTo);
+                handleUpdate(dayArray);
               }}
             >
               <Typography variant="h5">Go!</Typography>
@@ -117,10 +76,9 @@ const DateSelectPopover: React.FC<DateSelectProps> = ({ open, handleOpen, handle
               className={classes.datePickerButton}
               onClick={() => {
                 handleOpen();
-                updateDateRange(null, null);
               }}
             >
-              <Typography variant="h6">Any time</Typography>
+              <Typography variant="h6">Any day</Typography>
             </Button>
           </Grid>
         </CardActions>
