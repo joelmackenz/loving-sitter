@@ -1,9 +1,9 @@
-import { Profile } from '../../interface/Profile';
-
 export interface User {
   email: string;
-  username: string;
-  profile?: Profile;
+  _id: string;
+  firstName: string;
+  lastName: string;
+  isDogSitter: boolean;
 }
 
 export interface SearchUsersApiData {
