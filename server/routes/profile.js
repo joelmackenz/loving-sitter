@@ -14,7 +14,7 @@ const {
 
 router.post("/createorupdate", validateCreateProfile, protect, createProfile);
 
-router.get("/:id", protect, getOneProfile);
+router.get("/one", protect, getOneProfile);
 
 router.get("/", protect, getAllProfiles);
 
