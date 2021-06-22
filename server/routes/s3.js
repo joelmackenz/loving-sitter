@@ -7,10 +7,13 @@ const { uploadImage } = require("../controllers/s3")
 
 const upload = multer({
   limits: {
-    fieldSize: 1 * 1024 * 1024
+    fileSize: 1.5 * 1024 * 1024 // 1.5 MB limit 
   }
 })
-  .array('photos', 5);
+  .fields([
+    { name: "background", maxCount: 1 },
+    { name: "profile", maxCount: 1 },
+  ])
 
 
 router.post("/uploadimage", protect, upload, uploadImage);

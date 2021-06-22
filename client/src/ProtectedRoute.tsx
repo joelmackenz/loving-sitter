@@ -1,5 +1,6 @@
 import { Route, Redirect, RouteProps, RouteComponentProps } from 'react-router-dom';
 import { useAuth } from './context/useAuthContext';
+import Navbar from '../src/components/AuthNavbar/Navbar';
 
 const ProtectedRoute = ({ children, component: Component, ...routeProps }: RouteProps): JSX.Element => {
   const { loggedInUser } = useAuth();
@@ -10,7 +11,10 @@ const ProtectedRoute = ({ children, component: Component, ...routeProps }: Route
         loggedInUser && children ? (
           children
         ) : loggedInUser && Component ? (
-          <Component {...restProps} location={location} />
+          <>
+            <Navbar />
+            <Component {...restProps} location={location} />
+          </>
         ) : (
           <Redirect
             to={{
