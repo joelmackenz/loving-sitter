@@ -46,8 +46,8 @@ const SignUpForm = ({ handleSubmit }: Props): JSX.Element => {
         lastName: '',
       }}
       validationSchema={Yup.object().shape({
-        firstName: Yup.string().required('First Name is required').max(40, 'Username is too long'),
-        lastName: Yup.string().required('Last Name is required').max(40, 'Username is too long'),
+        firstName: Yup.string().required('First Name is required').max(40, 'First Name is too long'),
+        lastName: Yup.string().required('Last Name is required').max(40, 'Last Name is too long'),
         email: Yup.string().required('Email is required').email('Email is not valid'),
         password: Yup.string()
           .required('Password is required')
