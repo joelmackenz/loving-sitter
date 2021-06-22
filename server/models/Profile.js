@@ -6,6 +6,7 @@ const { ObjectId } = Schema;
 const profileSchema = new Schema({
   userId: {
     type: ObjectId,
+    ref: "user",
     required: true,
     unique: true,
   },
@@ -16,14 +17,8 @@ const profileSchema = new Schema({
   phone: String,
   city: String,
   description: String,
-  profileImg: {
-    type: String,
-    default: ''
-  },
-  coverImg: {
-    type: String,
-    default: ''
-  },
+  profileImg: String,
+  coverImg: String,
   startDate: Date,
   endDate: Date,
   priceRate: Number,

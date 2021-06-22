@@ -60,7 +60,7 @@ exports.validateCreateRequest = [
     next();
   },
 ];
-
+  
 exports.validateCreateNotification = [
   check("user").isMongoId().withMessage("User must be valid mongo Object Id"),
   check("type")

@@ -27,9 +27,9 @@ const userSchema = new Schema({
   },
   profileId: {
     type: ObjectId,
-    ref: "profile",
-  },
-});
+    ref: "profile"
+  }
+}, { timestamps: true });
 
 userSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);

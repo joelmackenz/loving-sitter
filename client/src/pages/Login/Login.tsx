@@ -4,6 +4,7 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import { FormikHelpers } from 'formik';
 import Typography from '@material-ui/core/Typography';
+import { Redirect } from 'react-router-dom';
 
 import useStyles from './useStyles';
 import login from '../../helpers/APICalls/login';
@@ -14,7 +15,7 @@ import LandingNavbar from '../../components/LandingNavbar/LandingNavbar';
 
 export default function Login(): JSX.Element {
   const classes = useStyles();
-  const { updateLoginContext } = useAuth();
+  const { updateLoginContext, loggedInUser } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
 
   const handleSubmit = (
@@ -36,6 +37,10 @@ export default function Login(): JSX.Element {
       }
     });
   };
+
+  if (loggedInUser?._id) {
+    return <Redirect to="/dashboard" />;
+  }
 
   return (
     <>

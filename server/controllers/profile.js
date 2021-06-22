@@ -1,6 +1,7 @@
 const ObjectId = require("mongoose").Types.ObjectId;
 const asyncHandler = require("express-async-handler");
 const Profile = require("../models/Profile");
+const User = require("../models/User");
 
 // @route POST /profile/:id
 // @descr Given a user ID and profile parameters, create a profile
@@ -67,6 +68,8 @@ exports.createProfile = asyncHandler(async (req, res, next) => {
     return updatedProfile(req, res);
   }
 
+
+
   const profile = new Profile({
     userId: req.user.id,
     ...req.body
@@ -78,7 +81,20 @@ exports.createProfile = asyncHandler(async (req, res, next) => {
       })
     }
 
-    profile._id = undefined;
+    // Add profile id to User Schema
+    User.updateOne(
+      { _id: req.user.id },
+      { $set: { profileId: profile._id } },
+      { upsert: true }
+    ).exec((error, user) => {
+      if (error) {
+        return res.status(400).json({
+          error: "Error in saving profile id to User"
+        })
+      };
+    })
+
+
     profile.__v = undefined;
     profile.userId = undefined;
 
@@ -102,9 +118,11 @@ exports.getOneProfile = asyncHandler(async (req, res, next) => {
     }
 
   try {
-    const profile = await Profile.findOne({ userId }, { _id: 0, userId: 0, __v: 0 });
+    const profile = await Profile.findOne({ userId }, { userId: 0, __v: 0, _id: 0 });
     if (profile) {
-      return res.status(200).json({ profile });
+      return res.status(200).json({
+        profile
+      });
     } else {
       return res.status(400).json({ error: 'Unable to Fetch User Profile' })
     }
@@ -126,6 +144,7 @@ exports.addImageUrls = asyncHandler(async (req, res, next) => {
     Profile.updateOne(
       { userId },
       { $set: { profileImg: req.body.profileImg, coverImg: req.body.coverImg } },
+      { upsert: true },
       (error, profile) => {
         if (error) {
           return res.status(500).json({
