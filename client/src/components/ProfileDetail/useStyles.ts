@@ -1,6 +1,6 @@
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
@@ -43,10 +43,53 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: '20px',
   },
   profileLocation: {
-    marginBottom: '40px',
+    marginBottom: '1rem',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   introduction: {
     width: '90%',
+  },
+  inputLabel: {
+    fontWeight: 900,
+    marginTop: '30px',
+    marginBottom: '10px',
+    textTransform: 'uppercase',
+    color: 'black',
+  },
+  inputFieldsContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column',
+      '& :last-child': {
+        marginTop: '0.2rem',
+      },
+    },
+    [theme.breakpoints.down('xs')]: {
+      flexDirection: 'row',
+      '& :last-child': {
+        marginTop: '0',
+      },
+    },
+  },
+  buttonContainer: {
+    marginTop: '1rem',
+    display: 'flex',
+    justifyContent: 'space-between',
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column',
+      '& :last-child': {
+        marginTop: '1rem',
+      },
+    },
+    [theme.breakpoints.down('xs')]: {
+      flexDirection: 'row',
+      '& :last-child': {
+        marginTop: '0',
+      },
+    },
   },
 }));
 export default useStyles;

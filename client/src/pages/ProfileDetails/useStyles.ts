@@ -1,17 +1,16 @@
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => ({
   profileDetailContainer: {
-    display: 'flex',
+    marginTop: '8rem',
+    marginBottom: '3rem',
     justifyContent: 'space-around',
-    marginTop: '50px',
   },
-  profileInfo: {
-    width: '50%',
-  },
-  requestInfo: {
-    height: 'fit-content',
-    padding: '10px',
+  requestGrid: {
+    padding: '1rem',
+    [theme.breakpoints.down('xs')]: {
+      marginTop: '2rem',
+    },
   },
 }));
 export default useStyles;

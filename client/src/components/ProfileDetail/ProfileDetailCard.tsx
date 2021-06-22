@@ -1,7 +1,6 @@
-import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
-import { Box, Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Typography } from '@material-ui/core';
+import { Box, Card, CardContent, CardMedia, Typography } from '@material-ui/core';
+
 import defaultCoverImg from '../../Images/default-profile-detail-cover.jpg';
 import defaultProfileImg from '../../Images/default-profile-image.jpg';
 import useStyles from './useStyles';
@@ -40,10 +39,12 @@ export default function ProfileDetailCard({ profile }: Props): JSX.Element {
           Loving pet sitter
         </Typography>
         {profile.address && (
-          <Typography className={classes.profileLocation}>
+          <Box className={classes.profileLocation}>
             <LocationOnIcon color="primary" />
-            {profile.address}
-          </Typography>
+            <Typography component="span" display="block">
+              {profile.address}
+            </Typography>
+          </Box>
         )}
         <Box className={classes.introduction}>
           {profile.description && (

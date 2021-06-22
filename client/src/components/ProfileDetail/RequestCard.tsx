@@ -1,8 +1,12 @@
-import DateFnsUtils from '@date-io/date-fns';
-import { Box, Button, CircularProgress, Grid, TextField, Typography } from '@material-ui/core';
-import { Rating } from '@material-ui/lab';
-import { MuiPickersUtilsProvider, KeyboardDatePicker, KeyboardTimePicker } from '@material-ui/pickers';
 import { useState } from 'react';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import InputLabel from '@material-ui/core/InputLabel';
+import { Rating } from '@material-ui/lab';
+
 import useStyles from './useStyles';
 
 interface Props {
@@ -49,78 +53,63 @@ export default function RequestCard({ profile }: Props): JSX.Element {
   }
 
   return (
-    <div className={classes.root}>
-      <Typography variant="h4">{`${profile.priceRate}/hr`}</Typography>
-      <Rating value={4.2} />
-      <Box>
-        <Box>
-          <Typography className={classes.requestFormText}>DROP IN</Typography>
-        </Box>
-        <Box>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-              disableToolbar
-              variant="inline"
-              inputVariant="outlined"
-              format="dd MMMM yyyy"
-              margin="normal"
-              id="date-picker-inline"
-              value={startDate}
-              onChange={handleStartDate}
-              KeyboardButtonProps={{
-                'aria-label': 'change date',
-              }}
-            />
-            <KeyboardTimePicker
-              margin="normal"
-              id="time-picker"
-              variant="inline"
-              inputVariant="outlined"
-              value={startDate}
-              onChange={handleStartDate}
-              KeyboardButtonProps={{
-                'aria-label': 'change time',
-              }}
-            />
-          </MuiPickersUtilsProvider>
-        </Box>
+    <>
+      <Box textAlign="center">
+        <Typography variant="h4">{`${profile.priceRate}/hr`}</Typography>
+        <Rating value={4.2} />
       </Box>
-      <Box>
-        <Box>
-          <Typography className={classes.requestFormText}>DROP OFF</Typography>
-        </Box>
-        <Box>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-              disableToolbar
-              variant="inline"
-              inputVariant="outlined"
-              format="dd MMMM yyyy"
-              margin="normal"
-              id="date-picker-inline"
-              value={endDate}
-              onChange={handleEndDate}
-              KeyboardButtonProps={{
-                'aria-label': 'change date',
-              }}
-            />
-            <KeyboardTimePicker
-              margin="normal"
-              id="time-picker"
-              variant="inline"
-              inputVariant="outlined"
-              value={endDate}
-              onChange={handleEndDate}
-              KeyboardButtonProps={{
-                'aria-label': 'change time',
-              }}
-            />
-          </MuiPickersUtilsProvider>
-        </Box>
+      <Grid container>
+        <Grid item xs={12}>
+          <InputLabel htmlFor="dropIn" className={classes.inputLabel}>
+            Drop In
+          </InputLabel>
+        </Grid>
+        <Grid item sm={12} xs={12} className={classes.inputFieldsContainer}>
+          <TextField
+            type="date"
+            id="dropIn"
+            name="dropIn"
+            variant="outlined"
+            // sadas
+          />
+          <TextField
+            type="time"
+            id="dropInTime"
+            name="dropInTime"
+            variant="outlined"
+            // sadas
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <InputLabel htmlFor="dropOff" className={classes.inputLabel}>
+            Drop Off
+          </InputLabel>
+        </Grid>
+        <Grid item sm={12} xs={12} className={classes.inputFieldsContainer}>
+          <TextField
+            type="date"
+            id="dropOff"
+            name="dropOff"
+            variant="outlined"
+            // sadas
+          />
+          <TextField
+            type="time"
+            id="dropOffTime"
+            name="dropOffTime"
+            variant="outlined"
+            // sadas
+          />
+        </Grid>
+      </Grid>
+      <Box textAlign="center" className={classes.buttonContainer}>
+        <Button type="submit" size="large" variant="contained" color="primary">
+          Send Request
+        </Button>
+        <Button type="button" size="large" variant="contained" color="primary">
+          Send Message
+        </Button>
       </Box>
-      <Button color="primary" variant="contained" type="submit" size="large" onClick={(e) => handleSubmit(e)}>
-        {sendSuccess ? <CircularProgress color="secondary" size={20} /> : `SEND REQUEST`}
-      </Button>
-    </div>
+    </>
   );
 }

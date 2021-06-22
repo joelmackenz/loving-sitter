@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
+import { useState } from 'react';
 import Paper from '@material-ui/core/Paper';
-import { Box, CardMedia } from '@material-ui/core';
-import ProfileDetailCard from '../../components/ProfileDetail/ProfileDetailCard';
+import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
+
 import useStyles from './useStyles';
+import ProfileDetailCard from '../../components/ProfileDetail/ProfileDetailCard';
 import RequestCard from '../../components/ProfileDetail/RequestCard';
 
 export default function ProfileDetails(): JSX.Element {
@@ -21,23 +22,18 @@ export default function ProfileDetails(): JSX.Element {
     priceRate: 14,
   });
 
-  //plug in when dashboard data is ready
-  // useEffect(()=>{
-  //   const fetchProfileData = async () => {
-  //     const profileData = await axios.get<any>(`/profile/${userId}`);
-  //     setProfile(profileData);
-  //   }
-  //   fetchProfileData();
-  // },[userId]);
-
   return (
-    <Box className={classes.profileDetailContainer}>
-      <Paper elevation={3} className={classes.profileInfo}>
-        <ProfileDetailCard profile={profile} />
-      </Paper>
-      <Paper elevation={3} className={classes.requestInfo}>
-        <RequestCard profile={profile} />
-      </Paper>
-    </Box>
+    <Grid container className={classes.profileDetailContainer}>
+      <Grid item sm={7} xs={11}>
+        <Paper elevation={3}>
+          <ProfileDetailCard profile={profile} />
+        </Paper>
+      </Grid>
+      <Grid item sm={3} xs={10}>
+        <Paper elevation={3} className={classes.requestGrid}>
+          <RequestCard profile={profile} />
+        </Paper>
+      </Grid>
+    </Grid>
   );
 }
