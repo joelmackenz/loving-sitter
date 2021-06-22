@@ -1,7 +1,8 @@
 const { check, validationResult } = require("express-validator");
 
 exports.validateRegister = [
-  check("username", "Please enter a username").not().isEmpty(),
+  check("firstName", "Please enter a First Name").not().isEmpty(),
+  check("lastName", "Please enter a Last Name").not().isEmpty(),
   check("email", "Please enter a valid email address").isEmail(),
   check(
     "password",
@@ -31,6 +32,18 @@ exports.validateLogin = [
   },
 ];
 
+exports.validateCreateProfile = [
+  check("phone", "Please enter your phone number").isMobilePhone(),
+  check("city", "City is required").not().isEmpty(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty())
+      return res.status(400).json({ errors: errors.array() });
+    next();
+  },
+]
+
 exports.validateCreateRequest = [
   check("user_id")
     .isMongoId()
@@ -47,7 +60,7 @@ exports.validateCreateRequest = [
     next();
   },
 ];
-
+  
 exports.validateCreateNotification = [
   check("user").isMongoId().withMessage("User must be valid mongo Object Id"),
   check("type")

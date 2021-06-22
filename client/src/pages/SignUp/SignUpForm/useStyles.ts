@@ -5,20 +5,6 @@ const useStyles = makeStyles((theme) => ({
     width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
-  label: {
-    fontSize: '18px',
-    marginTop: '1rem',
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-  },
-  inputs: {
-    height: '2rem',
-    padding: '5px',
-  },
-  forgot: {
-    paddingRight: 10,
-    color: '#3a8dff',
-  },
   submit: {
     margin: theme.spacing(3, 2, 2),
     padding: 10,
@@ -26,9 +12,15 @@ const useStyles = makeStyles((theme) => ({
     height: 56,
     borderRadius: theme.shape.borderRadius,
     marginTop: 49,
-    fontSize: 16,
-    backgroundColor: 'red',
+    fontSize: 14,
     fontWeight: 'bold',
+    textTransform: 'uppercase',
+  },
+  inputLabel: {
+    color: 'black',
+    fontWeight: 600,
+    textTransform: 'uppercase',
+    fontSize: '0.8rem',
   },
 }));
 

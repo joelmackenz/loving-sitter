@@ -4,31 +4,40 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import { FormikHelpers } from 'formik';
 import Typography from '@material-ui/core/Typography';
+import { Redirect, RouteComponentProps } from 'react-router-dom';
+
 import useStyles from './useStyles';
 import register from '../../helpers/APICalls/register';
 import SignUpForm from './SignUpForm/SignUpForm';
-import AuthHeader from '../../components/AuthHeader/AuthHeader';
 import { useAuth } from '../../context/useAuthContext';
 import { useSnackBar } from '../../context/useSnackbarContext';
-import { Link } from 'react-router-dom';
+import { useUser } from '../../context/useUserContext';
 import LandingNavbar from '../../components/LandingNavbar/LandingNavbar';
+import { CustomizedRouterState } from '../Login/Login';
 
-export default function Register(): JSX.Element {
+export default function Register({ location }: RouteComponentProps): JSX.Element {
   const classes = useStyles();
-  const { updateLoginContext } = useAuth();
+  const { updateLoginContext, loggedInUser } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
+  const { userState } = useUser();
+
+  const state = location.state as CustomizedRouterState;
 
   const handleSubmit = (
-    { username, email, password }: { email: string; password: string; username: string },
-    { setSubmitting }: FormikHelpers<{ email: string; password: string; username: string }>,
+    { firstName, lastName, email, password }: { firstName: string; lastName: string; password: string; email: string },
+    { setSubmitting }: FormikHelpers<{ email: string; password: string; firstName: string; lastName: string }>,
   ) => {
-    register(username, email, password).then((data) => {
+    register(firstName, lastName, email, password, userState.isDogSitter).then((data) => {
       if (data.error) {
-        console.error({ error: data.error.message });
+        console.error({ error: data.error });
         setSubmitting(false);
         updateSnackBarMessage(data.error.message);
       } else if (data.success) {
-        updateLoginContext(data.success);
+        if (userState.isDogSitter) {
+          updateLoginContext(data.success, '/settings');
+        } else {
+          updateLoginContext(data.success);
+        }
       } else {
         // should not get here from backend but this catch is for an unknown issue
         console.error({ data });
@@ -39,33 +48,37 @@ export default function Register(): JSX.Element {
     });
   };
 
+  if (
+    state?.previousPath &&
+    loggedInUser?.email &&
+    state?.previousPath !== '/login' &&
+    state?.previousPath !== '/signup' &&
+    state?.previousPath !== '/'
+  ) {
+    return <Redirect to={state.previousPath} />;
+  } else if (loggedInUser?.email) {
+    return <Redirect to="/dashboard" />;
+  }
+
   return (
-    <div>
+    <>
       <LandingNavbar />
-      <Grid container component="main" className={classes.root}>
+      <Grid container component="main" className={classes.root} justify="center">
         <CssBaseline />
-        <Grid item xs={12} elevation={6} component={Paper} square>
-          <Box className={classes.authWrapper}>
-            <Box width="100%" maxWidth={450} p={3} alignSelf="center">
-              <Grid container>
-                <Grid item xs>
-                  <Typography className={classes.welcome} component="h1" variant="h5">
-                    Sign up
-                  </Typography>
-                </Grid>
+        <Grid item xs={12} sm={8} md={6} elevation={6} component={Paper} square>
+          <Box width="100%" maxWidth={350} p={3} margin="auto">
+            <Grid container>
+              <Grid item xs>
+                <Typography className={classes.welcome} component="h1" variant="h5" align="center">
+                  SignUp
+                </Typography>
               </Grid>
-              <SignUpForm handleSubmit={handleSubmit} />
-            </Box>
-            <Grid className={classes.loginInfo}>
-              <Typography>{'Already have an account?'}</Typography>
-              <Link to="/login" className={classes.loginLink}>
-                Login
-              </Link>
             </Grid>
-            <Box p={1} alignSelf="center" />
+            <SignUpForm handleSubmit={handleSubmit} />
           </Box>
+          <Box p={1} alignSelf="center" />
         </Grid>
       </Grid>
-    </div>
+    </>
   );
 }

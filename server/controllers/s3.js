@@ -1,37 +1,50 @@
 const AWS = require("aws-sdk");
 
+const { addImageUrls } = require("./profile");
+
+AWS.config.update({ 
+  accessKeyId: process.env.ACCESS_KEY,
+  secretAccessKey: process.env.SECRET_ACCESS_KEY,
+  region: process.env.REGION
+});
+
 exports.uploadImage = (req, res) => {
-  if(req.file.size > 1 * 1024 * 1024) {
-    return res.status(400).json({
-      error: "Please, only upload only image upto 1Mb of size"
-    });
-  };
-  AWS.config.update({ 
-    accessKeyId: process.env.IAM_ACCESS_KEY,
-    secretAccessKey: process.env.IAM_SECRET_ACCESS_KEY,
-    region: process.env.REGION
-  });
   const s3 = new AWS.S3();
-  const params = {
-    Bucket: process.env.BUCKET_NAME,
-    Body: req.file.buffer,
-    ContentType: req.file.mimetype,
-    Key: `photo/${req.file.originalname}`
-  };
 
-  s3.upload(params, (error, data) => {
-    if (error) {
-      console.log(error);
-      return res.status(error.status).json({
-        error: `${error.message}`
-      });
-    }
+  let locationUrls = [];
 
-    if(data) {
-      const locationUrl = data.Location;
-      // store locationUrl to database
-    }
+  const entries = Object.entries(req.files);
 
-    return res.status(200).json({ data });
-  })
+  for (let index = 0; index < entries.length; index++) {
+    const fieldName = entries[index];
+    const file = fieldName[1][0];
+    const params = {
+      Bucket: process.env.BUCKET_NAME,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+      Key: `${req.user.id}/${file.fieldname}`,
+      ACL: 'public-read',
+    };
+    s3.upload(params, (error, data) => {
+      if (error) {
+        console.log(error);
+        return res.status(error.status).json({
+          error: `${error.message}`
+        });
+      }
+  
+      if(data) {
+        // store locationUrl in Database;
+        const locationUrl = data.Location;
+        locationUrls.push({ locationUrl, key: data.key });
+        if (locationUrls.length === entries.length) {
+          req.body.coverImg = locationUrls[0].locationUrl;
+          req.body.profileImg = locationUrls[1].locationUrl;
+
+          addImageUrls(req, res);
+        }
+      }
+    })
+  }
+
 };

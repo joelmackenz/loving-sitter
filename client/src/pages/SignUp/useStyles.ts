@@ -2,33 +2,17 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(() => ({
   root: {
-    minHeight: '100vh',
-    width: '100%',
-    '& .MuiInput-underline:before': {
-      borderBottom: '1.2px solid rgba(0, 0, 0, 0.2)',
-    },
-  },
-  authWrapper: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    flexDirection: 'column',
-    paddingTop: 23,
+    minHeight: '60vh',
+    marginTop: '6rem',
+    marginBottom: '3rem',
   },
   welcome: {
-    fontSize: '40px',
+    fontSize: 26,
     paddingBottom: 20,
     color: '#000000',
+    margin: '1rem 0',
     fontWeight: 700,
     fontFamily: "'Open Sans'",
-    textAlign: 'center',
-  },
-  loginInfo: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loginLink: {
-    color: 'red',
   },
 }));
 

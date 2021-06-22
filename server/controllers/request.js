@@ -49,7 +49,8 @@ exports.createRequest = (req, res) => {
   request.save((error, request) => {
     if (error) {
       return res.status(400).json({
-        error: "Unable to save request in DB"
+        error: "Unable to save request in DB",
+        message: error.message
       })
     }
 

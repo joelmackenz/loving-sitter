@@ -5,6 +5,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#fafafb',
     minHeight: '100vh',
     marginBottom: '3rem',
+    marginTop: '3.5rem',
     padding: '0px 16px',
     [theme.breakpoints.down('sm')]: {
       padding: '0px',
