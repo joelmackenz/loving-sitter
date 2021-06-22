@@ -4,6 +4,7 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import { FormikHelpers } from 'formik';
 import Typography from '@material-ui/core/Typography';
+import { Redirect, RouteComponentProps } from 'react-router-dom';
 
 import useStyles from './useStyles';
 import register from '../../helpers/APICalls/register';
@@ -12,12 +13,15 @@ import { useAuth } from '../../context/useAuthContext';
 import { useSnackBar } from '../../context/useSnackbarContext';
 import { useUser } from '../../context/useUserContext';
 import LandingNavbar from '../../components/LandingNavbar/LandingNavbar';
+import { CustomizedRouterState } from '../Login/Login';
 
-export default function Register(): JSX.Element {
+export default function Register({ location }: RouteComponentProps): JSX.Element {
   const classes = useStyles();
-  const { updateLoginContext } = useAuth();
+  const { updateLoginContext, loggedInUser } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
   const { userState } = useUser();
+
+  const state = location.state as CustomizedRouterState;
 
   const handleSubmit = (
     { firstName, lastName, email, password }: { firstName: string; lastName: string; password: string; email: string },
@@ -43,6 +47,18 @@ export default function Register(): JSX.Element {
       }
     });
   };
+
+  if (
+    state?.previousPath &&
+    loggedInUser?.email &&
+    state?.previousPath !== '/login' &&
+    state?.previousPath !== '/signup' &&
+    state?.previousPath !== '/'
+  ) {
+    return <Redirect to={state.previousPath} />;
+  } else if (loggedInUser?.email) {
+    return <Redirect to="/dashboard" />;
+  }
 
   return (
     <>
