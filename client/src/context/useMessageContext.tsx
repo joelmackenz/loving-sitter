@@ -30,9 +30,11 @@ export type DispatchMessages = (action: ActionMessages) => void;
 
 type ActionConvos =
   | { type: 'UPDATE_CONVOS'; conversations: IConversations[] }
-  | { type: 'ADD_NEW_MESSAGE'; activeConversation: string; message: IMessages };
+  | { type: 'ADD_ONLINE_USER'; recipientUserId: string }
+  | { type: 'REMOVE_OFFLINE_USER'; recipientUserId: string }
+  | { type: 'UPDATE_LATEST_MESSAGE'; activeConversation: string; message: string; createdAt: string };
 
-type DispatchConvos = (action: ActionConvos) => void;
+export type DispatchConvos = (action: ActionConvos) => void;
 
 interface IUseMessage {
   messages: { [key: string]: IMessages[] };
@@ -52,7 +54,11 @@ const messageReducer = (state: { [key: string]: IMessages[] }, action: ActionMes
       };
     case 'ADD_NEW_MESSAGE':
       const resultedArray = state[action.activeConversation];
-      resultedArray.push(action.message);
+      if (resultedArray) {
+        resultedArray.push(action.message);
+      } else {
+        console.error('activeConversation is undefined in resultedArray.');
+      }
       return {
         ...state,
         [action.activeConversation]: resultedArray,
@@ -66,6 +72,34 @@ const convoReducer = (state: IConversations[], action: ActionConvos) => {
   switch (action.type) {
     case 'UPDATE_CONVOS':
       return action.conversations;
+    case 'ADD_ONLINE_USER':
+      return state.map((convo) => {
+        if (convo.recipientUser.recipientUserId === action.recipientUserId) {
+          convo.recipientUser.online = true;
+          return convo;
+        } else {
+          return convo;
+        }
+      });
+    case 'REMOVE_OFFLINE_USER':
+      return state.map((convo) => {
+        if (convo.recipientUser.recipientUserId === action.recipientUserId) {
+          convo.recipientUser.online = false;
+          return convo;
+        } else {
+          return convo;
+        }
+      });
+    case 'UPDATE_LATEST_MESSAGE':
+      return state.map((convo) => {
+        if (convo.conversationId === action.activeConversation) {
+          convo.latestMessage.latestMessageText = action.message;
+          convo.latestMessage.createdAt = action.createdAt;
+          return convo;
+        } else {
+          return convo;
+        }
+      });
     default:
       return state;
   }

@@ -35,7 +35,7 @@ const ActiveChat: FC<Props> = (props) => {
   const classes = useStyles();
   const { updateSnackBarMessage } = useSnackBar();
   const { loggedInUser } = useAuth();
-  const { dispatchMessages, messages } = useMessage();
+  const { dispatchMessages, messages, dispatchConversations } = useMessage();
   const { activeConversation, conversation } = props;
 
   useEffect(() => {
@@ -67,6 +67,7 @@ const ActiveChat: FC<Props> = (props) => {
             recipientUser={conversation.recipientUser}
             conversationId={activeConversation}
             dispatchMessages={dispatchMessages}
+            dispatchConversations={dispatchConversations}
             currentUserId={loggedInUser?._id ? loggedInUser._id : ''}
           />
         </>

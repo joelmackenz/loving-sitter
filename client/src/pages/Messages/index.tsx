@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -6,6 +6,7 @@ import Sidebar from './Sidebar/Sidebar';
 import ActiveChat from './ActiveChat/ActiveChat';
 import { useSnackBar } from '../../context/useSnackbarContext';
 import { useMessage } from '../../context/useMessageContext';
+import { useSocket } from '../../context/useSocketContext';
 import { getAllConvosWithoutMessages } from '../../helpers/APICalls/conversation';
 
 export interface IConversations {
@@ -37,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Messages(): JSX.Element {
   const classes = useStyles();
   const { updateSnackBarMessage } = useSnackBar();
+  const { socket } = useSocket();
   const { dispatchConversations, conversations, activeConversation, handleActiveConversation } = useMessage();
 
   useEffect(() => {
@@ -49,6 +51,23 @@ export default function Messages(): JSX.Element {
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (socket === undefined) return;
+
+    socket.on('add-online-user', (recipientUserId) => {
+      dispatchConversations({ type: 'ADD_ONLINE_USER', recipientUserId });
+    });
+
+    socket.on('remove-offline-user', (recipientUserId) => {
+      dispatchConversations({ type: 'REMOVE_OFFLINE_USER', recipientUserId });
+    });
+
+    return () => {
+      socket.off('add-online-user');
+      socket.off('remove-offline-user');
+    };
+  }, [socket]);
 
   const conversation =
     conversations.length > 0
