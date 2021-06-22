@@ -10,6 +10,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { useMediaQuery } from '@material-ui/core';
 
 import useStyles from './useStyles';
+import { useUser } from '../../context/useUserContext';
 import authNavbarUseStyles from '../AuthNavbar/useStyles';
 
 const headersData = [
@@ -32,6 +33,7 @@ export default function LandingNavbar(): JSX.Element {
   const { toolbar, mobileIcon, mobileToolbar, drawerContainer, logo, linkItem, navbarDesktop, links } =
     authNavbarUseStyles();
   const { pathname } = useLocation();
+  const { dispatchUserContext } = useUser();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const isMobileView = useMediaQuery('(max-width:600px)');
 
@@ -46,7 +48,11 @@ export default function LandingNavbar(): JSX.Element {
         <MenuList className={links}>
           <MenuItem className={classes.menuItem}>
             <Typography className={classes.sitterPage}>
-              <Link to="#" className={` ${pathname === '/' ? classes.sitterLink : classes.otherSitterLink}`}>
+              <Link
+                to="/signup"
+                className={` ${pathname === '/' ? classes.sitterLink : classes.otherSitterLink}`}
+                onClick={() => dispatchUserContext({ type: 'SET_IS_DOG_SITTER' })}
+              >
                 BECOME A SITTER
               </Link>
             </Typography>

@@ -17,7 +17,7 @@ const DemoUser: FC<Props> = ({ submit }) => {
 
   const handleDemoClick = () => {
     setIsSubmitting(true);
-    const email = 'demoUser@email.com';
+    const email = 'test@user.com';
     const password = 'test1234';
     login(email, password).then((data) => {
       if (data.error) {

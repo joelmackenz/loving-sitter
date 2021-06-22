@@ -11,10 +11,10 @@ const logger = require("morgan");
 const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
 const s3Router = require("./routes/s3");
+const requestRouter = require('./routes/request');
+const notificationRouter = require("./routes/notification");
 const convoRouter = require("./routes/convo");
 const messageRouter = require("./routes/message");
-const requestRouter = require("./routes/request");
-const notificationRouter = require("./routes/notification");
 const profileRouter = require("./routes/profile");
 
 const { json, urlencoded } = express;
@@ -40,10 +40,10 @@ app.use(express.static(join(__dirname, "public")));
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
 app.use("/upload", s3Router);
-app.use("/convo", convoRouter);
-app.use("/message", messageRouter);
 app.use("/request", requestRouter);
 app.use("/notification", notificationRouter);
+app.use("/convo", convoRouter);
+app.use("/message", messageRouter);
 app.use("/profile", profileRouter);
 
 if (process.env.NODE_ENV === "production") {

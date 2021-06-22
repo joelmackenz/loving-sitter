@@ -57,7 +57,6 @@ export default function Login({ handleSubmit }: Props): JSX.Element {
             margin="normal"
             InputLabelProps={{
               shrink: true,
-              htmlFor: 'email',
             }}
             name="email"
             autoComplete="email"
