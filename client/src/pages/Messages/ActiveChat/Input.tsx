@@ -1,17 +1,19 @@
-import { useState, FC, FormEvent, ChangeEvent } from 'react';
+import { useState, FC, FormEvent, ChangeEvent, useEffect } from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import FilledInput from '@material-ui/core/FilledInput';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { useSocket } from '../../../context/useSocketContext';
 import { IRecipientUser } from '../ActiveChat/Header';
-import { DispatchMessages } from '../../../context/useMessageContext';
+import { DispatchMessages, DispatchConvos } from '../../../context/useMessageContext';
 import { addMessage } from '../../../helpers/APICalls/message';
 
 interface Props extends IRecipientUser {
   conversationId: string;
   currentUserId: string;
   dispatchMessages: DispatchMessages;
+  dispatchConversations: DispatchConvos;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -67,24 +69,75 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Input: FC<Props> = (props) => {
-  const { currentUserId, recipientUser, conversationId, dispatchMessages } = props;
+  const { currentUserId, recipientUser, conversationId, dispatchMessages, dispatchConversations } = props;
   const [text, setText] = useState<string>('');
   const classes = useStyles();
+  const { socket } = useSocket();
+
+  // dispatches the new message and latest Message
+  const dispatchNewMessage = (data: {
+    message: {
+      _id: string;
+      text: string;
+      author: string;
+      createdAt: string;
+      updatedAt: string;
+    };
+    activeConversation: string;
+  }) => {
+    dispatchMessages({ type: 'ADD_NEW_MESSAGE', activeConversation: data.activeConversation, message: data.message });
+    dispatchConversations({
+      type: 'UPDATE_LATEST_MESSAGE',
+      activeConversation: data.activeConversation,
+      message: data.message.text,
+      createdAt: data.message.createdAt,
+    });
+  };
+
+  useEffect(() => {
+    if (socket === undefined || currentUserId === '') return;
+
+    socket.on('new-message', dispatchNewMessage);
+
+    return () => {
+      socket.off('new-message', dispatchNewMessage);
+    };
+  }, [socket, currentUserId]);
+
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => setText(event.target.value);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (text === '') return;
+
     // add sender user info if posting to a brand new convo, so that the other user will have access to username, profile pic, etc.
+    const createdAt = new Date().toISOString();
     const message = {
       _id: Math.random().toString(),
       text: text,
       author: currentUserId,
-      createdAt: new Date().toISOString(),
+      createdAt,
       updatedAt: new Date().toISOString(),
     };
     window.scrollTo(0, document.body.scrollHeight);
-    dispatchMessages({ type: 'ADD_NEW_MESSAGE', activeConversation: conversationId, message });
+
+    const data = {
+      message,
+      activeConversation: conversationId,
+    };
+
+    // dispatch message to local context and dispatch latest message to conversation sidebar
+    dispatchNewMessage(data);
+
+    // emit message to recipient user
+    socket?.emit('new-message', {
+      message,
+      recipientUserId: recipientUser.recipientUserId,
+      currentUserId,
+      activeConversation: conversationId,
+    });
+
+    // add message to backend
     addMessage(conversationId, currentUserId, text).then((data) => {
       if (data.error) {
         console.error(data.error);
