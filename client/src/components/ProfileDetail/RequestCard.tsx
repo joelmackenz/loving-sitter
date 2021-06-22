@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { format } from 'date-fns';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
@@ -16,41 +16,6 @@ interface Props {
 }
 export default function RequestCard({ profile }: Props): JSX.Element {
   const classes = useStyles();
-  const currentDate = new Date();
-  const [startDate, setStartDate] = useState<Date | null>(currentDate);
-  const [endDate, setEndDate] = useState<Date | null>(currentDate);
-  const [serviceHours, setServiceHours] = useState<number>(0);
-  const [sendSuccess, setSendSuccess] = useState<boolean>(false);
-
-  const handleStartDate = (date: Date | null) => {
-    if (date?.getTime() !== undefined && startDate?.getTime() !== undefined && date?.getTime() < startDate?.getTime()) {
-      alert('Please select today or future day or future time');
-    } else {
-      setStartDate(date);
-    }
-  };
-
-  const handleEndDate = (date: Date | null) => {
-    if (date?.getTime() !== undefined && startDate?.getTime() !== undefined && date?.getTime() < startDate?.getTime()) {
-      alert('Please select today or future day or future time');
-    } else {
-      setEndDate(date);
-      //calculate service between start date and end date
-      timeDiffCalu(date, startDate);
-    }
-  };
-
-  const handleSubmit = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    setSendSuccess(true);
-  };
-
-  function timeDiffCalu(serviceEndDate: Date | null, serviceStartDate: Date | null) {
-    if (serviceEndDate !== null && serviceStartDate !== null) {
-      const diffInMilliSeconds = Math.abs(serviceEndDate.getTime() - serviceStartDate.getTime()) / 1000;
-      const hours = Math.floor(diffInMilliSeconds / 3600) % 24;
-    }
-  }
 
   return (
     <>
@@ -70,6 +35,9 @@ export default function RequestCard({ profile }: Props): JSX.Element {
             id="dropIn"
             name="dropIn"
             variant="outlined"
+            inputProps={{
+              min: format(new Date(), 'yyyy-MM-dd'),
+            }}
             // sadas
           />
           <TextField
@@ -91,7 +59,9 @@ export default function RequestCard({ profile }: Props): JSX.Element {
             id="dropOff"
             name="dropOff"
             variant="outlined"
-            // sadas
+            inputProps={{
+              min: format(new Date(), 'yyyy-MM-dd'),
+            }}
           />
           <TextField
             type="time"
