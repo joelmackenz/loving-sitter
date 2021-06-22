@@ -5,7 +5,7 @@ import { format, parseISO } from 'date-fns';
 
 import SenderBubble from './SenderBubble';
 import OtherUserBubble from './OtherUserBubble';
-import { IMessages } from './ActiveChat';
+import { IMessages } from '../../../context/useMessageContext';
 import { IRecipientUser } from './Header';
 
 interface Props extends IRecipientUser {

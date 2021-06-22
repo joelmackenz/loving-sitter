@@ -12,14 +12,6 @@ import { useSnackBar } from '../../../context/useSnackbarContext';
 import { useAuth } from '../../../context/useAuthContext';
 import { useMessage } from '../../../context/useMessageContext';
 
-export interface IMessages {
-  _id: string;
-  author: string;
-  text: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 interface Props {
   activeConversation: string;
   conversation?: IConversations | null;

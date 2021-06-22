@@ -3,6 +3,7 @@ import FormControl from '@material-ui/core/FormControl';
 import FilledInput from '@material-ui/core/FilledInput';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
+import { nanoid } from 'nanoid';
 
 import { IRecipientUser } from '../ActiveChat/Header';
 import { DispatchMessages } from '../../../context/useMessageContext';
@@ -77,11 +78,10 @@ const Input: FC<Props> = (props) => {
     if (text === '') return;
     // add sender user info if posting to a brand new convo, so that the other user will have access to username, profile pic, etc.
     const message = {
-      _id: Math.random().toString(),
+      _id: nanoid(),
       text: text,
       author: currentUserId,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
     };
     window.scrollTo(0, document.body.scrollHeight);
     dispatchMessages({ type: 'ADD_NEW_MESSAGE', activeConversation: conversationId, message });

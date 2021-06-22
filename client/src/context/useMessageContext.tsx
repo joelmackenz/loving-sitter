@@ -20,7 +20,6 @@ export interface IMessages {
   author: string;
   text: string;
   createdAt: string;
-  updatedAt: string;
 }
 
 type ActionMessages =

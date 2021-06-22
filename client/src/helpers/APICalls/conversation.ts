@@ -1,6 +1,6 @@
 import { FetchOptions } from '../../context/interface/FetchOptions';
 import { IConversations } from '../../pages/Messages';
-import { IMessages } from '../../pages/Messages/ActiveChat/ActiveChat';
+import { IMessages } from '../../context/useMessageContext';
 
 interface ApiData {
   error?: string;
