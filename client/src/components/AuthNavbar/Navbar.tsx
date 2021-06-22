@@ -1,4 +1,5 @@
 import { useState, useEffect, MouseEvent } from 'react';
+import { useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import Box from '@material-ui/core/Box';
 import Drawer from '@material-ui/core/Drawer';
@@ -17,15 +18,18 @@ import { useMediaQuery } from '@material-ui/core';
 
 import useStyles from './useStyles';
 import Logo from '../../Images/logo.png';
-import profileImage from '../../Images/775db5e79c5294846949f1f55059b53317f51e30.png';
 import { useAuth } from '../../context/useAuthContext';
 import { useSnackBar } from '../../context/useSnackbarContext';
+import { useSocket } from '../../context/useSocketContext';
+import { useUser, IUserContext } from '../../context/useUserContext';
+import { useMessage } from '../../context/useMessageContext';
+import { User } from '../../context/interface/User';
 import { getUnreadNotifications, updateReadStatus } from '../../helpers/APICalls/notification';
 import { Notification } from '../../interface/Notification';
 
 const headersData = [
   {
-    label: 'Profile',
+    label: 'Settings',
     href: '/settings',
   },
   {
@@ -55,17 +59,32 @@ interface ActiveNotification {
 interface NotificationProps {
   titleAnchor: HTMLElement | null;
   activeNotifications: ActiveNotification[];
+  userState: IUserContext;
+  loggedInUser?: User | null;
 }
 
-const NotificationPopper: React.FC<NotificationProps> = ({ titleAnchor, activeNotifications }) => {
+const NotificationPopper: React.FC<NotificationProps> = ({
+  titleAnchor,
+  activeNotifications,
+  userState,
+  loggedInUser,
+}) => {
   const classes = useStyles();
   return (
     <Popper open={Boolean(titleAnchor)} anchorEl={titleAnchor} className={classes.notificationsPopper}>
       <Box className={classes.notificationContainer}>
         {activeNotifications.length ? (
           activeNotifications.map((notification, index) => (
-            <Link to="/dashboard" className={clsx(classes.linkItem, classes.linkFlexContainer)} key={index}>
-              <Avatar src={profileImage} variant="square" className={clsx(classes.avatar, classes.avatarSize)} />
+            <Link
+              to={{ pathname: '/dashboard', state: { previousPath: '/dashboard' } }}
+              className={clsx(classes.linkItem, classes.linkFlexContainer)}
+              key={index}
+            >
+              <Avatar
+                src={userState.profileImg ? userState.profileImg : `https://robohash.org/${loggedInUser?.email}.png`}
+                variant="square"
+                className={clsx(classes.avatar, classes.avatarSize)}
+              />
               <Box>
                 <Typography className={classes.notificationTitle}>{notification.title}</Typography>
                 <Typography className={classes.notificationSubtitle} color="textSecondary">
@@ -90,8 +109,12 @@ const NotificationPopper: React.FC<NotificationProps> = ({ titleAnchor, activeNo
 export default function AuthNavbar(): JSX.Element {
   const classes = useStyles();
 
-  const { logout } = useAuth();
+  const location = useLocation();
+  const { logout, loggedInUser } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
+  const { userState, dispatchUserContext } = useUser();
+  const { conversations } = useMessage();
+  const { socket } = useSocket();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const isMobileView = useMediaQuery('(max-width:600px)');
@@ -137,6 +160,15 @@ export default function AuthNavbar(): JSX.Element {
   const handleLogout = () => {
     setProfilePopperAnchor(null);
     logout();
+    const currentUserId = loggedInUser?._id;
+    const otherUsersInConvo: string[] = [];
+    conversations.forEach((convo) => {
+      return otherUsersInConvo.push(convo.recipientUser.recipientUserId);
+    });
+    if (otherUsersInConvo.length === conversations.length) {
+      socket?.emit('logout', { currentUserId, otherUsersInConvo });
+    }
+    dispatchUserContext({ type: 'EMPTY_IMAGES' });
   };
 
   const handleToggleProfilePopper = (target: HTMLButtonElement) => {
@@ -150,7 +182,7 @@ export default function AuthNavbar(): JSX.Element {
   const displayDesktop = () => {
     return (
       <Toolbar className={classes.toolbar}>
-        <Link to="/dashboard">
+        <Link to={{ pathname: '/dashboard', state: { previousPath: location.pathname } }}>
           <img src={Logo} className={classes.logo} alt="logo" />
         </Link>
         <div className={classes.navbarDesktop}>{getMenuButtons()}</div>
@@ -172,7 +204,7 @@ export default function AuthNavbar(): JSX.Element {
           <div className={classes.drawerContainer}>{getDrawerChoices()}</div>
         </Drawer>
 
-        <Link to="/dashboard">
+        <Link to={{ pathname: '/dashboard', state: { previousPath: location.pathname } }}>
           <img src={Logo} className={classes.logo} alt="logo" />
         </Link>
       </Toolbar>
@@ -184,13 +216,19 @@ export default function AuthNavbar(): JSX.Element {
       setIsDrawerOpen(false);
       if (labelArg !== 'Logout') return;
       logout();
+      socket?.emit('logout', loggedInUser?._id);
+      dispatchUserContext({ type: 'EMPTY_IMAGES' });
     };
     return headersData.map(({ label, href }) => {
       return (
         <MenuItem key={label} onClick={() => handleNavMenuClick(label)}>
-          <Link className={classes.linkItem} to={href}>
-            {label}
-          </Link>
+          {label === 'Logout' ? (
+            <div className={classes.linkItem}>{label}</div>
+          ) : (
+            <Link className={classes.linkItem} to={{ pathname: href, state: { previousPath: location.pathname } }}>
+              {label}
+            </Link>
+          )}
         </MenuItem>
       );
     });
@@ -205,14 +243,17 @@ export default function AuthNavbar(): JSX.Element {
     >
       <MenuList autoFocusItem={Boolean(profilePopperAnchor)} onMouseLeave={() => setProfilePopperAnchor(null)}>
         <MenuItem onClick={() => setProfilePopperAnchor(null)}>
-          <Link className={classes.linkItem} to="/settings">
-            Profile
+          <Link className={classes.linkItem} to={{ pathname: '/settings', state: { previousPath: location.pathname } }}>
+            Settings
           </Link>
         </MenuItem>
-        <MenuItem onClick={() => setProfilePopperAnchor(null)}>
-          <Link className={classes.linkItem} onClick={handleLogout} to="/">
-            Logout
-          </Link>
+        <MenuItem
+          onClick={() => {
+            setProfilePopperAnchor(null);
+            handleLogout();
+          }}
+        >
+          <div className={classes.linkItem}>Logout</div>
         </MenuItem>
       </MenuList>
     </Popper>
@@ -235,21 +276,32 @@ export default function AuthNavbar(): JSX.Element {
             </div>
           </MenuItem>
           <MenuItem>
-            <Link to={`/myjobs`} className={classes.linkItem}>
+            <Link to={{ pathname: '/myjobs', state: { previousPath: location.pathname } }} className={classes.linkItem}>
               My Jobs
             </Link>
           </MenuItem>
           <MenuItem>
-            <Link to={`/messages`} className={classes.linkItem}>
+            <Link
+              to={{ pathname: '/messages', state: { previousPath: location.pathname } }}
+              className={classes.linkItem}
+            >
               Messages
             </Link>
           </MenuItem>
         </MenuList>
         <IconButton onClick={(e) => handleToggleProfilePopper(e.currentTarget)}>
-          <Avatar src={profileImage} className={classes.avatar} />
+          <Avatar
+            src={userState.profileImg ? userState.profileImg : `https://robohash.org/${loggedInUser?.email}.png`}
+            className={classes.avatar}
+          />
         </IconButton>
         {profilePopper}
-        <NotificationPopper titleAnchor={notificationsAnchor} activeNotifications={notifications} />
+        <NotificationPopper
+          userState={userState}
+          loggedInUser={loggedInUser}
+          titleAnchor={notificationsAnchor}
+          activeNotifications={notifications}
+        />
       </>
     );
   };

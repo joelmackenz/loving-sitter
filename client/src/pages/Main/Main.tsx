@@ -5,15 +5,22 @@ import InputLabel from '@material-ui/core/InputLabel';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import Box from '@material-ui/core/Box';
+import { RouteComponentProps, Redirect } from 'react-router-dom';
 
 import mainPagePhoto from '../../Images/mainPagePhoto.jpg';
 import useStyles from './useStyles';
 import LandingNavbar from '../../components/LandingNavbar/LandingNavbar';
+import { useAuth } from '../../context/useAuthContext';
+import { CustomizedRouterState } from '../Login/Login';
 
-export default function Main(): JSX.Element {
+export default function Main({ location }: RouteComponentProps): JSX.Element {
   const [dropInDate, setDropInDate] = useState<Date | null>(null);
   const [dropOffDate, setDropOffDate] = useState<Date | null>(null);
   const classes = useStyles();
+
+  const { loggedInUser } = useAuth();
+
+  const state = location.state as CustomizedRouterState;
 
   const handleDropInDateChange = (date: Date | null) => {
     setDropInDate(date);
@@ -22,6 +29,18 @@ export default function Main(): JSX.Element {
   const handleDropOffDateChagne = (date: Date | null) => {
     setDropOffDate(date);
   };
+
+  if (
+    state?.previousPath &&
+    loggedInUser?.email &&
+    state?.previousPath !== '/login' &&
+    state?.previousPath !== '/signup' &&
+    state?.previousPath !== '/'
+  ) {
+    return <Redirect to={state.previousPath} />;
+  } else if (loggedInUser?.email) {
+    return <Redirect to="/dashboard" />;
+  }
 
   return (
     <>

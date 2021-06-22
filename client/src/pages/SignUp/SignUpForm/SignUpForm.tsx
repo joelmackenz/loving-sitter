@@ -12,13 +12,15 @@ import DemoUser from '../../../components/DemoUser/DemoUser';
 interface Props {
   handleSubmit: (
     {
-      username,
+      firstName,
+      lastName,
       email,
       password,
     }: {
       email: string;
       password: string;
-      username: string;
+      firstName: string;
+      lastName: string;
     },
     {
       setStatus,
@@ -26,7 +28,8 @@ interface Props {
     }: FormikHelpers<{
       email: string;
       password: string;
-      username: string;
+      firstName: string;
+      lastName: string;
     }>,
   ) => void;
 }
@@ -39,10 +42,12 @@ const SignUpForm = ({ handleSubmit }: Props): JSX.Element => {
       initialValues={{
         email: '',
         password: '',
-        username: '',
+        firstName: '',
+        lastName: '',
       }}
       validationSchema={Yup.object().shape({
-        username: Yup.string().required('Username is required').max(40, 'Username is too long'),
+        firstName: Yup.string().required('First Name is required').max(40, 'First Name is too long'),
+        lastName: Yup.string().required('Last Name is required').max(40, 'Last Name is too long'),
         email: Yup.string().required('Email is required').email('Email is not valid'),
         password: Yup.string()
           .required('Password is required')
@@ -53,25 +58,45 @@ const SignUpForm = ({ handleSubmit }: Props): JSX.Element => {
     >
       {({ handleSubmit, handleChange, values, touched, errors, isSubmitting }) => (
         <form onSubmit={handleSubmit} className={classes.form} noValidate>
-          <InputLabel className={classes.inputLabel} htmlFor="username">
-            Username
+          <InputLabel className={classes.inputLabel} htmlFor="firstName">
+            First Name
           </InputLabel>
           <TextField
-            id="username"
+            id="firstName"
             fullWidth
             margin="normal"
             InputLabelProps={{
               shrink: true,
             }}
-            name="username"
-            autoComplete="username"
-            placeholder="Create a username"
+            name="firstName"
+            autoComplete="John"
             autoFocus
-            helperText={touched.username ? errors.username : ''}
-            error={touched.username && Boolean(errors.username)}
-            value={values.username}
-            variant="outlined"
+            helperText={touched.firstName ? errors.firstName : ''}
+            error={touched.firstName && Boolean(errors.firstName)}
+            value={values.firstName}
             onChange={handleChange}
+            variant="outlined"
+            placeholder="Your First name"
+          />
+          <InputLabel className={classes.inputLabel} htmlFor="lastName">
+            Last Name
+          </InputLabel>
+          <TextField
+            id="lastName"
+            fullWidth
+            margin="normal"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            name="lastName"
+            autoComplete="John"
+            autoFocus
+            helperText={touched.lastName ? errors.lastName : ''}
+            error={touched.lastName && Boolean(errors.lastName)}
+            value={values.lastName}
+            onChange={handleChange}
+            variant="outlined"
+            placeholder="Your Last name"
           />
           <InputLabel className={classes.inputLabel} htmlFor="email">
             Email

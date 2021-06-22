@@ -1,20 +1,25 @@
 const express = require("express");
 const router = express.Router();
 
-const auth = require("../middleware/auth");
+const protect = require('../middleware/auth');
+const { validateCreateProfile } = require('../validate');
+const { 
+  createProfile,
+  getOneProfile,
+  getAllProfiles,
+  getProfilesBySearch,
+  getProfilesByDay
+} = require('../controllers/profile');
 
-const profileController = require("../controllers/profile");
 
-router.post("/:id", auth, profileController.createProfile);
+router.post("/createorupdate", validateCreateProfile, protect, createProfile);
 
-router.put("/:id", auth, profileController.updateProfile);
+router.get("/one", protect, getOneProfile);
 
-router.get("/:id", auth, profileController.getOneProfile);
+router.get("/", protect, getAllProfiles);
 
-router.get("/", auth, profileController.getAllProfiles);
+router.get("/search/city/:search", protect, getProfilesBySearch);
 
-router.get("/search/city/:search", auth, profileController.getProfilesBySearch);
-
-router.get("/search/day/:search", auth, profileController.getProfilesByDay);
+router.get("/search/day/:search", protect, getProfilesByDay);
 
 module.exports = router;

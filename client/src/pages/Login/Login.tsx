@@ -4,6 +4,7 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import { FormikHelpers } from 'formik';
 import Typography from '@material-ui/core/Typography';
+import { Redirect, RouteComponentProps } from 'react-router-dom';
 
 import useStyles from './useStyles';
 import login from '../../helpers/APICalls/login';
@@ -12,10 +13,16 @@ import { useAuth } from '../../context/useAuthContext';
 import { useSnackBar } from '../../context/useSnackbarContext';
 import LandingNavbar from '../../components/LandingNavbar/LandingNavbar';
 
-export default function Login(): JSX.Element {
+export interface CustomizedRouterState {
+  previousPath?: string;
+}
+
+export default function Login({ location }: RouteComponentProps): JSX.Element {
   const classes = useStyles();
-  const { updateLoginContext } = useAuth();
+  const { updateLoginContext, loggedInUser } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
+
+  const state = location.state as CustomizedRouterState;
 
   const handleSubmit = (
     { email, password }: { email: string; password: string },
@@ -36,6 +43,18 @@ export default function Login(): JSX.Element {
       }
     });
   };
+
+  if (
+    state?.previousPath &&
+    loggedInUser?.email &&
+    state?.previousPath !== '/login' &&
+    state?.previousPath !== '/signup' &&
+    state?.previousPath !== '/'
+  ) {
+    return <Redirect to={state.previousPath} />;
+  } else if (loggedInUser?.email) {
+    return <Redirect to="/dashboard" />;
+  }
 
   return (
     <>

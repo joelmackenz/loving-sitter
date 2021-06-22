@@ -7,7 +7,7 @@ import logoutAPI from '../helpers/APICalls/logout';
 
 interface IAuthContext {
   loggedInUser: User | null | undefined;
-  updateLoginContext: (data: AuthApiDataSuccess) => void;
+  updateLoginContext: (data: AuthApiDataSuccess, redirect?: string) => void;
   logout: () => void;
 }
 
@@ -23,9 +23,11 @@ export const AuthProvider: FunctionComponent = ({ children }): JSX.Element => {
   const history = useHistory();
 
   const updateLoginContext = useCallback(
-    (data: AuthApiDataSuccess) => {
+    (data: AuthApiDataSuccess, redirect?: string | undefined) => {
       setLoggedInUser(data.user);
-      history.push('/dashboard');
+      if (redirect !== undefined) {
+        history.push(redirect);
+      }
     },
     [history],
   );
@@ -34,8 +36,11 @@ export const AuthProvider: FunctionComponent = ({ children }): JSX.Element => {
     // needed to remove token cookie
     await logoutAPI()
       .then(() => {
-        history.push('/login');
         setLoggedInUser(null);
+        history.push({
+          pathname: '/login',
+          state: { previousPath: location.pathname },
+        });
       })
       .catch((error) => console.error(error));
   }, [history]);
@@ -46,17 +51,18 @@ export const AuthProvider: FunctionComponent = ({ children }): JSX.Element => {
       await loginWithCookies().then((data: AuthApiData) => {
         if (data.success) {
           updateLoginContext(data.success);
-          history.push('/dashboard');
         } else {
           // don't need to provide error feedback as this just means user doesn't have saved cookies or the cookies have not been authenticated on the backend
           setLoggedInUser(null);
-          history.push('/login');
+          history.push({
+            pathname: '/login',
+            state: { previousPath: location.pathname },
+          });
         }
       });
     };
     checkLoginWithCookies();
   }, [updateLoginContext, history]);
-
   return <AuthContext.Provider value={{ loggedInUser, updateLoginContext, logout }}>{children}</AuthContext.Provider>;
 };
 
