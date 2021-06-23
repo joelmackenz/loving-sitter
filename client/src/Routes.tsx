@@ -2,7 +2,6 @@ import { Route, Redirect, Switch } from 'react-router-dom';
 
 import Login from './pages/Login/Login';
 import Signup from './pages/SignUp/SignUp';
-import Dashboard from './pages/Dashboard/Dashboard';
 import Settings from './pages/Settings/Settings';
 import Messages from './pages/Messages/index';
 import ProtectedRoute from './ProtectedRoute';

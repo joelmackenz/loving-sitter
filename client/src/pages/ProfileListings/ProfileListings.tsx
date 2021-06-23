@@ -8,6 +8,8 @@ import Snackbar from '@material-ui/core/Snackbar';
 import SearchIcon from '@material-ui/icons/Search';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import CloseIcon from '@material-ui/icons/Close';
+
+import { useSnackBar } from '../../context/useSnackbarContext';
 import DateSelectPopover from './DaySelectPopover';
 import ProfileCard from './ProfileCard';
 import Alert from './alert';
@@ -31,6 +33,7 @@ export interface Profile {
 export default function ProfileListings(): JSX.Element {
   const classes = useStyles();
 
+  const { updateSnackBarMessage } = useSnackBar();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [calendarOpen, setCalendarOpen] = useState<true | false>(false);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
@@ -65,6 +68,8 @@ export default function ProfileListings(): JSX.Element {
       if (users?.length) {
         setDisplayedProfiles(users.slice(0, 6));
         setProfiles(users);
+      } else {
+        updateSnackBarMessage('No Dog Sitter Found!');
       }
     });
   };
@@ -85,9 +90,10 @@ export default function ProfileListings(): JSX.Element {
     } else {
       setDisplayedProfiles([]);
       const data = await searchProfilesByCity(search);
-      const users: any = data.allUsers;
-
-      setDisplayedProfiles(users);
+      const users = data.allUsers;
+      if (users?.length) {
+        setDisplayedProfiles(users);
+      }
     }
   };
 
