@@ -29,7 +29,7 @@ export default function RequestCard({ profile }: Props): JSX.Element {
             Drop In
           </InputLabel>
         </Grid>
-        <Grid item sm={12} xs={12} className={classes.inputFieldsContainer}>
+        <Grid item xs={12} className={classes.inputFieldsContainer}>
           <TextField
             type="date"
             id="dropIn"
@@ -53,7 +53,7 @@ export default function RequestCard({ profile }: Props): JSX.Element {
             Drop Off
           </InputLabel>
         </Grid>
-        <Grid item sm={12} xs={12} className={classes.inputFieldsContainer}>
+        <Grid item xs={12} className={classes.inputFieldsContainer}>
           <TextField
             type="date"
             id="dropOff"

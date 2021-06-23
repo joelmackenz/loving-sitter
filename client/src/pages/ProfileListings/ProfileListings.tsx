@@ -54,7 +54,6 @@ export default function ProfileListings(): JSX.Element {
 
   const initializeProfiles = () => {
     getProfiles().then((data) => {
-      console.log(data);
       const profileList: any = [];
       const users = data.users;
       if (users) {
