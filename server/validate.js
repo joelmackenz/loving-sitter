@@ -45,9 +45,6 @@ exports.validateCreateProfile = [
 ]
 
 exports.validateCreateRequest = [
-  check("user_id")
-    .isMongoId()
-    .withMessage("User Id must be valid mongo Object Id"),
   check("sitter_id")
     .isMongoId()
     .withMessage("User Id must be valid mongo Object Id"),

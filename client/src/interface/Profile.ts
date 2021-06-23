@@ -1,4 +1,3 @@
-import { User } from './User';
 import { IUserContext } from '../context/useUserContext';
 
 export interface IProfile extends IUserContext {

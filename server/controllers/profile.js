@@ -107,6 +107,40 @@ exports.createProfile = asyncHandler(async (req, res, next) => {
 
 })
 
+exports.getOneFullUserProfile = asyncHandler(async (req, res, next) => {
+  const userId = req.params.userId;
+  // validate id
+  if (!ObjectId.isValid(userId)) {
+    return res.status(400).send(Error("User ID is invalid."));
+  };
+
+  try {
+    const user = await User.findOne({
+      _id: userId,
+      isDogSitter: { $eq: true },
+      profileId: {
+          $exists: true,
+      },
+  })
+      .select("firstName lastName email isDogSitter")
+      .populate({
+          path: "profileId",
+          select: "-__v -availableDays"
+      });
+
+      return res.status(400).json({
+        success: 'Retrieved successfully',
+        user
+      })
+
+  } catch (error) {
+    res.status(500).json({
+      error: error.message
+    })
+  }
+
+})
+
 
 // @route GET /profile/
 exports.getOneProfile = asyncHandler(async (req, res, next) => {

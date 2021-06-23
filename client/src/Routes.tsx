@@ -23,7 +23,7 @@ const Routes = (): JSX.Element => {
         <ProtectedRoute exact path="/dashboard" component={ProfileListings} />
         <ProtectedRoute exact path="/settings" component={Settings} />
         <ProtectedRoute exact path="/messages" component={Messages} />
-        <ProtectedRoute path="/dashboard/:profileId" component={ProfileDetails} />
+        <ProtectedRoute path="/dashboard/:userId" component={ProfileDetails} />
         <Route path="*">
           <Redirect to="/login" />
         </Route>

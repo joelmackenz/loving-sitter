@@ -21,7 +21,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ profile }) => {
 
   return (
     <Link
-      to={{ pathname: `/dashboard/${profile._id}`, state: { previousPath: location.pathname } }}
+      to={{ pathname: `/dashboard/${profile._id}`, state: { previousPath: location.pathname, profile } }}
       className={classes.cardLinkContainer}
     >
       <Card className={classes.card} raised={true}>
