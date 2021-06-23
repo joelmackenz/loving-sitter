@@ -117,19 +117,6 @@ export default function ProfileListings(): JSX.Element {
     }
   };
 
-  const profileCardGrid = (
-    <Grid container className={classes.profilesContainer}>
-      {displayedProfiles.map((profile) => (
-        <Grid item key={profile._id}>
-          <ProfileCard profile={profile} />
-        </Grid>
-      ))}
-      <Snackbar open={snackbarOpen} autoHideDuration={2000} onClose={handleSnackbarClose}>
-        <Alert severity="info">No more users found</Alert>
-      </Snackbar>
-    </Grid>
-  );
-
   useEffect(() => {
     initializeProfiles();
   }, []);
@@ -173,7 +160,16 @@ export default function ProfileListings(): JSX.Element {
           </Grid>
         </Grid>
       </Grid>
-      {profileCardGrid}
+      <Grid container className={classes.profilesContainer}>
+        {displayedProfiles.map((profile) => (
+          <Grid item key={profile._id}>
+            <ProfileCard profile={profile} />
+          </Grid>
+        ))}
+        <Snackbar open={snackbarOpen} autoHideDuration={2000} onClose={handleSnackbarClose}>
+          <Alert severity="info">No more users found</Alert>
+        </Snackbar>
+      </Grid>
       {!search && daySearchDisplay === 'any' && (
         <Button onClick={handleShowMore} variant="outlined" className={classes.showMore}>
           Show More
