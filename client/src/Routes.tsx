@@ -2,13 +2,14 @@ import { Route, Redirect, Switch } from 'react-router-dom';
 
 import Login from './pages/Login/Login';
 import Signup from './pages/SignUp/SignUp';
+import ProfileListings from './pages/ProfileListings/ProfileListings';
+import ProfileDetails from './pages/ProfileDetails/ProfileDetails';
 import Settings from './pages/Settings/Settings';
 import Messages from './pages/Messages/index';
 import ProtectedRoute from './ProtectedRoute';
 import Main from './pages/Main/Main';
 import AuthNavbar from './components/AuthNavbar/Navbar';
 import { useAuth } from './context/useAuthContext';
-import ProfileListings from './pages/ProfileListings/ProfileListings';
 
 const Routes = (): JSX.Element => {
   const { loggedInUser } = useAuth();
@@ -22,6 +23,7 @@ const Routes = (): JSX.Element => {
         <ProtectedRoute exact path="/dashboard" component={ProfileListings} />
         <ProtectedRoute exact path="/settings" component={Settings} />
         <ProtectedRoute exact path="/messages" component={Messages} />
+        <ProtectedRoute path="/dashboard/:profileId" component={ProfileDetails} />
         <Route path="*">
           <Redirect to="/login" />
         </Route>

@@ -121,6 +121,9 @@ const useStyles = makeStyles({
     margin: '1rem',
     marginBottom: '2rem',
   },
+  cardLinkContainer: {
+    textDecoration: 'none',
+  },
 });
 
 export default useStyles;
