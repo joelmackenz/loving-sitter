@@ -11,6 +11,7 @@ import login from '../../helpers/APICalls/login';
 import LoginForm from './LoginForm/LoginForm';
 import { useAuth } from '../../context/useAuthContext';
 import { useSnackBar } from '../../context/useSnackbarContext';
+import { useUser } from '../../context/useUserContext';
 import LandingNavbar from '../../components/LandingNavbar/LandingNavbar';
 
 export interface CustomizedRouterState {
@@ -21,6 +22,7 @@ export default function Login({ location }: RouteComponentProps): JSX.Element {
   const classes = useStyles();
   const { updateLoginContext, loggedInUser } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
+  const { dispatchUserContext } = useUser();
 
   const state = location.state as CustomizedRouterState;
 
@@ -29,11 +31,17 @@ export default function Login({ location }: RouteComponentProps): JSX.Element {
     { setSubmitting }: FormikHelpers<{ email: string; password: string }>,
   ) => {
     login(email, password).then((data) => {
+      console.log(data);
       if (data.error) {
         setSubmitting(false);
-        updateSnackBarMessage(data.error.message);
+        if (data.error.message) {
+          updateSnackBarMessage(data.error.message);
+        }
       } else if (data.success) {
         updateLoginContext(data.success);
+        if (data.success.user.profileImg) {
+          dispatchUserContext({ type: 'UPLOAD_PROFILE', profileImg: data.success.user.profileImg });
+        }
       } else {
         // should not get here from backend but this catch is for an unknown issue
         console.error({ data });

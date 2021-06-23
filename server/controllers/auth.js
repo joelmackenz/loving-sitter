@@ -55,7 +55,12 @@ exports.registerUser = asyncHandler(async (req, res, next) => {
 exports.loginUser = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+  const user = 
+    await User.findOne({ email })
+    .populate({
+      path: "profileId",
+      select: "profileImg"
+    });
 
   if (user && (await user.matchPassword(password))) {
     const token = generateToken(user._id);
@@ -74,6 +79,7 @@ exports.loginUser = asyncHandler(async (req, res, next) => {
           lastName: user.lastName,
           email: user.email,
           isDogSitter: user.isDogSitter,
+          profileImg: user.profileId?.profileImg
         }
       }
     });
@@ -87,13 +93,19 @@ exports.loginUser = asyncHandler(async (req, res, next) => {
 // @desc Get user data with valid token
 // @access Private
 exports.loadUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.user.id);
+  const user =
+    await User.findById(req.user.id)
+      .select("firstName lastName email isDogSitter")
+      .populate({
+        path: "profileId",
+        select: "profileImg"
+      });
 
   if (!user) {
     res.status(401);
     throw new Error("Not authorized");
   }
-
+  
   res.status(200).json({
     success: {
       user: {
@@ -102,6 +114,7 @@ exports.loadUser = asyncHandler(async (req, res, next) => {
         lastName: user.lastName,
         email: user.email,
         isDogSitter: user.isDogSitter,
+        profileImg: user.profileId?.profileImg
       }
     }
   });

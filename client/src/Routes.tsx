@@ -9,6 +9,7 @@ import ProtectedRoute from './ProtectedRoute';
 import Main from './pages/Main/Main';
 import AuthNavbar from './components/AuthNavbar/Navbar';
 import { useAuth } from './context/useAuthContext';
+import ProfileListings from './pages/ProfileListings/ProfileListings';
 
 const Routes = (): JSX.Element => {
   const { loggedInUser } = useAuth();
@@ -19,7 +20,7 @@ const Routes = (): JSX.Element => {
         <Route exact path="/" component={Main} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/signup" component={Signup} />
-        <ProtectedRoute exact path="/dashboard" component={Dashboard} />
+        <ProtectedRoute exact path="/dashboard" component={ProfileListings} />
         <ProtectedRoute exact path="/settings" component={Settings} />
         <ProtectedRoute exact path="/messages" component={Messages} />
         <Route path="*">

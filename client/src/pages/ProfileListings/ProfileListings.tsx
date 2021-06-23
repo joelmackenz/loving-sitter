@@ -15,11 +15,18 @@ import useStyles from './useStyles';
 import getProfiles from '../../helpers/APICalls/getProfiles';
 import searchProfilesByCity from '../../helpers/APICalls/searchProfilesByCity';
 import searchProfilesByDay from '../../helpers/APICalls/searchProfilesByDay';
+import Spinner from '../../components/Spinner/Spinner';
 
-import { User } from '../../interface/User';
+import { IProfile } from '../../interface/Profile';
 
-// Temporary user data to show functionality
-import { Profile } from '../../interface/Profile';
+export interface Profile {
+  firstName: string;
+  lastName: string;
+  isDogSitter: boolean;
+  email: string;
+  _id: string;
+  profileId: IProfile;
+}
 
 export default function ProfileListings(): JSX.Element {
   const classes = useStyles();
@@ -54,19 +61,11 @@ export default function ProfileListings(): JSX.Element {
 
   const initializeProfiles = () => {
     getProfiles().then((data) => {
-      const profileList: any = [];
-      const users = data.users;
-      if (users) {
-        for (let i = 0; i < users.length; i++) {
-          if (users[i].profile) {
-            profileList.push(users[i].profile);
-            setDisplayedProfiles(profileList.slice(0, 6));
-          } else {
-            break;
-          }
-        }
+      const users = data.allUsers;
+      if (users?.length) {
+        setDisplayedProfiles(users.slice(0, 6));
+        setProfiles(users);
       }
-      setProfiles(profileList);
     });
   };
 
@@ -84,18 +83,11 @@ export default function ProfileListings(): JSX.Element {
     if (!search) {
       initializeProfiles();
     } else {
-      const searchResults: Profile[] = [];
       setDisplayedProfiles([]);
       const data = await searchProfilesByCity(search);
-      const users: any = data.users;
-      if (users) {
-        users.map((user: User) => {
-          if (user.profile) {
-            searchResults.push(user.profile);
-          }
-        });
-        setDisplayedProfiles(searchResults);
-      }
+      const users: any = data.allUsers;
+
+      setDisplayedProfiles(users);
     }
   };
 
@@ -103,27 +95,30 @@ export default function ProfileListings(): JSX.Element {
     if (!selectedDays) {
       initializeProfiles();
     } else {
-      const searchResults: Profile[] = [];
       const data = await searchProfilesByDay(selectedDays);
-      const users: any = data.users;
-      if (users) {
-        users.map((user: User) => {
-          if (user.profile) {
-            searchResults.push(user.profile);
-          }
-        });
-        setDisplayedProfiles(searchResults);
+      const users = data.allUsers;
+      if (users?.length) {
+        setDisplayedProfiles(users);
       }
     }
   };
 
   const profileCardGrid = (
     <Grid container className={classes.profilesContainer}>
-      {displayedProfiles.map((profile) => (
-        <Grid item key={profile._id}>
-          <ProfileCard profile={profile} />
-        </Grid>
-      ))}
+      {displayedProfiles.length ? (
+        displayedProfiles.map((user) => {
+          if (!user.profileId) {
+            return <p>No Results Found.</p>;
+          }
+          return (
+            <Grid item key={user._id}>
+              <ProfileCard profile={user} />
+            </Grid>
+          );
+        })
+      ) : (
+        <Spinner />
+      )}
       <Snackbar open={snackbarOpen} autoHideDuration={2000} onClose={handleSnackbarClose}>
         <Alert severity="info">No more users found</Alert>
       </Snackbar>

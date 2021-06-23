@@ -176,27 +176,23 @@ exports.getAllProfiles = asyncHandler(async (req, res, next) => {
         ? req.body.numberOfUsers + 1
         : 100;
     try {
-        const users = [];
         const allUsers = await User.find({
             _id: { $ne: req.user.id },
-            profile: {
+            isDogSitter: { $eq: true },
+            profileId: {
                 $exists: true,
             },
         })
+            .select("firstName lastName email isDogSitter")
             .limit(numberOfUsers)
             .populate({
-                path: "profile",
-                match: { isDogSitter: { $eq: true } },
+                path: "profileId",
+                select: "-__v -availableDays"
             });
-        // Sets users to array of users with populated profiles
-        allUsers.map((user) => {
-            if (user.profile) {
-                users.push(user);
-            }
-        });
         // Returns only users with profiles
         res.status(200).json({
-            users,
+            success: "Retrieved Successfully",
+            allUsers
         });
     } catch (e) {
         res.status(500);
@@ -209,28 +205,25 @@ exports.getAllProfiles = asyncHandler(async (req, res, next) => {
 exports.getProfilesBySearch = asyncHandler(async (req, res, next) => {
     const search = req.params.search;
     try {
-        const foundUsers = await User.find({
+        const allUsers = await User.find({
             _id: { $ne: req.user.id },
-            profile: {
+            isDogSitter: { $eq: true },
+            profileId: {
                 $exists: true,
             },
-        }).populate({
-            path: "profile",
-            match: { isDogSitter: { $eq: true } },
-        });
-        // Sets users to array of users with populated profiles
-        const users = [];
-        foundUsers.map((user) => {
-            if (user.profile) {
-                const city = user.profile.address.city.toLowerCase();
-                if (city.includes(search)) {
-                    users.push(user);
-                }
-            }
-        });
+        })
+          .select("firstName lastName email isDogSitter")
+          .populate({
+              path: "profileId",
+              select: "-__v -availableDays",
+              match: {
+                city: search
+              }
+          });
+
         // Returns only users with profiles
         res.status(200).json({
-            users,
+          allUsers,
         });
     } catch (e) {
         res.status(500);
@@ -241,33 +234,27 @@ exports.getProfilesBySearch = asyncHandler(async (req, res, next) => {
 // @route GET /profile/search/day/:search
 // @descr Gets an array of users who have profiles based on given availability days
 exports.getProfilesByDay = asyncHandler(async (req, res, next) => {
-    const search = req.params.search.split(",");
+    const search = req.params.search;
     try {
-        const foundUsers = await User.find({
+        const allUsers = await User.find({
             _id: { $ne: req.user.id },
-            profile: {
-                $exists: true,
+            isDogSitter: { $eq: true },
+            profileId: {
+              $exists: true,
             },
-        }).populate({
-            path: "profile",
-            match: { isDogSitter: { $eq: true } },
-        });
-        // Sets users to array of users whos availability includes a day in the search array
-        const users = [];
-        foundUsers.map((user) => {
-            if (user.profile) {
-                const availableDays = user.profile.availableDates;
-                search.map((day) => {
-                    if (availableDays.includes(day)) {
-                        users.push(user);
-                        foundUsers.pop(user);
-                    }
-                });
+        })
+          .select("firstName lastName email isDogSitter")
+          .populate({
+            path: "profileId",
+            select: "-__v",
+            match: {
+              availableDays: { $in: search }
             }
         });
+
         // Returns only users with profiles
         res.status(200).json({
-            users,
+          allUsers
         });
     } catch (e) {
         res.status(500);

@@ -4,6 +4,7 @@ export interface User {
   firstName: string;
   lastName: string;
   isDogSitter: boolean;
+  profileImg?: string;
 }
 
 export interface SearchUsersApiData {
