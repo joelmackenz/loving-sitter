@@ -22,6 +22,14 @@ const requestSchema = new Schema({
     type: Date,
     required: true
   },
+  start_time: {
+    type: String,
+    required: true
+  },
+  end_time: {
+    type: String,
+    required: true
+  },
   accepted: {
     type: Boolean,
     default: false

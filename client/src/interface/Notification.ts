@@ -4,8 +4,10 @@ export interface Notification {
   readStatus: boolean;
   title: string;
   type: 'VIEWED_ACCOUNT' | 'SERVICE_REQUEST' | 'SERVICE_ACCEPTED' | 'SERVICE_DECLINED';
-  user: string | object;
-  _id: string;
+  userReceiverId: string;
+  userCreatorId: string;
+  _id?: string;
+  requestId?: string;
 }
 
 export interface NotificationApiData {

@@ -11,8 +11,10 @@ import * as Yup from 'yup';
 
 import useStyles from './useStyles';
 import { Profile } from '../../pages/ProfileListings/ProfileListings';
+import { createNotification, ICreateNotification } from '../../helpers/APICalls/notification';
 import { useSnackBar } from '../../context/useSnackbarContext';
 import { useAuth } from '../../context/useAuthContext';
+import { useSocket } from '../../context/useSocketContext';
 import { createRequest } from '../../helpers/APICalls/request';
 
 interface Props {
@@ -22,27 +24,66 @@ interface Props {
 interface FormValues {
   start_date: string;
   end_date: string;
-  dropInTime: string;
-  dropOffTime: string;
+  start_time: string;
+  end_time: string;
 }
+
+const differenceBetweenTwoTimes = (startValue: any, endValue: any): string => {
+  const start = startValue.split(':');
+  const end = endValue.split(':');
+  const startDate = new Date(0, 0, 0, start[0], start[1], 0);
+  const endDate = new Date(0, 0, 0, end[0], end[1], 0);
+  let diff = endDate.getTime() - startDate.getTime();
+  const hours = Math.floor(diff / 1000 / 60 / 60);
+  diff -= hours * 1000 * 60 * 60;
+  const minutes = Math.floor(diff / 1000 / 60);
+
+  return (hours < 9 ? '0' : '') + hours + ' hr' + ' ' + (minutes < 9 ? '0' : '') + minutes + ' min';
+};
 
 export default function RequestCard({ profile }: Props): JSX.Element {
   const classes = useStyles();
   const { updateSnackBarMessage } = useSnackBar();
   const { loggedInUser } = useAuth();
+  const { socket } = useSocket();
 
   const handleSubmit = (values: FormValues, { setSubmitting }: FormikHelpers<FormValues>): void => {
-    const { start_date, end_date } = values;
     const user_id = loggedInUser?._id ? loggedInUser._id : '';
     const sitter_id = profile._id;
+    const { start_time, end_time } = values;
 
-    createRequest({ start_date, end_date, sitter_id, user_id }).then((data) => {
+    createRequest({ ...values, sitter_id, user_id }).then((data) => {
       if (data.error) {
         updateSnackBarMessage(data.error);
         setSubmitting(false);
       } else if (data.success) {
         updateSnackBarMessage(data.success);
         setSubmitting(false);
+
+        const dataToCreateNotification: ICreateNotification = {
+          requestId: data.requestId,
+          title: `${profile.firstName} has requested your service for ${differenceBetweenTwoTimes(
+            start_time,
+            end_time,
+          )}`,
+          description: 'Dog Sitting',
+          type: 'SERVICE_REQUEST',
+          userReceiverId: profile._id,
+          userCreatorId: loggedInUser?._id ? loggedInUser._id : '',
+        };
+        // notification socket data send
+        const dataSendToSocket = {
+          recipientUserId: profile._id,
+          createdAt: new Date().toISOString(),
+          readStatus: false,
+        };
+        socket?.emit('new-notification', { ...dataToCreateNotification, ...dataSendToSocket });
+
+        createNotification({ ...dataToCreateNotification }).then((data) => {
+          if (data.error) {
+            updateSnackBarMessage(data.error);
+          }
+        });
       }
     });
   };
@@ -56,12 +97,14 @@ export default function RequestCard({ profile }: Props): JSX.Element {
         initialValues={{
           start_date: '',
           end_date: '',
-          dropInTime: '',
-          dropOffTime: '',
+          start_time: '',
+          end_time: '',
         }}
         validationSchema={Yup.object().shape({
           start_date: Yup.string().required('Drop In Date is required'),
           end_date: Yup.string().required('Drop Off Date is required'),
+          start_time: Yup.string().required('Drop In Time is required'),
+          end_time: Yup.string().required('Drop Off Time is required'),
         })}
         onSubmit={handleSubmit}
       >
@@ -89,12 +132,12 @@ export default function RequestCard({ profile }: Props): JSX.Element {
                 />
                 <TextField
                   type="time"
-                  id="dropInTime"
-                  name="dropInTime"
+                  id="start_time"
+                  name="start_time"
                   variant="outlined"
-                  helperText={touched.dropInTime ? errors.dropInTime : ''}
-                  error={touched.dropInTime && Boolean(errors.dropInTime)}
-                  value={values.dropInTime}
+                  helperText={touched.start_time ? errors.start_time : ''}
+                  error={touched.start_time && Boolean(errors.start_time)}
+                  value={values.start_time}
                   onChange={handleChange}
                 />
               </Grid>
@@ -119,12 +162,12 @@ export default function RequestCard({ profile }: Props): JSX.Element {
                 />
                 <TextField
                   type="time"
-                  id="dropOffTime"
-                  name="dropOffTime"
+                  id="end_time"
+                  name="end_time"
                   variant="outlined"
-                  helperText={touched.dropOffTime ? errors.dropOffTime : ''}
-                  error={touched.dropOffTime && Boolean(errors.dropOffTime)}
-                  value={values.dropOffTime}
+                  helperText={touched.end_time ? errors.end_time : ''}
+                  error={touched.end_time && Boolean(errors.end_time)}
+                  value={values.end_time}
                   onChange={handleChange}
                 />
               </Grid>

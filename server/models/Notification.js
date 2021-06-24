@@ -4,7 +4,12 @@ const { Schema } = mongoose;
 const { ObjectId } = Schema;
 
 const notificationSchema = new Schema({
-  user: {
+  userReceiverId: {
+    type: ObjectId,
+    ref: "user",
+    required: true
+  },
+  userCreatorId: {
     type: ObjectId,
     ref: "user",
     required: true
@@ -33,6 +38,10 @@ const notificationSchema = new Schema({
     type: Boolean,
     default: false
   },
+  requestId: {
+    type: ObjectId,
+    ref: 'Request'
+  }
 }, { timestamps: true });
 
 module.exports =  mongoose.model("Notification", notificationSchema);

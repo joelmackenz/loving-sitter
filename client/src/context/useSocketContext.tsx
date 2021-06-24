@@ -5,23 +5,15 @@ import { useAuth } from '../context/useAuthContext';
 
 interface ISocketContext {
   socket: Socket | undefined;
-  initSocket: () => void;
 }
 
 export const SocketContext = createContext<ISocketContext>({
   socket: undefined,
-  initSocket: () => null,
 });
 
 export const SocketProvider: FunctionComponent = ({ children }): JSX.Element => {
   const [socket, setSocket] = useState<Socket | undefined>(undefined);
   const { loggedInUser } = useAuth();
-
-  useEffect(() => {
-    if (loggedInUser?._id === undefined || socket === undefined) return;
-
-    socket.emit('comes-online', loggedInUser._id);
-  }, [loggedInUser, socket]);
 
   const initSocket = useCallback(() => {
     console.log('trying to connect');
@@ -32,7 +24,20 @@ export const SocketProvider: FunctionComponent = ({ children }): JSX.Element => 
     );
   }, []);
 
-  return <SocketContext.Provider value={{ socket, initSocket }}>{children}</SocketContext.Provider>;
+  useEffect(() => {
+    initSocket();
+    return () => {
+      socket?.close();
+    };
+  }, [initSocket]);
+
+  useEffect(() => {
+    if (loggedInUser?._id === undefined || socket === undefined) return;
+
+    socket.emit('comes-online', loggedInUser._id);
+  }, [loggedInUser, socket]);
+
+  return <SocketContext.Provider value={{ socket }}>{children}</SocketContext.Provider>;
 };
 
 export function useSocket(): ISocketContext {

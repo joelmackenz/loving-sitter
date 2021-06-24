@@ -1,9 +1,15 @@
 const Notification = require("../models/Notification");
 
 exports.createNotification = (req, res) => {
-  if (req.user.id === req.body.user) {
+  if (req.user.id === req.body.userReceiverId) {
     return res.status(401).json({
       error: "User is not authorized for creating notifications for himself."
+    })
+  }
+
+  if (req.user.id !== req.body.userCreatorId) {
+    return res.status(401).json({
+      error: "Please, only pass the userCreatorId for loggedIn user"
     })
   }
 
@@ -24,7 +30,7 @@ exports.createNotification = (req, res) => {
 
 exports.updateReadNotification = (req, res) => {
   const operations = req.body.notifications.map((notification) => {
-    if(notification.user.toString() !== req.user.id) {
+    if(notification.userReceiverId.toString() !== req.user.id) {
       return res.status(401).json({
         error: "User is not authorized to update read status."
       });
@@ -54,7 +60,7 @@ exports.getAllNotification = (req, res) => {
   const sortBy = req.query.sortBy ? req.query.sortBy : "_id";
 
   Notification
-    .find({ user: req.user.id })
+    .find({ userReceiverId: req.user.id })
     .sort([[sortBy, "ascending"]])
     .limit(limit)
     .exec((error, notification) => {
@@ -77,13 +83,14 @@ exports.getUnreadNotification = (req, res) => {
     .find(
       { 
         readStatus: { $eq: false },
-        user: req.user.id,
+        userReceiverId: req.user.id,
       },
       {
         __v: 0,
         updatedAt: 0
       }
     )
+    .select("-updatedAt")
     .exec((error, notification) => {
       if (error) {
         return res.status(400).json({

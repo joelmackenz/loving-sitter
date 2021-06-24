@@ -61,6 +61,14 @@ exports.appSocket = (server) => {
         message: data.message,
         activeConversation: data.activeConversation,
       })
+    });
+
+    // when a new notification comes up
+    socket.on("new-notification", (data) => {
+      // retrieve socket id of recipient user
+      const { recipientUserId, ...otherValues } = data;
+      const recipientSocketId = onlineUsers[recipientUserId];
+      socket.to(recipientSocketId).emit("new-notification", { ...otherValues });
     })
 
     // when a user goes logout or goes offline

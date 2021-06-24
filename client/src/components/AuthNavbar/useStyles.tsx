@@ -105,6 +105,22 @@ const useStyles = makeStyles((theme) => {
       flexDirection: 'row-reverse',
       justifyContent: 'space-between',
     },
+    notificationButtonContainer: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      margin: '1rem 0',
+    },
+    acceptButton: {
+      color: 'green',
+      border: '1px solid green',
+      '&:hover': {
+        border: '1px solid green',
+      },
+    },
+    declineButton: {
+      color: 'red',
+      border: '1px solid red',
+    },
   };
 });
 
