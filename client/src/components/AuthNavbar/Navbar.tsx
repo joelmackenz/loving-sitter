@@ -74,15 +74,17 @@ const NotificationPopper: React.FC<NotificationProps> = ({
   const { socket } = useSocket();
   const { updateSnackBarMessage } = useSnackBar();
 
+  const [buttonClicked, setButtonClicked] = useState<string>('');
+
   const handleAcceptClick = (notification: Notification) => {
     const requestId = notification.requestId ? notification.requestId : '';
     const accepted = true;
     const declined = false;
     updateRequest(requestId, accepted, declined).then((data) => {
-      console.log(data);
       if (data.error) {
         updateSnackBarMessage(data.error);
       } else if (data.success) {
+        setButtonClicked('SERVICE_ACCEPTED');
         const dataToCreateNotification: ICreateNotification = {
           requestId,
           title: `${loggedInUser?.firstName} has accepted your request.`,
@@ -118,6 +120,7 @@ const NotificationPopper: React.FC<NotificationProps> = ({
       if (data.error) {
         updateSnackBarMessage(data.error);
       } else if (data.success) {
+        setButtonClicked('SERVICE_DECLINED');
         const dataToCreateNotification: ICreateNotification = {
           requestId,
           title: `${loggedInUser?.firstName} has declined your request.`,
@@ -165,22 +168,30 @@ const NotificationPopper: React.FC<NotificationProps> = ({
                 </Typography>
                 {notification.type === 'SERVICE_REQUEST' && (
                   <Box className={classes.notificationButtonContainer}>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      className={classes.acceptButton}
-                      onClick={() => handleAcceptClick(notification)}
-                    >
-                      Accept
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      className={classes.declineButton}
-                      onClick={() => handleDeclineClick(notification)}
-                    >
-                      Decline
-                    </Button>
+                    {buttonClicked === 'SERVICE_ACCEPTED' ? (
+                      <p>You have Accepted the request successfully.</p>
+                    ) : buttonClicked === 'SERVICE_DECLINED' ? (
+                      <p>You have Declined the request successfully.</p>
+                    ) : (
+                      <>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          className={classes.acceptButton}
+                          onClick={() => handleAcceptClick(notification)}
+                        >
+                          Accept
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          className={classes.declineButton}
+                          onClick={() => handleDeclineClick(notification)}
+                        >
+                          Decline
+                        </Button>
+                      </>
+                    )}
                     <Button variant="outlined" color="primary">
                       Message
                     </Button>
