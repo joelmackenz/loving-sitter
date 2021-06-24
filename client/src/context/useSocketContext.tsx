@@ -25,11 +25,13 @@ export const SocketProvider: FunctionComponent = ({ children }): JSX.Element => 
   }, []);
 
   useEffect(() => {
+    if (loggedInUser?._id === undefined) return;
+
     initSocket();
     return () => {
       socket?.close();
     };
-  }, [initSocket]);
+  }, [initSocket, loggedInUser]);
 
   useEffect(() => {
     if (loggedInUser?._id === undefined || socket === undefined) return;
