@@ -399,7 +399,7 @@ const EditProfile: FC<Props> = (props) => {
                         name="priceRate"
                         autoComplete="priceRate"
                         variant="outlined"
-                        placeholder="Your Price per day in US $"
+                        placeholder="Your Price per hour in US $"
                         helperText={touched.priceRate ? errors.priceRate : ''}
                         error={touched.priceRate && Boolean(errors.priceRate)}
                         value={values.priceRate}
