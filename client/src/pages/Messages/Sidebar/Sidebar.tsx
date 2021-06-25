@@ -11,6 +11,7 @@ import Spinner from '../../../components/Spinner/Spinner';
 export interface Props {
   conversations: IConversations[];
   handleActiveConversation: (conversationId: string) => void;
+  isFetching: boolean;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -34,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Sidebar: FC<Props> = (props) => {
   const classes = useStyles();
-  const { conversations, handleActiveConversation } = props;
+  const { conversations, handleActiveConversation, isFetching } = props;
   return (
     <Paper elevation={3} className={classes.root}>
       {conversations.length ? (
@@ -49,6 +50,10 @@ const Sidebar: FC<Props> = (props) => {
               />
             );
           })}
+        </Box>
+      ) : !isFetching ? (
+        <Box paddingTop="7rem">
+          <p>Please, Chat with sitters for any queries.</p>
         </Box>
       ) : (
         <Spinner />

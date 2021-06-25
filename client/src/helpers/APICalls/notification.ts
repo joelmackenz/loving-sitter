@@ -8,6 +8,7 @@ export interface ICreateNotification {
   userReceiverId: string;
   userCreatorId: string;
   requestId?: string;
+  userCreatorProfileImg: string;
 }
 
 export const createNotification = async (

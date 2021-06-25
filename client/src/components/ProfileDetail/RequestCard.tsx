@@ -8,14 +8,18 @@ import Typography from '@material-ui/core/Typography';
 import InputLabel from '@material-ui/core/InputLabel';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
+import { useHistory } from 'react-router-dom';
 
 import useStyles from './useStyles';
+import { useMessage } from '../../context/useMessageContext';
 import { Profile } from '../../pages/ProfileListings/ProfileListings';
 import { createNotification, ICreateNotification } from '../../helpers/APICalls/notification';
 import { useSnackBar } from '../../context/useSnackbarContext';
 import { useAuth } from '../../context/useAuthContext';
 import { useSocket } from '../../context/useSocketContext';
+import { useUser } from '../../context/useUserContext';
 import { createRequest } from '../../helpers/APICalls/request';
+import { newConvo } from '../../utils/conversation';
 
 interface Props {
   profile: Profile;
@@ -46,6 +50,10 @@ export default function RequestCard({ profile }: Props): JSX.Element {
   const { updateSnackBarMessage } = useSnackBar();
   const { loggedInUser } = useAuth();
   const { socket } = useSocket();
+  const { handleActiveConversation, conversations, dispatchConversations } = useMessage();
+  const { userState } = useUser();
+
+  const history = useHistory();
 
   const handleSubmit = (values: FormValues, { setSubmitting }: FormikHelpers<FormValues>): void => {
     const user_id = loggedInUser?._id ? loggedInUser._id : '';
@@ -70,22 +78,53 @@ export default function RequestCard({ profile }: Props): JSX.Element {
           type: 'SERVICE_REQUEST',
           userReceiverId: profile._id,
           userCreatorId: loggedInUser?._id ? loggedInUser._id : '',
+          userCreatorProfileImg: userState.profileImg.length
+            ? userState.profileImg
+            : `https://robohash.org/${loggedInUser?.email}.png`,
         };
         // notification socket data send
         const dataSendToSocket = {
           recipientUserId: profile._id,
           createdAt: new Date().toISOString(),
           readStatus: false,
+          userCreatorId: {
+            firstName: loggedInUser?.firstName,
+            lastName: loggedInUser?.lastName,
+            email: loggedInUser?.email,
+            _id: loggedInUser?._id,
+          },
         };
         socket?.emit('new-notification', { ...dataToCreateNotification, ...dataSendToSocket });
 
         createNotification({ ...dataToCreateNotification }).then((data) => {
+          console.log(data);
           if (data.error) {
             updateSnackBarMessage(data.error);
           }
         });
       }
     });
+  };
+
+  const handleSendMessage = () => {
+    const recipientUser = {
+      recipientUserId: profile._id,
+      firstName: profile.firstName,
+      lastName: profile.lastName,
+      email: profile.email,
+      profileImg: profile.profileId.profileImg,
+    };
+    newConvo(
+      conversations,
+      handleActiveConversation,
+      recipientUser,
+      loggedInUser,
+      updateSnackBarMessage,
+      userState,
+      socket,
+      dispatchConversations,
+      history,
+    );
   };
 
   return (
@@ -176,7 +215,7 @@ export default function RequestCard({ profile }: Props): JSX.Element {
               <Button type="submit" size="large" variant="contained" color="primary">
                 {isSubmitting ? <CircularProgress style={{ color: 'white' }} /> : 'Send Request'}
               </Button>
-              <Button type="button" size="large" variant="contained" color="primary">
+              <Button type="button" size="large" variant="contained" color="primary" onClick={handleSendMessage}>
                 Send Message
               </Button>
             </Box>

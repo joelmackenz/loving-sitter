@@ -41,7 +41,11 @@ const notificationSchema = new Schema({
   requestId: {
     type: ObjectId,
     ref: 'Request'
-  }
+  },
+  userCreatorProfileImg: {
+    type: String,
+    required: true,
+  },
 }, { timestamps: true });
 
 module.exports =  mongoose.model("Notification", notificationSchema);

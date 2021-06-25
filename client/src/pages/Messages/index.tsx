@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -41,13 +41,19 @@ export default function Messages(): JSX.Element {
   const { socket } = useSocket();
   const { dispatchConversations, conversations, activeConversation, handleActiveConversation } = useMessage();
 
+  const [isFetching, setIsFetching] = useState<boolean>(true);
+
   useEffect(() => {
     getAllConvosWithoutMessages().then((data) => {
       if (data.error) {
+        setIsFetching(false);
         updateSnackBarMessage(data.error);
       } else if (data.success) {
+        setIsFetching(false);
         dispatchConversations({ type: 'UPDATE_CONVOS', conversations: data.conversations });
         handleActiveConversation(data.conversations[0].conversationId);
+      } else {
+        setIsFetching(false);
       }
     });
   }, []);
@@ -63,9 +69,14 @@ export default function Messages(): JSX.Element {
       dispatchConversations({ type: 'REMOVE_OFFLINE_USER', recipientUserId });
     });
 
+    socket.on('new-convo', (data) => {
+      dispatchConversations({ type: 'ADD_NEW_CONVO', conversation: data });
+    });
+
     return () => {
       socket.off('add-online-user');
       socket.off('remove-offline-user');
+      socket.off('new-convo');
     };
   }, [socket]);
 
@@ -77,7 +88,11 @@ export default function Messages(): JSX.Element {
   return (
     <Grid container component="main" className={classes.root}>
       <Grid item md={3} sm={4} className={classes.gridSidebar}>
-        <Sidebar conversations={conversations} handleActiveConversation={handleActiveConversation} />
+        <Sidebar
+          isFetching={isFetching}
+          conversations={conversations}
+          handleActiveConversation={handleActiveConversation}
+        />
       </Grid>
       <Grid item md={9} sm={8} xs={12}>
         <ActiveChat conversation={conversation} activeConversation={activeConversation} />

@@ -91,6 +91,7 @@ const Header: FC<IRecipientUser> = (props) => {
   const isMobileView = useMediaQuery('(max-width:600px)');
   const { recipientUser } = props;
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isFetching, setIsFetching] = useState<boolean>(false); // TODO: handle usecase for mobile devices
   const handleDrawerOpen = () => setIsDrawerOpen(true);
   const handleDrawerClose = () => setIsDrawerOpen(false);
   return (
@@ -101,7 +102,11 @@ const Header: FC<IRecipientUser> = (props) => {
             <MenuIcon />
           </IconButton>
           <Drawer anchor="left" open={isDrawerOpen} onClose={handleDrawerClose}>
-            <Sidebar conversations={conversations} handleActiveConversation={handleActiveConversation} />
+            <Sidebar
+              isFetching={isFetching}
+              conversations={conversations}
+              handleActiveConversation={handleActiveConversation}
+            />
           </Drawer>
         </>
       )}

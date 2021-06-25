@@ -1,5 +1,5 @@
 import { useState, useEffect, MouseEvent } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 import Box from '@material-ui/core/Box';
 import Drawer from '@material-ui/core/Drawer';
@@ -16,6 +16,8 @@ import { Link } from 'react-router-dom';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { useMediaQuery } from '@material-ui/core';
+import { Socket } from 'socket.io-client';
+import { History } from 'history';
 
 import useStyles from './useStyles';
 import Logo from '../../Images/logo.png';
@@ -23,7 +25,7 @@ import { useAuth } from '../../context/useAuthContext';
 import { useSnackBar } from '../../context/useSnackbarContext';
 import { useSocket } from '../../context/useSocketContext';
 import { useUser, IUserContext } from '../../context/useUserContext';
-import { useMessage } from '../../context/useMessageContext';
+import { useMessage, IConversations, DispatchConvos } from '../../context/useMessageContext';
 import { User } from '../../context/interface/User';
 import { Notification } from '../../interface/Notification';
 import {
@@ -33,6 +35,7 @@ import {
   ICreateNotification,
 } from '../../helpers/APICalls/notification';
 import { updateRequest } from '../../helpers/APICalls/request';
+import { newConvo } from '../../utils/conversation';
 
 const headersData = [
   {
@@ -62,6 +65,12 @@ interface NotificationProps {
   activeNotifications: Notification[];
   userState: IUserContext;
   loggedInUser?: User | null;
+  socket: Socket | undefined;
+  updateSnackBarMessage: (message: string) => void;
+  conversations: IConversations[];
+  handleActiveConversations: (conversationId: string) => void;
+  dispatchConversations: DispatchConvos;
+  history: History;
 }
 
 const NotificationPopper: React.FC<NotificationProps> = ({
@@ -69,10 +78,14 @@ const NotificationPopper: React.FC<NotificationProps> = ({
   activeNotifications,
   userState,
   loggedInUser,
+  socket,
+  updateSnackBarMessage,
+  conversations,
+  handleActiveConversations,
+  dispatchConversations,
+  history,
 }) => {
   const classes = useStyles();
-  const { socket } = useSocket();
-  const { updateSnackBarMessage } = useSnackBar();
 
   const [buttonClicked, setButtonClicked] = useState<string>('');
 
@@ -90,8 +103,9 @@ const NotificationPopper: React.FC<NotificationProps> = ({
           title: `${loggedInUser?.firstName} has accepted your request.`,
           description: 'Dog Sitting',
           type: 'SERVICE_ACCEPTED',
-          userReceiverId: notification.userCreatorId,
+          userReceiverId: notification.userCreatorId._id,
           userCreatorId: loggedInUser?._id ? loggedInUser?._id : '',
+          userCreatorProfileImg: userState.profileImg,
         };
         // notification socket data send
         const dataSendToSocket = {
@@ -126,8 +140,9 @@ const NotificationPopper: React.FC<NotificationProps> = ({
           title: `${loggedInUser?.firstName} has declined your request.`,
           description: 'Dog Sitting',
           type: 'SERVICE_DECLINED',
-          userReceiverId: notification.userCreatorId,
+          userReceiverId: notification.userCreatorId._id,
           userCreatorId: loggedInUser?._id ? loggedInUser?._id : '',
+          userCreatorProfileImg: userState.profileImg,
         };
         // notification socket data send
         const dataSendToSocket = {
@@ -147,6 +162,27 @@ const NotificationPopper: React.FC<NotificationProps> = ({
     });
   };
 
+  const handleMessage = (notification: Notification) => {
+    const recipientUser = {
+      recipientUserId: notification.userCreatorId._id,
+      firstName: notification.userCreatorId.firstName,
+      lastName: notification.userCreatorId.lastName,
+      email: notification.userCreatorId.email,
+      profileImg: notification.userCreatorProfileImg,
+    };
+    newConvo(
+      conversations,
+      handleActiveConversations,
+      recipientUser,
+      loggedInUser,
+      updateSnackBarMessage,
+      userState,
+      socket,
+      dispatchConversations,
+      history,
+    );
+  };
+
   return (
     <Popper open={Boolean(titleAnchor)} anchorEl={titleAnchor} className={classes.notificationsPopper}>
       <Box className={classes.notificationContainer}>
@@ -154,7 +190,11 @@ const NotificationPopper: React.FC<NotificationProps> = ({
           activeNotifications.map((notification, index) => (
             <Box className={clsx(classes.linkItem, classes.linkFlexContainer)} key={index}>
               <Avatar
-                src={userState.profileImg ? userState.profileImg : `https://robohash.org/${loggedInUser?.email}.png`}
+                src={
+                  notification.userCreatorProfileImg.length
+                    ? notification.userCreatorProfileImg
+                    : `https://robohash.org/${notification.userCreatorId.email}.png`
+                }
                 variant="square"
                 className={clsx(classes.avatar, classes.avatarSize)}
               />
@@ -192,7 +232,7 @@ const NotificationPopper: React.FC<NotificationProps> = ({
                         </Button>
                       </>
                     )}
-                    <Button variant="outlined" color="primary">
+                    <Button variant="outlined" color="primary" onClick={() => handleMessage(notification)}>
                       Message
                     </Button>
                   </Box>
@@ -214,10 +254,11 @@ export default function AuthNavbar(): JSX.Element {
   const classes = useStyles();
 
   const location = useLocation();
+  const history = useHistory();
   const { logout, loggedInUser } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
   const { userState, dispatchUserContext } = useUser();
-  const { conversations } = useMessage();
+  const { conversations, handleActiveConversation, dispatchConversations } = useMessage();
   const { socket } = useSocket();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -422,6 +463,12 @@ export default function AuthNavbar(): JSX.Element {
           loggedInUser={loggedInUser}
           titleAnchor={notificationsAnchor}
           activeNotifications={notifications}
+          socket={socket}
+          updateSnackBarMessage={updateSnackBarMessage}
+          conversations={conversations}
+          handleActiveConversations={handleActiveConversation}
+          dispatchConversations={dispatchConversations}
+          history={history}
         />
       </>
     );

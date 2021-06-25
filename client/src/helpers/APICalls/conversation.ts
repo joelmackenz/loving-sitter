@@ -29,7 +29,7 @@ export const createConvo = async (userOneId: string, userTwoId: string): Promise
   return await fetch(`/convo`, fetchOptions)
     .then((res) => res.json())
     .catch(() => ({
-      error: { message: 'Unable to connect to server. Please try again' },
+      error: 'Unable to connect to server. Please try again',
     }));
 };
 

@@ -12,12 +12,13 @@ exports.createNotification = (req, res) => {
       error: "Please, only pass the userCreatorId for loggedIn user"
     })
   }
-
+  console.log('req.body ', req.body);
   const notification = new Notification(req.body);
   notification.save((error, notification) => {
     if (error) {
       return res.status(400).json({
         error: "Error in Saving the notification",
+        message: error.message
       })
     }
 
@@ -91,6 +92,7 @@ exports.getUnreadNotification = (req, res) => {
       }
     )
     .select("-updatedAt")
+    .populate("userCreatorId", "firstName lastName email")
     .exec((error, notification) => {
       if (error) {
         return res.status(400).json({

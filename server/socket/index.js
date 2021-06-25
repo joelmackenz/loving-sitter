@@ -54,6 +54,13 @@ exports.appSocket = (server) => {
       socket.broadcast.emit("add-online-user", id);
     });
 
+    socket.on("new-convo", (data) => {
+      const { recipientUserId, ...otherValues } = data;
+      // retrieve socket id of recipient user
+      const recipientSocketId = onlineUsers[recipientUserId];
+      socket.to(recipientSocketId).emit("new-convo", otherValues);
+    })
+
     socket.on("new-message", (data) => {
       // retrieve socket id of recipient user
       const recipientSocketId = onlineUsers[data.recipientUserId];
