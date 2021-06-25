@@ -156,7 +156,6 @@ const EditProfile: FC<Props> = (props) => {
                   .required('Please, enter your Price Rate')
                   .matches(/^[0-9]+$/, 'Must contain numbers only')
                   .max(2, 'Value must be less than $100')
-
               : Yup.string(),
           })}
           onSubmit={handleSubmit}
