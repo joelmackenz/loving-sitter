@@ -15,12 +15,12 @@ export default function ProfileDetailCard({ profile }: Props): JSX.Element {
   return (
     <Card className={classes.cardContainer}>
       <CardMedia
-        image={profile.profileId.coverImg ? profile.profileId.coverImg : defaultCoverImg}
+        image={profile.profileId[0]?.coverImg ? profile.profileId[0].coverImg : defaultCoverImg}
         title="Contemplative Reptile"
         className={classes.coverImg}
       />
       <CardMedia
-        image={profile.profileId.profileImg ? profile.profileId.profileImg : defaultProfileImg}
+        image={profile.profileId[0]?.profileImg ? profile.profileId[0].profileImg : defaultProfileImg}
         title="Contemplative Reptile"
         className={classes.profileImg}
       />
@@ -31,21 +31,21 @@ export default function ProfileDetailCard({ profile }: Props): JSX.Element {
         <Typography variant="h6" component="h2" color="textSecondary" className={classes.subInfo}>
           Loving pet sitter
         </Typography>
-        {profile.profileId.city && (
+        {profile.profileId[0]?.city && (
           <Box className={classes.profileLocation}>
             <LocationOnIcon color="primary" />
             <Typography component="span" display="block">
-              {profile.profileId.city}
+              {profile.profileId[0].city}
             </Typography>
           </Box>
         )}
         <Box className={classes.introduction}>
-          {profile.profileId.description && (
+          {profile.profileId[0]?.description && (
             <Box>
               <Typography variant="h5" component="h3">
                 About me
               </Typography>
-              <Typography variant="subtitle1">{profile.profileId.description}</Typography>
+              <Typography variant="subtitle1">{profile.profileId[0].description}</Typography>
             </Box>
           )}
         </Box>

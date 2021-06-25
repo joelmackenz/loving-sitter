@@ -122,15 +122,20 @@ exports.getOneFullUserProfile = asyncHandler(async (req, res, next) => {
           $exists: true,
       },
   })
+      .lean()
       .select("firstName lastName email isDogSitter")
       .populate({
           path: "profileId",
           select: "-__v -availableDays"
       });
 
+      const newProfileId = [{...user.profileId}];
+      const newUser = user;
+      newUser.profileId = newProfileId
+      
       return res.status(400).json({
         success: 'Retrieved successfully',
-        user
+        user: newUser
       })
 
   } catch (error) {
