@@ -16,6 +16,7 @@ import LandingNavbar from '../../components/LandingNavbar/LandingNavbar';
 
 export interface CustomizedRouterState {
   previousPath?: string;
+  searchCity?: string;
 }
 
 export default function Login({ location }: RouteComponentProps): JSX.Element {
@@ -61,7 +62,7 @@ export default function Login({ location }: RouteComponentProps): JSX.Element {
   ) {
     return <Redirect to={state.previousPath} />;
   } else if (loggedInUser?.email) {
-    return <Redirect to="/dashboard" />;
+    return <Redirect to={{ pathname: '/dashboard', state: { searchCity: state?.searchCity } }} />;
   }
 
   return (

@@ -9,18 +9,31 @@ interface IAuthContext {
   loggedInUser: User | null | undefined;
   updateLoginContext: (data: AuthApiDataSuccess, redirect?: string) => void;
   logout: () => void;
+  updateLoginFields: (dogSitter: boolean) => void;
 }
 
 export const AuthContext = createContext<IAuthContext>({
   loggedInUser: undefined,
   updateLoginContext: () => null,
   logout: () => null,
+  updateLoginFields: () => null,
 });
 
 export const AuthProvider: FunctionComponent = ({ children }): JSX.Element => {
   // default undefined before loading, once loaded provide user or null if logged out
   const [loggedInUser, setLoggedInUser] = useState<User | null | undefined>();
   const history = useHistory();
+
+  const updateLoginFields = useCallback((dogSitter: boolean) => {
+    setLoggedInUser((prevState) => {
+      if (prevState !== null && prevState !== undefined) {
+        return {
+          ...prevState,
+          isDogSitter: dogSitter,
+        };
+      }
+    });
+  }, []);
 
   const updateLoginContext = useCallback(
     (data: AuthApiDataSuccess, redirect?: string | undefined) => {
@@ -63,7 +76,11 @@ export const AuthProvider: FunctionComponent = ({ children }): JSX.Element => {
     };
     checkLoginWithCookies();
   }, [updateLoginContext, history]);
-  return <AuthContext.Provider value={{ loggedInUser, updateLoginContext, logout }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ loggedInUser, updateLoginContext, logout, updateLoginFields }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export function useAuth(): IAuthContext {

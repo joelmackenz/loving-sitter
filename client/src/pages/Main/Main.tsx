@@ -11,7 +11,7 @@ import { useAuth } from '../../context/useAuthContext';
 import { CustomizedRouterState } from '../Login/Login';
 import { useSnackBar } from '../../context/useSnackbarContext';
 
-export default function Main({ location }: RouteComponentProps): JSX.Element {
+export default function Main({ location, history }: RouteComponentProps): JSX.Element {
   const [searchCity, setSearchCity] = useState<string>('');
   const { updateSnackBarMessage } = useSnackBar();
   const classes = useStyles();
@@ -26,6 +26,16 @@ export default function Main({ location }: RouteComponentProps): JSX.Element {
     event.preventDefault();
     if (searchCity === '') {
       return updateSnackBarMessage('Please enter city value first.');
+    }
+
+    if (!loggedInUser?._id) {
+      history.push({
+        pathname: '/login',
+        state: {
+          previousPath: location.pathname,
+          searchCity,
+        },
+      });
     }
   };
 

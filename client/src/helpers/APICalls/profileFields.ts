@@ -10,6 +10,24 @@ interface ProfileFieldsResult extends AuthFieldsResult {
   success?: string;
   profile?: EditProfileFields;
 }
+
+export const updateIsDogSitter = async (): Promise<{
+  error?: string;
+  success?: string;
+  isDogSitter?: boolean;
+}> => {
+  const fetchOptions: FetchOptions = {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+  };
+  return await fetch(`/auth/update/isDogSitter`, fetchOptions)
+    .then((res) => res.json())
+    .catch(() => ({
+      error: 'Unable to connect to server. Please try again',
+    }));
+};
+
 export const updateAuthFields = async (firstName: string, lastName: string): Promise<AuthFieldsResult> => {
   const fetchOptions: FetchOptions = {
     method: 'PUT',

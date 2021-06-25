@@ -31,7 +31,7 @@ interface FormValues {
   start_time: string;
   end_time: string;
 }
-
+// eslint-disable-next-line
 const differenceBetweenTwoTimes = (startValue: any, endValue: any): string => {
   const start = startValue.split(':');
   const end = endValue.split(':');

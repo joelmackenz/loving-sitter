@@ -2,7 +2,6 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 import { Box, Card, CardContent, CardMedia, Typography } from '@material-ui/core';
 
 import defaultCoverImg from '../../Images/default-profile-detail-cover.jpg';
-import defaultProfileImg from '../../Images/default-profile-image.jpg';
 import useStyles from './useStyles';
 import { Profile } from '../../pages/ProfileListings/ProfileListings';
 
@@ -20,7 +19,11 @@ export default function ProfileDetailCard({ profile }: Props): JSX.Element {
         className={classes.coverImg}
       />
       <CardMedia
-        image={profile.profileId[0]?.profileImg ? profile.profileId[0].profileImg : defaultProfileImg}
+        image={
+          profile.profileId[0]?.profileImg
+            ? profile.profileId[0].profileImg
+            : `https://robohash.org/${profile.email}.png`
+        }
         title="Contemplative Reptile"
         className={classes.profileImg}
       />

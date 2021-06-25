@@ -89,6 +89,25 @@ exports.loginUser = asyncHandler(async (req, res, next) => {
   }
 });
 
+exports.updateUser = asyncHandler(async  (req, res, next) => {
+  User.updateOne(
+    { _id: req.user.id },
+    { $set: { isDogSitter: true } },
+    { runValidators: true }
+  ).exec((error, user) => {
+    if (error) {
+      return res.status(400).json({
+        error: "Error in updating your request. Please, try again!!"
+      })
+    }
+    
+    return res.status(200).json({
+      success: "Auth User Updated Succssfully.",
+      isDogSitter: true,
+    })
+  })
+})
+
 // @route GET /auth/user
 // @desc Get user data with valid token
 // @access Private

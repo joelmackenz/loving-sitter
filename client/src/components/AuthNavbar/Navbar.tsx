@@ -36,6 +36,7 @@ import {
 } from '../../helpers/APICalls/notification';
 import { updateRequest } from '../../helpers/APICalls/request';
 import { newConvo } from '../../utils/conversation';
+import { updateIsDogSitter } from '../../helpers/APICalls/profileFields';
 
 const headersData = [
   {
@@ -255,7 +256,7 @@ export default function AuthNavbar(): JSX.Element {
 
   const location = useLocation();
   const history = useHistory();
-  const { logout, loggedInUser } = useAuth();
+  const { logout, loggedInUser, updateLoginFields } = useAuth();
   const { updateSnackBarMessage } = useSnackBar();
   const { userState, dispatchUserContext } = useUser();
   const { conversations, handleActiveConversation, dispatchConversations } = useMessage();
@@ -324,6 +325,22 @@ export default function AuthNavbar(): JSX.Element {
       socket?.emit('logout', { currentUserId, otherUsersInConvo });
     }
     dispatchUserContext({ type: 'EMPTY_IMAGES' });
+  };
+
+  const handleSitterClick = () => {
+    updateIsDogSitter().then((data) => {
+      console.log(data);
+      if (data.error) {
+        updateSnackBarMessage(data.error);
+      } else if (data.success && data.isDogSitter) {
+        updateLoginFields(data.isDogSitter);
+        history.push({
+          pathname: '/settings',
+          state: { previousPath: location.pathname },
+        });
+        updateSnackBarMessage('Fill your Profile, to complete the process.');
+      }
+    });
   };
 
   const handleToggleProfilePopper = (target: HTMLButtonElement) => {
@@ -437,11 +454,22 @@ export default function AuthNavbar(): JSX.Element {
               />
             </div>
           </MenuItem>
-          <MenuItem>
-            <Link to={{ pathname: '/myjobs', state: { previousPath: location.pathname } }} className={classes.linkItem}>
-              My Jobs
-            </Link>
-          </MenuItem>
+          {loggedInUser?.isDogSitter ? (
+            <MenuItem>
+              <Link
+                to={{ pathname: '/myjobs', state: { previousPath: location.pathname } }}
+                className={classes.linkItem}
+              >
+                My Jobs
+              </Link>
+            </MenuItem>
+          ) : (
+            <MenuItem>
+              <div className={classes.linkItem} onClick={handleSitterClick}>
+                Become a Sitter
+              </div>
+            </MenuItem>
+          )}
           <MenuItem>
             <Link
               to={{ pathname: '/messages', state: { previousPath: location.pathname } }}

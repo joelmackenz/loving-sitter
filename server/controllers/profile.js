@@ -3,29 +3,6 @@ const asyncHandler = require("express-async-handler");
 const Profile = require("../models/Profile");
 const User = require("../models/User");
 
-// @route POST /profile/:id
-// @descr Given a user ID and profile parameters, create a profile
-exports.createProfile = asyncHandler(async (req, res, next) => {
-    const userId = req.params.id;
-    const profileData = new Profile(req.body);
-
-    // Needs check to ensure that info sender owns the profile,
-    // and that there is no profile already there
-    await profileData.save().then(() => {
-        User.updateOne(
-            { _id: userId },
-            { $set: { profile: profileData._id } },
-            (err) => {
-                if (err) {
-                    console.log(err);
-                    res.send(err);
-                } else {
-                    res.json({ success: true, msg: "Message added" });
-                }
-            }
-        );
-    });
-});
 
 // @route PUT /profile/:id
 // @Given an ID and new parameters, update the profile
@@ -129,9 +106,11 @@ exports.getOneFullUserProfile = asyncHandler(async (req, res, next) => {
           select: "-__v -availableDays"
       });
 
-      const newProfileId = [{...user.profileId}];
+      const newProfileId = [{...user?.profileId}];
       const newUser = user;
-      newUser.profileId = newProfileId
+      if (newUser?.profileId) {
+        newUser.profileId = newProfileId;
+      }
       
       return res.status(400).json({
         success: 'Retrieved successfully',
@@ -218,8 +197,8 @@ exports.getAllProfiles = asyncHandler(async (req, res, next) => {
       User.aggregate(
         [
           { 
-            $match: { 
-            _id: { $ne: req.user.id },
+            $match: {
+            $expr: {$ne: ["$_id", {"$toObjectId": req.user.id}]},
             isDogSitter: { $eq: true },
             profileId: { $exists: true }
           }},
@@ -279,7 +258,7 @@ exports.getProfilesBySearch = asyncHandler(async (req, res, next) => {
           [
             { 
               $match: { 
-              _id: { $ne: req.user.id },
+              $expr: {$ne: ["$_id", {"$toObjectId": req.user.id}]},
               isDogSitter: { $eq: true },
               profileId: { $exists: true }
             }},
@@ -341,7 +320,7 @@ exports.getProfilesByDay = asyncHandler(async (req, res, next) => {
           [
             { 
               $match: { 
-              _id: { $ne: req.user.id },
+              $expr: {$ne: ["$_id", {"$toObjectId": req.user.id}]},
               isDogSitter: { $eq: true },
               profileId: { $exists: true }
             }},

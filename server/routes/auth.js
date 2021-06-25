@@ -7,7 +7,8 @@ const {
   loginUser,
   loadUser,
   logoutUser,
-  updateUserFields
+  updateUserFields,
+  updateUser
 } = require('../controllers/auth');
 
 router.route('/register').post(validateRegister, registerUser);
@@ -19,5 +20,7 @@ router.route('/user').get(protect, loadUser);
 router.route('/logout').get(logoutUser);
 
 router.route('/update').put(protect, updateUserFields);
+
+router.route('/update/isDogSitter').put(protect, updateUser);
 
 module.exports = router;

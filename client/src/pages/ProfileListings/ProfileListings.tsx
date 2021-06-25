@@ -8,6 +8,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import SearchIcon from '@material-ui/icons/Search';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import CloseIcon from '@material-ui/icons/Close';
+import { RouteComponentProps } from 'react-router-dom';
 
 import { useSnackBar } from '../../context/useSnackbarContext';
 import DateSelectPopover from './DaySelectPopover';
@@ -18,8 +19,8 @@ import getProfiles from '../../helpers/APICalls/getProfiles';
 import searchProfilesByCity from '../../helpers/APICalls/searchProfilesByCity';
 import searchProfilesByDay from '../../helpers/APICalls/searchProfilesByDay';
 import Spinner from '../../components/Spinner/Spinner';
-
 import { IProfile } from '../../interface/Profile';
+import { CustomizedRouterState } from '../Login/Login';
 
 export interface Profile {
   firstName: string;
@@ -30,8 +31,9 @@ export interface Profile {
   profileId: IProfile[];
 }
 
-export default function ProfileListings(): JSX.Element {
+export default function ProfileListings({ location }: RouteComponentProps): JSX.Element {
   const classes = useStyles();
+  const state = location.state as CustomizedRouterState;
 
   const { updateSnackBarMessage } = useSnackBar();
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -88,7 +90,7 @@ export default function ProfileListings(): JSX.Element {
   };
 
   const updateBySearch = async () => {
-    if (!search) {
+    if (!search && !state?.searchCity) {
       initializeProfiles();
     } else {
       setDisplayedProfiles([]);
@@ -139,7 +141,11 @@ export default function ProfileListings(): JSX.Element {
   );
 
   useEffect(() => {
-    initializeProfiles();
+    if (state?.searchCity) {
+      setSearch(state.searchCity);
+    } else {
+      initializeProfiles();
+    }
   }, []);
 
   useEffect(() => {
@@ -153,7 +159,7 @@ export default function ProfileListings(): JSX.Element {
   return (
     <Grid container className={classes.root}>
       <Typography variant="h4" component="h1" className={classes.title}>
-        Your search results
+        Choose Your Dog Sitter
       </Typography>
       <Grid>
         <Grid container className={classes.searchDateContainer}>
@@ -162,6 +168,7 @@ export default function ProfileListings(): JSX.Element {
             <InputBase
               placeholder="Search by city…"
               inputProps={{ 'aria-label': 'search' }}
+              value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
               }}
