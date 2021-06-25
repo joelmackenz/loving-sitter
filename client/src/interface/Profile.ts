@@ -11,8 +11,8 @@ export interface ProfilesApiData {
     isDogSitter: boolean;
     email: string;
     _id: string;
-    profileId: IProfile;
+    profileId: IProfile[];
   }[];
   success?: string;
-  error?: { message: string };
+  error?: string;
 }

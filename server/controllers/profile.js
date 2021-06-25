@@ -210,24 +210,55 @@ exports.getAllProfiles = asyncHandler(async (req, res, next) => {
         ? req.body.numberOfUsers + 1
         : 100;
     try {
-        const allUsers = await User.find({
+      User.aggregate(
+        [
+          { 
+            $match: { 
             _id: { $ne: req.user.id },
             isDogSitter: { $eq: true },
-            profileId: {
-                $exists: true,
-            },
-        })
-            .select("firstName lastName email isDogSitter")
-            .limit(numberOfUsers)
-            .populate({
-                path: "profileId",
-                select: "-__v -availableDays"
-            });
-        // Returns only users with profiles
-        res.status(200).json({
-            success: "Retrieved Successfully",
-            allUsers
-        });
+            profileId: { $exists: true }
+          }},
+          {
+            $project: {
+              firstName: 1,
+              lastName: 1,
+              email: 1,
+              isDogSitter: 1,
+              profileId: 1,
+          }},
+          {
+            $lookup: {
+              from: "profiles",
+              let: { id: "$profileId" },
+              pipeline: [
+                {
+                  $project: {
+                    __v: 0,
+                    availableDays: 0,
+                }},
+                {
+                  $match: {
+                    $expr: {$eq: ["$_id", {"$toObjectId": "$$id"}]},
+                }}
+              ],
+              as: "profileId",
+          }},
+          {
+            $match: {
+              "profileId": {"$ne": []}
+          }},
+        ],
+        (error, result) => {
+          if (error || !result.length) {
+            return res.status(400).json({
+              error: "No Search Result Found"
+            })
+          }
+          return res.status(200).json({
+            allUsers: result
+          })
+        }
+      );
     } catch (e) {
         res.status(500);
         throw new Error(e.message);
@@ -239,26 +270,56 @@ exports.getAllProfiles = asyncHandler(async (req, res, next) => {
 exports.getProfilesBySearch = asyncHandler(async (req, res, next) => {
     const search = req.params.search;
     try {
-        const allUsers = await User.find({
-            _id: { $ne: req.user.id },
-            isDogSitter: { $eq: true },
-            profileId: {
-                $exists: true,
-            },
-        })
-          .select("firstName lastName email isDogSitter")
-          .populate({
-              path: "profileId",
-              select: "-__v -availableDays",
-              match: {
-                city: search
-              }
-          });
-
-        // Returns only users with profiles
-        res.status(200).json({
-          allUsers,
-        });
+        User.aggregate(
+          [
+            { 
+              $match: { 
+              _id: { $ne: req.user.id },
+              isDogSitter: { $eq: true },
+              profileId: { $exists: true }
+            }},
+            {
+              $project: {
+                firstName: 1,
+                lastName: 1,
+                email: 1,
+                isDogSitter: 1,
+                profileId: 1,
+            }},
+            {
+              $lookup: {
+                from: "profiles",
+                let: { id: "$profileId" },
+                pipeline: [
+                  {
+                    $project: {
+                      __v: 0,
+                      availableDays: 0,
+                  }},
+                  {
+                    $match: {
+                      $expr: {$eq: ["$_id", {"$toObjectId": "$$id"}]},
+                      city: search
+                  }}
+                ],
+                as: "profileId",
+            }},
+            {
+              $match: {
+                "profileId": {"$ne": []}
+            }},
+          ],
+          (error, result) => {
+            if (error || !result.length) {
+              return res.status(400).json({
+                error: "No Search Result Found"
+              })
+            }
+            return res.status(200).json({
+              allUsers: result
+            })
+          }
+        );
     } catch (e) {
         res.status(500);
         throw new Error(e.message);
@@ -268,28 +329,59 @@ exports.getProfilesBySearch = asyncHandler(async (req, res, next) => {
 // @route GET /profile/search/day/:search
 // @descr Gets an array of users who have profiles based on given availability days
 exports.getProfilesByDay = asyncHandler(async (req, res, next) => {
-    const search = req.params.search;
-    try {
-        const allUsers = await User.find({
-            _id: { $ne: req.user.id },
-            isDogSitter: { $eq: true },
-            profileId: {
-              $exists: true,
-            },
-        })
-          .select("firstName lastName email isDogSitter")
-          .populate({
-            path: "profileId",
-            select: "-__v",
-            match: {
-              availableDays: { $in: search }
-            }
-        });
+    const search = req.params.search.split(",");
 
-        // Returns only users with profiles
-        res.status(200).json({
-          allUsers
-        });
+    try {
+        User.aggregate(
+          [
+            { 
+              $match: { 
+              _id: { $ne: req.user.id },
+              isDogSitter: { $eq: true },
+              profileId: { $exists: true }
+            }},
+            {
+              $project: {
+                firstName: 1,
+                lastName: 1,
+                email: 1,
+                isDogSitter: 1,
+                profileId: 1,
+            }},
+            {
+              $lookup: {
+                from: "profiles",
+                let: { id: "$profileId" },
+                pipeline: [
+                  {
+                    $project: {
+                      __v: 0,
+                  }},
+                  {
+                    $match: {
+                      $expr: {$eq: ["$_id", {"$toObjectId": "$$id"}]},
+                      availableDays: { $in: search }
+                  }}
+                ],
+                as: "profileId",
+            }},
+            {
+              $match: {
+                "profileId": {"$ne": []}
+            }},
+          ],
+          (error, result) => {
+            if (error || !result.length) {
+              return res.status(400).json({
+                error: "No Search Result Found"
+              })
+            }
+            return res.status(200).json({
+              allUsers: result
+            })
+          }
+        );
+
     } catch (e) {
         res.status(500);
         throw new Error(e.message);
