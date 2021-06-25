@@ -27,7 +27,7 @@ export interface Profile {
   isDogSitter: boolean;
   email: string;
   _id: string;
-  profileId: IProfile;
+  profileId: IProfile[];
 }
 
 export default function ProfileListings(): JSX.Element {
@@ -41,6 +41,7 @@ export default function ProfileListings(): JSX.Element {
   const [displayedProfiles, setDisplayedProfiles] = useState<Profile[]>(profiles.slice(0, 6));
   const [snackbarOpen, setSnackbarOpen] = useState<true | false>(false);
   const [search, setSearch] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const handleShowMore = () => {
     const numberOfUsers = displayedProfiles.length;
@@ -68,6 +69,8 @@ export default function ProfileListings(): JSX.Element {
       if (users?.length) {
         setDisplayedProfiles(users.slice(0, 6));
         setProfiles(users);
+      } else if (data.error) {
+        setErrorMessage(data.error);
       } else {
         updateSnackBarMessage('No Dog Sitter Found!');
       }
@@ -93,6 +96,8 @@ export default function ProfileListings(): JSX.Element {
       const users = data.allUsers;
       if (users?.length) {
         setDisplayedProfiles(users);
+      } else if (data.error) {
+        setErrorMessage(data.error);
       }
     }
   };
@@ -105,6 +110,9 @@ export default function ProfileListings(): JSX.Element {
       const users = data.allUsers;
       if (users?.length) {
         setDisplayedProfiles(users);
+      } else if (data.error) {
+        setDisplayedProfiles([]);
+        setErrorMessage(data.error);
       }
     }
   };
@@ -113,15 +121,14 @@ export default function ProfileListings(): JSX.Element {
     <Grid container className={classes.profilesContainer}>
       {displayedProfiles.length ? (
         displayedProfiles.map((user) => {
-          if (!user.profileId) {
-            return <p>No Results Found.</p>;
-          }
           return (
             <Grid item key={user._id}>
               <ProfileCard profile={user} />
             </Grid>
           );
         })
+      ) : errorMessage !== '' ? (
+        <p>{errorMessage}</p>
       ) : (
         <Spinner />
       )}
