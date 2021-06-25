@@ -112,7 +112,7 @@ export default function RequestCard({ profile }: Props): JSX.Element {
       firstName: profile.firstName,
       lastName: profile.lastName,
       email: profile.email,
-      profileImg: profile.profileId.profileImg,
+      profileImg: profile.profileId[0].profileImg,
     };
     newConvo(
       conversations,
@@ -130,7 +130,7 @@ export default function RequestCard({ profile }: Props): JSX.Element {
   return (
     <>
       <Box textAlign="center">
-        <Typography variant="h4">{`$${profile.profileId.priceRate}/hr`}</Typography>
+        <Typography variant="h4">{`$${profile.profileId[0]?.priceRate}/hr`}</Typography>
       </Box>
       <Formik
         initialValues={{
