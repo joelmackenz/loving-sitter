@@ -37,7 +37,6 @@ exports.uploadImage = (req, res) => {
         const locationUrl = data.Location;
         locationUrls[data.key] = locationUrl;
         if (Object.entries(locationUrls).length === entries.length) {
-          console.log("locationUrls ", locationUrls);
           req.body.coverImg = locationUrls[`${req.user.id}/background`];
           req.body.profileImg = locationUrls[`${req.user.id}/profile`];
 

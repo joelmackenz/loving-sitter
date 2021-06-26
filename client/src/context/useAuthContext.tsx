@@ -9,7 +9,7 @@ interface IAuthContext {
   loggedInUser: User | null | undefined;
   updateLoginContext: (data: AuthApiDataSuccess, redirect?: string) => void;
   logout: () => void;
-  updateLoginFields: (dogSitter: boolean) => void;
+  updateLoginFields: (dogSitter: boolean, profileEmptyField?: boolean) => void;
 }
 
 export const AuthContext = createContext<IAuthContext>({
@@ -24,15 +24,28 @@ export const AuthProvider: FunctionComponent = ({ children }): JSX.Element => {
   const [loggedInUser, setLoggedInUser] = useState<User | null | undefined>();
   const history = useHistory();
 
-  const updateLoginFields = useCallback((dogSitter: boolean) => {
-    setLoggedInUser((prevState) => {
-      if (prevState !== null && prevState !== undefined) {
-        return {
-          ...prevState,
-          isDogSitter: dogSitter,
-        };
-      }
-    });
+  const updateLoginFields = useCallback((dogSitter: boolean, profileEmptyField?: boolean) => {
+    if (dogSitter) {
+      setLoggedInUser((prevState) => {
+        if (prevState !== null && prevState !== undefined) {
+          return {
+            ...prevState,
+            isDogSitter: dogSitter,
+          };
+        }
+      });
+    }
+
+    if (profileEmptyField) {
+      setLoggedInUser((prevState) => {
+        if (prevState !== null && prevState !== undefined) {
+          return {
+            ...prevState,
+            profileImg: '',
+          };
+        }
+      });
+    }
   }, []);
 
   const updateLoginContext = useCallback(

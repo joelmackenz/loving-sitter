@@ -161,7 +161,7 @@ exports.addImageUrls = asyncHandler(async (req, res, next) => {
   try {
     Profile.updateOne(
       { userId },
-      { $set: { profileImg: req.body.profileImg, coverImg: req.body.coverImg } },
+      { $set: { profileImg: req.body?.profileImg, coverImg: req.body?.coverImg } },
       { upsert: true },
       (error, profile) => {
         if (error) {

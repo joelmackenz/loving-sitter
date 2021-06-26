@@ -1,4 +1,4 @@
-import { useReducer, useContext, createContext, FunctionComponent } from 'react';
+import { useReducer, useContext, createContext, FunctionComponent, useEffect } from 'react';
 
 import { useAuth } from './useAuthContext';
 
@@ -81,10 +81,9 @@ const UserContext = createContext<IUseUser>({
 });
 
 const UserProvider: FunctionComponent = ({ children }): JSX.Element => {
-  const { loggedInUser } = useAuth();
   const [userState, dispatchUserContext] = useReducer(userReducer, {
     coverImg: '',
-    profileImg: loggedInUser?.profileImg ? loggedInUser.profileImg : '',
+    profileImg: '',
     isDogSitter: false,
     isAvailable: false,
     phone: '',
@@ -93,6 +92,16 @@ const UserProvider: FunctionComponent = ({ children }): JSX.Element => {
     availableDays: [],
     priceRate: '',
   });
+
+  const { loggedInUser, updateLoginFields } = useAuth();
+
+  useEffect(() => {
+    // making sure we only dispatch the upload profile on the first load of app
+    if (userState.profileImg !== '' || !loggedInUser?.profileImg) return;
+
+    dispatchUserContext({ type: 'UPLOAD_PROFILE', profileImg: loggedInUser.profileImg });
+    updateLoginFields(false, true);
+  }, [loggedInUser, userState]);
 
   return <UserContext.Provider value={{ userState, dispatchUserContext }}>{children}</UserContext.Provider>;
 };
