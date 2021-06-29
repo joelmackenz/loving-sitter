@@ -4,7 +4,7 @@ Loving Sitter is a web app made to connect animal owners with animal caretakers.
 
 ## Table of Contents
 
--   [General Info](#general-info)
+-   [General Info](#general)
 -   [Contributors](#contributors)
 -   [Technologies](#technologies)
 -   [Features](#features)
@@ -13,7 +13,7 @@ Loving Sitter is a web app made to connect animal owners with animal caretakers.
 
 ---
 
-## General Information
+## General
 
 This application was made as part of the co-hort program with Hatchways.
 
