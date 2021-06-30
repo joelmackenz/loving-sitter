@@ -3,29 +3,6 @@ const asyncHandler = require("express-async-handler");
 const Profile = require("../models/Profile");
 const User = require("../models/User");
 
-// @route POST /profile/:id
-// @descr Given a user ID and profile parameters, create a profile
-exports.createProfile = asyncHandler(async (req, res, next) => {
-    const userId = req.params.id;
-    const profileData = new Profile(req.body);
-
-    // Needs check to ensure that info sender owns the profile,
-    // and that there is no profile already there
-    await profileData.save().then(() => {
-        User.updateOne(
-            { _id: userId },
-            { $set: { profile: profileData._id } },
-            (err) => {
-                if (err) {
-                    console.log(err);
-                    res.send(err);
-                } else {
-                    res.json({ success: true, msg: "Message added" });
-                }
-            }
-        );
-    });
-});
 
 // @route PUT /profile/:id
 // @Given an ID and new parameters, update the profile
@@ -107,6 +84,47 @@ exports.createProfile = asyncHandler(async (req, res, next) => {
 
 })
 
+exports.getOneFullUserProfile = asyncHandler(async (req, res, next) => {
+  const userId = req.params.userId;
+  // validate id
+  if (!ObjectId.isValid(userId)) {
+    return res.status(400).send(Error("User ID is invalid."));
+  };
+
+  try {
+    const user = await User.findOne({
+      _id: userId,
+      isDogSitter: { $eq: true },
+      profileId: {
+          $exists: true,
+      },
+  })
+      .lean()
+      .select("firstName lastName email isDogSitter")
+      .populate({
+          path: "profileId",
+          select: "-__v -availableDays"
+      });
+
+      const newProfileId = [{...user?.profileId}];
+      const newUser = user;
+      if (newUser?.profileId) {
+        newUser.profileId = newProfileId;
+      }
+      
+      return res.status(400).json({
+        success: 'Retrieved successfully',
+        user: newUser
+      })
+
+  } catch (error) {
+    res.status(500).json({
+      error: error.message
+    })
+  }
+
+})
+
 
 // @route GET /profile/
 exports.getOneProfile = asyncHandler(async (req, res, next) => {
@@ -143,7 +161,7 @@ exports.addImageUrls = asyncHandler(async (req, res, next) => {
   try {
     Profile.updateOne(
       { userId },
-      { $set: { profileImg: req.body.profileImg, coverImg: req.body.coverImg } },
+      { $set: { profileImg: req.body?.profileImg, coverImg: req.body?.coverImg } },
       { upsert: true },
       (error, profile) => {
         if (error) {
@@ -176,28 +194,55 @@ exports.getAllProfiles = asyncHandler(async (req, res, next) => {
         ? req.body.numberOfUsers + 1
         : 100;
     try {
-        const users = [];
-        const allUsers = await User.find({
-            _id: { $ne: req.user.id },
-            profile: {
-                $exists: true,
-            },
-        })
-            .limit(numberOfUsers)
-            .populate({
-                path: "profile",
-                match: { isDogSitter: { $eq: true } },
-            });
-        // Sets users to array of users with populated profiles
-        allUsers.map((user) => {
-            if (user.profile) {
-                users.push(user);
-            }
-        });
-        // Returns only users with profiles
-        res.status(200).json({
-            users,
-        });
+      User.aggregate(
+        [
+          { 
+            $match: {
+            $expr: {$ne: ["$_id", {"$toObjectId": req.user.id}]},
+            isDogSitter: { $eq: true },
+            profileId: { $exists: true }
+          }},
+          {
+            $project: {
+              firstName: 1,
+              lastName: 1,
+              email: 1,
+              isDogSitter: 1,
+              profileId: 1,
+          }},
+          {
+            $lookup: {
+              from: "profiles",
+              let: { id: "$profileId" },
+              pipeline: [
+                {
+                  $project: {
+                    __v: 0,
+                    availableDays: 0,
+                }},
+                {
+                  $match: {
+                    $expr: {$eq: ["$_id", {"$toObjectId": "$$id"}]},
+                }}
+              ],
+              as: "profileId",
+          }},
+          {
+            $match: {
+              "profileId": {"$ne": []}
+          }},
+        ],
+        (error, result) => {
+          if (error || !result.length) {
+            return res.status(400).json({
+              error: "No Search Result Found"
+            })
+          }
+          return res.status(200).json({
+            allUsers: result
+          })
+        }
+      );
     } catch (e) {
         res.status(500);
         throw new Error(e.message);
@@ -209,29 +254,56 @@ exports.getAllProfiles = asyncHandler(async (req, res, next) => {
 exports.getProfilesBySearch = asyncHandler(async (req, res, next) => {
     const search = req.params.search;
     try {
-        const foundUsers = await User.find({
-            _id: { $ne: req.user.id },
-            profile: {
-                $exists: true,
-            },
-        }).populate({
-            path: "profile",
-            match: { isDogSitter: { $eq: true } },
-        });
-        // Sets users to array of users with populated profiles
-        const users = [];
-        foundUsers.map((user) => {
-            if (user.profile) {
-                const city = user.profile.address.city.toLowerCase();
-                if (city.includes(search)) {
-                    users.push(user);
-                }
+        User.aggregate(
+          [
+            { 
+              $match: { 
+              $expr: {$ne: ["$_id", {"$toObjectId": req.user.id}]},
+              isDogSitter: { $eq: true },
+              profileId: { $exists: true }
+            }},
+            {
+              $project: {
+                firstName: 1,
+                lastName: 1,
+                email: 1,
+                isDogSitter: 1,
+                profileId: 1,
+            }},
+            {
+              $lookup: {
+                from: "profiles",
+                let: { id: "$profileId" },
+                pipeline: [
+                  {
+                    $project: {
+                      __v: 0,
+                      availableDays: 0,
+                  }},
+                  {
+                    $match: {
+                      $expr: {$eq: ["$_id", {"$toObjectId": "$$id"}]},
+                      city: search
+                  }}
+                ],
+                as: "profileId",
+            }},
+            {
+              $match: {
+                "profileId": {"$ne": []}
+            }},
+          ],
+          (error, result) => {
+            if (error || !result.length) {
+              return res.status(400).json({
+                error: "No Search Result Found"
+              })
             }
-        });
-        // Returns only users with profiles
-        res.status(200).json({
-            users,
-        });
+            return res.status(200).json({
+              allUsers: result
+            })
+          }
+        );
     } catch (e) {
         res.status(500);
         throw new Error(e.message);
@@ -242,33 +314,58 @@ exports.getProfilesBySearch = asyncHandler(async (req, res, next) => {
 // @descr Gets an array of users who have profiles based on given availability days
 exports.getProfilesByDay = asyncHandler(async (req, res, next) => {
     const search = req.params.search.split(",");
+
     try {
-        const foundUsers = await User.find({
-            _id: { $ne: req.user.id },
-            profile: {
-                $exists: true,
-            },
-        }).populate({
-            path: "profile",
-            match: { isDogSitter: { $eq: true } },
-        });
-        // Sets users to array of users whos availability includes a day in the search array
-        const users = [];
-        foundUsers.map((user) => {
-            if (user.profile) {
-                const availableDays = user.profile.availableDates;
-                search.map((day) => {
-                    if (availableDays.includes(day)) {
-                        users.push(user);
-                        foundUsers.pop(user);
-                    }
-                });
+        User.aggregate(
+          [
+            { 
+              $match: { 
+              $expr: {$ne: ["$_id", {"$toObjectId": req.user.id}]},
+              isDogSitter: { $eq: true },
+              profileId: { $exists: true }
+            }},
+            {
+              $project: {
+                firstName: 1,
+                lastName: 1,
+                email: 1,
+                isDogSitter: 1,
+                profileId: 1,
+            }},
+            {
+              $lookup: {
+                from: "profiles",
+                let: { id: "$profileId" },
+                pipeline: [
+                  {
+                    $project: {
+                      __v: 0,
+                  }},
+                  {
+                    $match: {
+                      $expr: {$eq: ["$_id", {"$toObjectId": "$$id"}]},
+                      availableDays: { $in: search }
+                  }}
+                ],
+                as: "profileId",
+            }},
+            {
+              $match: {
+                "profileId": {"$ne": []}
+            }},
+          ],
+          (error, result) => {
+            if (error || !result.length) {
+              return res.status(400).json({
+                error: "No Search Result Found"
+              })
             }
-        });
-        // Returns only users with profiles
-        res.status(200).json({
-            users,
-        });
+            return res.status(200).json({
+              allUsers: result
+            })
+          }
+        );
+
     } catch (e) {
         res.status(500);
         throw new Error(e.message);

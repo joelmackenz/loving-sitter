@@ -14,13 +14,23 @@ const profileSchema = new Schema({
     type: Boolean, 
     default: false 
   },
+  availableDays: [{
+    type: String,
+    enum: [
+      'mon',
+      'tues',
+      'wed',
+      'thurs',
+      'fri',
+      'sat',
+      'sun',
+    ],
+  }],  
   phone: String,
   city: String,
   description: String,
   profileImg: String,
   coverImg: String,
-  startDate: Date,
-  endDate: Date,
   priceRate: Number,
 });
 

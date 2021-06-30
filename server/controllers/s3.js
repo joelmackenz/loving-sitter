@@ -11,10 +11,9 @@ AWS.config.update({
 exports.uploadImage = (req, res) => {
   const s3 = new AWS.S3();
 
-  let locationUrls = [];
+  let locationUrls = {};
 
   const entries = Object.entries(req.files);
-
   for (let index = 0; index < entries.length; index++) {
     const fieldName = entries[index];
     const file = fieldName[1][0];
@@ -36,10 +35,10 @@ exports.uploadImage = (req, res) => {
       if(data) {
         // store locationUrl in Database;
         const locationUrl = data.Location;
-        locationUrls.push({ locationUrl, key: data.key });
-        if (locationUrls.length === entries.length) {
-          req.body.coverImg = locationUrls[0].locationUrl;
-          req.body.profileImg = locationUrls[1].locationUrl;
+        locationUrls[data.key] = locationUrl;
+        if (Object.entries(locationUrls).length === entries.length) {
+          req.body.coverImg = locationUrls[`${req.user.id}/background`];
+          req.body.profileImg = locationUrls[`${req.user.id}/profile`];
 
           addImageUrls(req, res);
         }

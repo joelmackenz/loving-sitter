@@ -1,9 +1,6 @@
-import { useState } from 'react';
-import clsx from 'clsx';
+import { useState, ChangeEvent, FormEvent } from 'react';
 import { Button, Grid, TextField, Typography } from '@material-ui/core';
 import InputLabel from '@material-ui/core/InputLabel';
-import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import Box from '@material-ui/core/Box';
 import { RouteComponentProps, Redirect } from 'react-router-dom';
 
@@ -12,22 +9,34 @@ import useStyles from './useStyles';
 import LandingNavbar from '../../components/LandingNavbar/LandingNavbar';
 import { useAuth } from '../../context/useAuthContext';
 import { CustomizedRouterState } from '../Login/Login';
+import { useSnackBar } from '../../context/useSnackbarContext';
 
-export default function Main({ location }: RouteComponentProps): JSX.Element {
-  const [dropInDate, setDropInDate] = useState<Date | null>(null);
-  const [dropOffDate, setDropOffDate] = useState<Date | null>(null);
+export default function Main({ location, history }: RouteComponentProps): JSX.Element {
+  const [searchCity, setSearchCity] = useState<string>('');
+  const { updateSnackBarMessage } = useSnackBar();
   const classes = useStyles();
 
   const { loggedInUser } = useAuth();
 
   const state = location.state as CustomizedRouterState;
 
-  const handleDropInDateChange = (date: Date | null) => {
-    setDropInDate(date);
-  };
+  const handleChange = (event: ChangeEvent<HTMLInputElement>): void => setSearchCity(event.target.value);
 
-  const handleDropOffDateChagne = (date: Date | null) => {
-    setDropOffDate(date);
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (searchCity === '') {
+      return updateSnackBarMessage('Please enter city value first.');
+    }
+
+    if (!loggedInUser?._id) {
+      history.push({
+        pathname: '/login',
+        state: {
+          previousPath: location.pathname,
+          searchCity,
+        },
+      });
+    }
   };
 
   if (
@@ -55,7 +64,7 @@ export default function Main({ location }: RouteComponentProps): JSX.Element {
                   dog deserves
                 </Box>
               </Typography>
-              <form>
+              <form onSubmit={handleSubmit}>
                 <InputLabel htmlFor="search" className={classes.searchText}>
                   WHERE
                 </InputLabel>
@@ -63,46 +72,13 @@ export default function Main({ location }: RouteComponentProps): JSX.Element {
                   id="search"
                   name="search"
                   variant="outlined"
-                  placeholder="Anywhere"
+                  placeholder="City - Toronto"
                   className={classes.searchInput}
                   fullWidth
+                  onChange={handleChange}
                 />
-                <InputLabel htmlFor="dropIn" className={clsx(classes.searchText, classes.inlineDisplay)}>
-                  DROP IN /
-                </InputLabel>
-                <InputLabel htmlFor="dropOff" className={clsx(classes.searchText, classes.inlineDisplay)}>
-                  &nbsp;DROP OFF
-                </InputLabel>
-                <Box className={classes.dateRangeContainer}>
-                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <KeyboardDatePicker
-                      id="dropIn"
-                      name="dropIn"
-                      className={classes.dateRange}
-                      variant="inline"
-                      inputVariant="outlined"
-                      placeholder="mm/dd/yyyy"
-                      format="MM/dd/yyyy"
-                      value={dropInDate}
-                      onChange={handleDropInDateChange}
-                    />
-                  </MuiPickersUtilsProvider>
-                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <KeyboardDatePicker
-                      id="dropOff"
-                      name="dropOff"
-                      className={classes.dateRange}
-                      variant="inline"
-                      inputVariant="outlined"
-                      placeholder="mm/dd/yyyy"
-                      format="MM/dd/yyyy"
-                      value={dropOffDate}
-                      onChange={handleDropOffDateChagne}
-                    />
-                  </MuiPickersUtilsProvider>
-                </Box>
                 <Grid>
-                  <Button variant="contained" color="primary" className={classes.mainPageBtn}>
+                  <Button type="submit" variant="contained" color="primary" className={classes.mainPageBtn}>
                     FIND MY DOG SITTER
                   </Button>
                 </Grid>

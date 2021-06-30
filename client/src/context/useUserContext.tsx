@@ -1,11 +1,14 @@
-import { useReducer, useContext, createContext, FunctionComponent } from 'react';
+import { useReducer, useContext, createContext, FunctionComponent, useEffect } from 'react';
+
+import { useAuth } from './useAuthContext';
+
+export type AvailableDays = 'mon' | 'tues' | 'wed' | 'thurs' | 'fri' | 'sat' | 'sun';
 
 export interface EditProfileFields {
   phone: string;
   city: string;
   description: string;
-  startDate: string;
-  endDate: string;
+  availableDays: AvailableDays[];
   priceRate: string;
 }
 
@@ -14,7 +17,7 @@ export interface IUserContext extends EditProfileFields {
   profileImg: string;
   isDogSitter: boolean;
   isAvailable: boolean;
-  [key: string]: string | boolean;
+  [key: string]: string | boolean | AvailableDays[];
 }
 
 type Action =
@@ -44,11 +47,9 @@ const userReducer = (state: IUserContext, action: Action) => {
     case 'SET_IS_DOG_SITTER':
       return { ...state, isDogSitter: true };
     case 'UPDATE_EDIT_PROFILE_FIELDS':
-      const { startDate, endDate, priceRate, ...otherFields } = action.fields;
+      const { priceRate, ...otherFields } = action.fields;
       return {
         ...state,
-        startDate: startDate !== null ? startDate.substring(0, 10) : '',
-        endDate: endDate !== null ? endDate.substring(0, 10) : '',
         priceRate: `${priceRate}`,
         ...otherFields,
       };
@@ -61,7 +62,7 @@ const userReducer = (state: IUserContext, action: Action) => {
   }
 };
 
-const UserContext = createContext({
+const UserContext = createContext<IUseUser>({
   userState: {
     coverImg: '',
     profileImg: '',
@@ -70,8 +71,7 @@ const UserContext = createContext({
     phone: '',
     city: '',
     description: '',
-    startDate: '',
-    endDate: '',
+    availableDays: [],
     priceRate: '',
   },
   // eslint-disable-next-line
@@ -89,10 +89,20 @@ const UserProvider: FunctionComponent = ({ children }): JSX.Element => {
     phone: '',
     city: '',
     description: '',
-    startDate: '',
-    endDate: '',
+    availableDays: [],
     priceRate: '',
   });
+
+  const { loggedInUser, updateLoginFields } = useAuth();
+
+  useEffect(() => {
+    // making sure we only dispatch the upload profile on the first load of app
+    if (userState.profileImg !== '' || !loggedInUser?.profileImg) return;
+
+    dispatchUserContext({ type: 'UPLOAD_PROFILE', profileImg: loggedInUser.profileImg });
+    updateLoginFields(false, true);
+  }, [loggedInUser, userState]);
+
   return <UserContext.Provider value={{ userState, dispatchUserContext }}>{children}</UserContext.Provider>;
 };
 

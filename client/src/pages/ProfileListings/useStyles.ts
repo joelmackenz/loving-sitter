@@ -7,7 +7,9 @@ const useStyles = makeStyles({
   },
   title: {
     fontWeight: 'bold',
-    margin: '2rem',
+    marginTop: '5.5rem',
+    marginBottom: '1.3rem',
+    textTransform: 'capitalize',
   },
   card: {
     margin: '2rem',
@@ -120,6 +122,9 @@ const useStyles = makeStyles({
   showMore: {
     margin: '1rem',
     marginBottom: '2rem',
+  },
+  cardLinkContainer: {
+    textDecoration: 'none',
   },
 });
 

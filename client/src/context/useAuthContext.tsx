@@ -9,18 +9,44 @@ interface IAuthContext {
   loggedInUser: User | null | undefined;
   updateLoginContext: (data: AuthApiDataSuccess, redirect?: string) => void;
   logout: () => void;
+  updateLoginFields: (dogSitter: boolean, profileEmptyField?: boolean) => void;
 }
 
 export const AuthContext = createContext<IAuthContext>({
   loggedInUser: undefined,
   updateLoginContext: () => null,
   logout: () => null,
+  updateLoginFields: () => null,
 });
 
 export const AuthProvider: FunctionComponent = ({ children }): JSX.Element => {
   // default undefined before loading, once loaded provide user or null if logged out
   const [loggedInUser, setLoggedInUser] = useState<User | null | undefined>();
   const history = useHistory();
+
+  const updateLoginFields = useCallback((dogSitter: boolean, profileEmptyField?: boolean) => {
+    if (dogSitter) {
+      setLoggedInUser((prevState) => {
+        if (prevState !== null && prevState !== undefined) {
+          return {
+            ...prevState,
+            isDogSitter: dogSitter,
+          };
+        }
+      });
+    }
+
+    if (profileEmptyField) {
+      setLoggedInUser((prevState) => {
+        if (prevState !== null && prevState !== undefined) {
+          return {
+            ...prevState,
+            profileImg: '',
+          };
+        }
+      });
+    }
+  }, []);
 
   const updateLoginContext = useCallback(
     (data: AuthApiDataSuccess, redirect?: string | undefined) => {
@@ -55,7 +81,7 @@ export const AuthProvider: FunctionComponent = ({ children }): JSX.Element => {
           // don't need to provide error feedback as this just means user doesn't have saved cookies or the cookies have not been authenticated on the backend
           setLoggedInUser(null);
           history.push({
-            pathname: '/login',
+            pathname: '/',
             state: { previousPath: location.pathname },
           });
         }
@@ -63,7 +89,11 @@ export const AuthProvider: FunctionComponent = ({ children }): JSX.Element => {
     };
     checkLoginWithCookies();
   }, [updateLoginContext, history]);
-  return <AuthContext.Provider value={{ loggedInUser, updateLoginContext, logout }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ loggedInUser, updateLoginContext, logout, updateLoginFields }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export function useAuth(): IAuthContext {

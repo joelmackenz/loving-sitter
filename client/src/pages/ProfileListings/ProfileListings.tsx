@@ -8,6 +8,9 @@ import Snackbar from '@material-ui/core/Snackbar';
 import SearchIcon from '@material-ui/icons/Search';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import CloseIcon from '@material-ui/icons/Close';
+import { RouteComponentProps } from 'react-router-dom';
+
+import { useSnackBar } from '../../context/useSnackbarContext';
 import DateSelectPopover from './DaySelectPopover';
 import ProfileCard from './ProfileCard';
 import Alert from './alert';
@@ -15,15 +18,24 @@ import useStyles from './useStyles';
 import getProfiles from '../../helpers/APICalls/getProfiles';
 import searchProfilesByCity from '../../helpers/APICalls/searchProfilesByCity';
 import searchProfilesByDay from '../../helpers/APICalls/searchProfilesByDay';
+import Spinner from '../../components/Spinner/Spinner';
+import { IProfile } from '../../interface/Profile';
+import { CustomizedRouterState } from '../Login/Login';
 
-import { User } from '../../interface/User';
+export interface Profile {
+  firstName: string;
+  lastName: string;
+  isDogSitter: boolean;
+  email: string;
+  _id: string;
+  profileId: IProfile[];
+}
 
-// Temporary user data to show functionality
-import { Profile } from '../../interface/Profile';
-
-export default function ProfileListings(): JSX.Element {
+export default function ProfileListings({ location }: RouteComponentProps): JSX.Element {
   const classes = useStyles();
+  const state = location.state as CustomizedRouterState;
 
+  const { updateSnackBarMessage } = useSnackBar();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [calendarOpen, setCalendarOpen] = useState<true | false>(false);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
@@ -31,6 +43,7 @@ export default function ProfileListings(): JSX.Element {
   const [displayedProfiles, setDisplayedProfiles] = useState<Profile[]>(profiles.slice(0, 6));
   const [snackbarOpen, setSnackbarOpen] = useState<true | false>(false);
   const [search, setSearch] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const handleShowMore = () => {
     const numberOfUsers = displayedProfiles.length;
@@ -54,19 +67,15 @@ export default function ProfileListings(): JSX.Element {
 
   const initializeProfiles = () => {
     getProfiles().then((data) => {
-      const profileList: any = [];
-      const users = data.users;
-      if (users) {
-        for (let i = 0; i < users.length; i++) {
-          if (users[i].profile) {
-            profileList.push(users[i].profile);
-            setDisplayedProfiles(profileList.slice(0, 6));
-          } else {
-            break;
-          }
-        }
+      const users = data.allUsers;
+      if (users?.length) {
+        setDisplayedProfiles(users.slice(0, 6));
+        setProfiles(users);
+      } else if (data.error) {
+        setErrorMessage(data.error);
+      } else {
+        updateSnackBarMessage('No Dog Sitter Found!');
       }
-      setProfiles(profileList);
     });
   };
 
@@ -81,20 +90,16 @@ export default function ProfileListings(): JSX.Element {
   };
 
   const updateBySearch = async () => {
-    if (!search) {
+    if (!search && !state?.searchCity) {
       initializeProfiles();
     } else {
-      const searchResults: Profile[] = [];
       setDisplayedProfiles([]);
       const data = await searchProfilesByCity(search);
-      const users: any = data.users;
-      if (users) {
-        users.map((user: User) => {
-          if (user.profile) {
-            searchResults.push(user.profile);
-          }
-        });
-        setDisplayedProfiles(searchResults);
+      const users = data.allUsers;
+      if (users?.length) {
+        setDisplayedProfiles(users);
+      } else if (data.error) {
+        setErrorMessage(data.error);
       }
     }
   };
@@ -103,22 +108,44 @@ export default function ProfileListings(): JSX.Element {
     if (!selectedDays) {
       initializeProfiles();
     } else {
-      const searchResults: Profile[] = [];
       const data = await searchProfilesByDay(selectedDays);
-      const users: any = data.users;
-      if (users) {
-        users.map((user: User) => {
-          if (user.profile) {
-            searchResults.push(user.profile);
-          }
-        });
-        setDisplayedProfiles(searchResults);
+      const users = data.allUsers;
+      if (users?.length) {
+        setDisplayedProfiles(users);
+      } else if (data.error) {
+        setDisplayedProfiles([]);
+        setErrorMessage(data.error);
       }
     }
   };
 
+  const profileCardGrid = (
+    <Grid container className={classes.profilesContainer}>
+      {displayedProfiles.length ? (
+        displayedProfiles.map((user) => {
+          return (
+            <Grid item key={user._id}>
+              <ProfileCard profile={user} />
+            </Grid>
+          );
+        })
+      ) : errorMessage !== '' ? (
+        <p>{errorMessage}</p>
+      ) : (
+        <Spinner />
+      )}
+      <Snackbar open={snackbarOpen} autoHideDuration={2000} onClose={handleSnackbarClose}>
+        <Alert severity="info">No more users found</Alert>
+      </Snackbar>
+    </Grid>
+  );
+
   useEffect(() => {
-    initializeProfiles();
+    if (state?.searchCity) {
+      setSearch(state.searchCity);
+    } else {
+      initializeProfiles();
+    }
   }, []);
 
   useEffect(() => {
@@ -132,7 +159,7 @@ export default function ProfileListings(): JSX.Element {
   return (
     <Grid container className={classes.root}>
       <Typography variant="h4" component="h1" className={classes.title}>
-        Your search results
+        Choose Your Dog Sitter
       </Typography>
       <Grid>
         <Grid container className={classes.searchDateContainer}>
@@ -141,6 +168,7 @@ export default function ProfileListings(): JSX.Element {
             <InputBase
               placeholder="Search by city…"
               inputProps={{ 'aria-label': 'search' }}
+              value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
               }}
@@ -160,16 +188,7 @@ export default function ProfileListings(): JSX.Element {
           </Grid>
         </Grid>
       </Grid>
-      <Grid container className={classes.profilesContainer}>
-        {displayedProfiles.map((profile) => (
-          <Grid item key={profile._id}>
-            <ProfileCard profile={profile} />
-          </Grid>
-        ))}
-        <Snackbar open={snackbarOpen} autoHideDuration={2000} onClose={handleSnackbarClose}>
-          <Alert severity="info">No more users found</Alert>
-        </Snackbar>
-      </Grid>
+      {profileCardGrid}
       {!search && daySearchDisplay === 'any' && (
         <Button onClick={handleShowMore} variant="outlined" className={classes.showMore}>
           Show More

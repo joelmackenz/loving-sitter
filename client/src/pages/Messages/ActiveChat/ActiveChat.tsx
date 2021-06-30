@@ -71,6 +71,10 @@ const ActiveChat: FC<Props> = (props) => {
             currentUserId={loggedInUser?._id ? loggedInUser._id : ''}
           />
         </>
+      ) : activeConversation === '' ? (
+        <Box paddingTop="7rem" display="flex" justifyContent="center">
+          <p>Select any Conversation to chat.</p>
+        </Box>
       ) : (
         <Spinner />
       )}

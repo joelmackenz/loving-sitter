@@ -2,19 +2,11 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 import { Box, Card, CardContent, CardMedia, Typography } from '@material-ui/core';
 
 import defaultCoverImg from '../../Images/default-profile-detail-cover.jpg';
-import defaultProfileImg from '../../Images/default-profile-image.jpg';
 import useStyles from './useStyles';
+import { Profile } from '../../pages/ProfileListings/ProfileListings';
 
 interface Props {
-  profile: {
-    coverImg: string;
-    profileImg: string;
-    firstName: string;
-    lastName: string;
-    address: string;
-    description: string;
-    galleryImg: [string] | null;
-  };
+  profile: Profile;
 }
 
 export default function ProfileDetailCard({ profile }: Props): JSX.Element {
@@ -22,42 +14,43 @@ export default function ProfileDetailCard({ profile }: Props): JSX.Element {
   return (
     <Card className={classes.cardContainer}>
       <CardMedia
-        image={profile.coverImg ? profile.coverImg : defaultCoverImg}
+        image={profile.profileId[0]?.coverImg ? profile.profileId[0].coverImg : defaultCoverImg}
         title="Contemplative Reptile"
         className={classes.coverImg}
       />
       <CardMedia
-        image={profile.profileImg ? profile.profileImg : defaultProfileImg}
+        image={
+          profile.profileId[0]?.profileImg
+            ? profile.profileId[0].profileImg
+            : `https://robohash.org/${profile.email}.png`
+        }
         title="Contemplative Reptile"
         className={classes.profileImg}
       />
       <CardContent className={classes.cardContent}>
-        <Typography variant="h4" className={classes.profileName}>
+        <Typography variant="h4" component="h1" className={classes.profileName}>
           {profile.firstName} {profile.lastName}
         </Typography>
-        <Typography variant="h6" color="textSecondary" className={classes.subInfo}>
+        <Typography variant="h6" component="h2" color="textSecondary" className={classes.subInfo}>
           Loving pet sitter
         </Typography>
-        {profile.address && (
+        {profile.profileId[0]?.city && (
           <Box className={classes.profileLocation}>
             <LocationOnIcon color="primary" />
             <Typography component="span" display="block">
-              {profile.address}
+              {profile.profileId[0].city}
             </Typography>
           </Box>
         )}
         <Box className={classes.introduction}>
-          {profile.description && (
+          {profile.profileId[0]?.description && (
             <Box>
-              <Typography variant="h5">About me</Typography>
-              <Typography variant="subtitle1">{profile.description}</Typography>
+              <Typography variant="h5" component="h3">
+                About me
+              </Typography>
+              <Typography variant="subtitle1">{profile.profileId[0].description}</Typography>
             </Box>
           )}
-          <Box>
-            {profile.galleryImg?.map((image, index) => {
-              <CardMedia key={index} image={image} />;
-            })}
-          </Box>
         </Box>
       </CardContent>
     </Card>

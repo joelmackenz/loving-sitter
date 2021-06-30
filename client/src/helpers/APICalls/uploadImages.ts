@@ -13,7 +13,7 @@ const uploadImagesAPI = async (data: FormData): Promise<S3UploadAPIData> => {
   return await fetch(`/upload/uploadimage`, fetchOptions)
     .then((res) => res.json())
     .catch(() => ({
-      error: { message: 'Unable to connect to server. Please try again' },
+      error: 'Unable to connect to server. Please try again',
     }));
 };
 

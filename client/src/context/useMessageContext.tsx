@@ -32,7 +32,8 @@ type ActionConvos =
   | { type: 'UPDATE_CONVOS'; conversations: IConversations[] }
   | { type: 'ADD_ONLINE_USER'; recipientUserId: string }
   | { type: 'REMOVE_OFFLINE_USER'; recipientUserId: string }
-  | { type: 'UPDATE_LATEST_MESSAGE'; activeConversation: string; message: string; createdAt: string };
+  | { type: 'UPDATE_LATEST_MESSAGE'; activeConversation: string; message: string; createdAt: string }
+  | { type: 'ADD_NEW_CONVO'; conversation: IConversations };
 
 export type DispatchConvos = (action: ActionConvos) => void;
 
@@ -72,6 +73,14 @@ const convoReducer = (state: IConversations[], action: ActionConvos) => {
   switch (action.type) {
     case 'UPDATE_CONVOS':
       return action.conversations;
+    case 'ADD_NEW_CONVO':
+      const convoExists = state.find((convo) => convo.conversationId === action.conversation.conversationId);
+      // if conversation doesn't exist, only then create a new Convo
+      if (!convoExists?.conversationId) {
+        return [{ ...action.conversation }, ...state];
+      } else {
+        return state;
+      }
     case 'ADD_ONLINE_USER':
       return state.map((convo) => {
         if (convo.recipientUser.recipientUserId === action.recipientUserId) {

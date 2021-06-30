@@ -4,17 +4,21 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Grid from '@material-ui/core/Grid';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
+import Checkbox from '@material-ui/core/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
-import { format } from 'date-fns';
 
 import { useSnackBar } from '../../context/useSnackbarContext';
 import { useAuth } from '../../context/useAuthContext';
 import useStyles from './useStyles';
-import { IUseUser } from '../../context/useUserContext';
+import { IUseUser, AvailableDays } from '../../context/useUserContext';
 import { updateAuthFields, createOrUpdateProfileFields } from '../../helpers/APICalls/profileFields';
 
 interface FormValues {
@@ -24,16 +28,33 @@ interface FormValues {
   phone: string;
   city: string;
   description: string;
-  startDate: string;
-  endDate: string;
+  availableDays: AvailableDays[];
   priceRate: string;
-  [key: string]: string;
+  [key: string]: string | AvailableDays[];
 }
 
 interface Props extends IUseUser {
   handleChangedAnything: () => void;
   handleChangedAnythingToFalse: () => void;
 }
+
+type DaysName = 'sun' | 'mon' | 'tues' | 'wed' | 'thurs' | 'fri' | 'sat';
+
+interface FormCheckBox {
+  id: number;
+  label: string;
+  value: DaysName;
+}
+
+const formCheckBoxes: FormCheckBox[] = [
+  { id: 1, label: 'Sunday', value: 'sun' },
+  { id: 2, label: 'Monday', value: 'mon' },
+  { id: 3, label: 'Tuesday', value: 'tues' },
+  { id: 4, label: 'Wednesday', value: 'wed' },
+  { id: 5, label: 'Thursday', value: 'thurs' },
+  { id: 6, label: 'Friday', value: 'fri' },
+  { id: 7, label: 'Saturday', value: 'sat' },
+];
 
 const EditProfile: FC<Props> = (props) => {
   const classes = useStyles();
@@ -58,7 +79,9 @@ const EditProfile: FC<Props> = (props) => {
         key !== 'profileImg' &&
         key !== 'isDogSitter' &&
         key !== 'isAvailable' &&
-        userState[key] === otherValues[key]
+        userState[key] === otherValues[key] &&
+        Object.entries(userState['availableDays']).toString() ===
+          Object.entries(otherValues['availableDays']).toString()
       ) {
         otherFieldsChange = false;
       } else if (key !== 'coverImg' && key !== 'profileImg' && key !== 'isDogSitter' && key !== 'isAvailable') {
@@ -115,8 +138,7 @@ const EditProfile: FC<Props> = (props) => {
             phone: userState.phone ? userState.phone : '',
             city: userState.city ? userState.city : '',
             description: userState.description ? userState.description : '',
-            startDate: userState.startDate ? userState.startDate : '',
-            endDate: userState.endDate ? userState.endDate : '',
+            availableDays: userState.availableDays.length ? userState.availableDays : [],
             priceRate: userState.priceRate ? userState.priceRate : '',
           }}
           validationSchema={Yup.object().shape({
@@ -125,22 +147,20 @@ const EditProfile: FC<Props> = (props) => {
             email: Yup.string().required('Email is required').email('Email is not valid'),
             description: loggedInUser?.isDogSitter ? Yup.string().required('Description is required.') : Yup.string(),
             city: Yup.string().required('City is required.'),
-            startDate: loggedInUser?.isDogSitter ? Yup.string().required('Start Date is required.') : Yup.string(),
-            endDate: loggedInUser?.isDogSitter ? Yup.string().required('End Date is required.') : Yup.string(),
             phone: Yup.string()
               .required('Please, enter your phone number')
               .matches(/^[0-9]+$/, 'Must contain numbers only')
               .length(10, 'Number must be 10 digits'),
             priceRate: loggedInUser?.isDogSitter
               ? Yup.string()
-                  .required('Please, enter your phone number')
+                  .required('Please, enter your Price Rate')
                   .matches(/^[0-9]+$/, 'Must contain numbers only')
-                  .max(3, 'Value must br less than $100')
+                  .max(2, 'Value must be less than $100')
               : Yup.string(),
           })}
           onSubmit={handleSubmit}
         >
-          {({ handleSubmit, handleChange, values, touched, errors, isSubmitting }) => (
+          {({ handleSubmit, handleChange, values, touched, errors, isSubmitting, setValues }) => (
             <form onSubmit={handleSubmit} noValidate>
               <Grid container>
                 <Grid item md={3} xs={12} className={classes.inputLabelGridContainer}>
@@ -318,69 +338,49 @@ const EditProfile: FC<Props> = (props) => {
                       xs={12}
                       className={`${classes.inputLabelGridContainer} ${classes.inputLabelMargin}`}
                     >
-                      <InputLabel htmlFor="startDate">start Date</InputLabel>
+                      <FormLabel component="legend">Availability</FormLabel>
                     </Grid>
                     <Grid item md={7} xs={12}>
-                      <TextField
-                        type="date"
-                        id="startDate"
-                        fullWidth
-                        margin="normal"
-                        name="startDate"
-                        inputProps={{
-                          min: format(new Date(), 'yyyy-MM-dd'),
-                        }}
-                        autoComplete="startDate"
-                        variant="outlined"
-                        placeholder="Start Date"
-                        helperText={touched.startDate ? errors.startDate : ''}
-                        error={touched.startDate && Boolean(errors.startDate)}
-                        value={values.startDate}
-                        onChange={(event) => {
-                          if (event.target.value !== userState.startDate) {
-                            handleChangedAnything();
-                          } else {
-                            handleChangedAnythingToFalse();
-                          }
-                          return handleChange(event);
-                        }}
-                        required
-                      />
-                    </Grid>
-                    <Grid
-                      item
-                      md={3}
-                      xs={12}
-                      className={`${classes.inputLabelGridContainer} ${classes.inputLabelMargin}`}
-                    >
-                      <InputLabel htmlFor="endDate">end Date</InputLabel>
-                    </Grid>
-                    <Grid item md={7} xs={12}>
-                      <TextField
-                        type="date"
-                        id="endDate"
-                        fullWidth
-                        margin="normal"
-                        name="endDate"
-                        autoComplete="endDate"
-                        variant="outlined"
-                        inputProps={{
-                          min: format(new Date(), 'yyyy-MM-dd'),
-                        }}
-                        placeholder="End Date"
-                        helperText={touched.endDate ? errors.endDate : ''}
-                        error={touched.endDate && Boolean(errors.endDate)}
-                        value={values.endDate}
-                        onChange={(event) => {
-                          if (event.target.value !== userState.endDate) {
-                            handleChangedAnything();
-                          } else {
-                            handleChangedAnythingToFalse();
-                          }
-                          return handleChange(event);
-                        }}
-                        required
-                      />
+                      <FormControl component="fieldset">
+                        <FormGroup>
+                          {formCheckBoxes.map((checkbox) => (
+                            <FormControlLabel
+                              key={checkbox.id}
+                              control={
+                                <Checkbox
+                                  color="primary"
+                                  checked={values.availableDays.includes(checkbox.value)}
+                                  onChange={(event) => {
+                                    handleChangedAnything();
+                                    setValues((prevState) => {
+                                      if (event.target.checked) {
+                                        const checkedName = checkbox.value;
+                                        return {
+                                          ...prevState,
+                                          availableDays: [...prevState.availableDays, checkedName],
+                                        };
+                                      } else {
+                                        const availableDays = prevState.availableDays;
+                                        const indexOf = availableDays.indexOf(checkbox.value);
+                                        if (indexOf > -1) {
+                                          availableDays.splice(indexOf, 1);
+                                          return {
+                                            ...prevState,
+                                            availableDays,
+                                          };
+                                        }
+                                        return prevState;
+                                      }
+                                    });
+                                  }}
+                                  name={checkbox.value}
+                                />
+                              }
+                              label={checkbox.label}
+                            />
+                          ))}
+                        </FormGroup>
+                      </FormControl>
                     </Grid>
                     <Grid
                       item
@@ -399,7 +399,7 @@ const EditProfile: FC<Props> = (props) => {
                         name="priceRate"
                         autoComplete="priceRate"
                         variant="outlined"
-                        placeholder="Your Price per day in US $"
+                        placeholder="Your Price per hour in US $"
                         helperText={touched.priceRate ? errors.priceRate : ''}
                         error={touched.priceRate && Boolean(errors.priceRate)}
                         value={values.priceRate}

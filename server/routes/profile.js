@@ -8,13 +8,16 @@ const {
   getOneProfile,
   getAllProfiles,
   getProfilesBySearch,
-  getProfilesByDay
+  getProfilesByDay,
+  getOneFullUserProfile
 } = require('../controllers/profile');
 
 
 router.post("/createorupdate", validateCreateProfile, protect, createProfile);
 
 router.get("/one", protect, getOneProfile);
+
+router.get("/:userId", protect, getOneFullUserProfile);
 
 router.get("/", protect, getAllProfiles);
 

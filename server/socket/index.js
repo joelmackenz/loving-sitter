@@ -54,6 +54,13 @@ exports.appSocket = (server) => {
       socket.broadcast.emit("add-online-user", id);
     });
 
+    socket.on("new-convo", (data) => {
+      const { recipientUserId, ...otherValues } = data;
+      // retrieve socket id of recipient user
+      const recipientSocketId = onlineUsers[recipientUserId];
+      socket.to(recipientSocketId).emit("new-convo", otherValues);
+    })
+
     socket.on("new-message", (data) => {
       // retrieve socket id of recipient user
       const recipientSocketId = onlineUsers[data.recipientUserId];
@@ -61,6 +68,14 @@ exports.appSocket = (server) => {
         message: data.message,
         activeConversation: data.activeConversation,
       })
+    });
+
+    // when a new notification comes up
+    socket.on("new-notification", (data) => {
+      // retrieve socket id of recipient user
+      const { recipientUserId, ...otherValues } = data;
+      const recipientSocketId = onlineUsers[recipientUserId];
+      socket.to(recipientSocketId).emit("new-notification", { ...otherValues });
     })
 
     // when a user goes logout or goes offline

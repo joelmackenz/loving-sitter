@@ -41,6 +41,7 @@ const useStyles = makeStyles((theme) => ({
   },
   subInfo: {
     marginBottom: '20px',
+    fontSize: '0.8rem',
   },
   profileLocation: {
     marginBottom: '1rem',

@@ -45,9 +45,6 @@ exports.validateCreateProfile = [
 ]
 
 exports.validateCreateRequest = [
-  check("user_id")
-    .isMongoId()
-    .withMessage("User Id must be valid mongo Object Id"),
   check("sitter_id")
     .isMongoId()
     .withMessage("User Id must be valid mongo Object Id"),
@@ -62,7 +59,8 @@ exports.validateCreateRequest = [
 ];
   
 exports.validateCreateNotification = [
-  check("user").isMongoId().withMessage("User must be valid mongo Object Id"),
+  check("userCreatorId").isMongoId().withMessage("UserCreatorId must be valid mongo Object Id"),
+  check("userReceiverId").isMongoId().withMessage("UserReceiverId must be valid mongo Object Id"),
   check("type")
     .isIn([
       "SERVICE_REQUEST",

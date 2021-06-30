@@ -55,7 +55,8 @@ exports.createRequest = (req, res) => {
     }
 
     return res.status(200).json({
-      request
+      success: "Request send successfully.",
+      requestId: request._id
     })
 
   })
@@ -89,8 +90,8 @@ exports.updateRequest = (req, res) => {
         })
       }
 
-      return res.status(204).json({
-        success: "query updated successfully."
+      return res.status(200).json({
+        success: "Query updated successfully."
       })
 
     }

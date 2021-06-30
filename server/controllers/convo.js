@@ -67,7 +67,7 @@ module.exports.getAllConvos = async (req, res, next) => {
                 select: "profileImg"
             }
         })
-        if (!foundConvos) {
+        if (!foundConvos.length) {
             return res.status(200).json({
                 error: "No conversations found."
             });

@@ -4,7 +4,12 @@ const { Schema } = mongoose;
 const { ObjectId } = Schema;
 
 const notificationSchema = new Schema({
-  user: {
+  userReceiverId: {
+    type: ObjectId,
+    ref: "user",
+    required: true
+  },
+  userCreatorId: {
     type: ObjectId,
     ref: "user",
     required: true
@@ -32,6 +37,14 @@ const notificationSchema = new Schema({
   readStatus: {
     type: Boolean,
     default: false
+  },
+  requestId: {
+    type: ObjectId,
+    ref: 'Request'
+  },
+  userCreatorProfileImg: {
+    type: String,
+    required: true,
   },
 }, { timestamps: true });
 

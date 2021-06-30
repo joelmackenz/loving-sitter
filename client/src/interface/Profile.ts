@@ -1,31 +1,18 @@
-import { User } from './User';
+import { IUserContext } from '../context/useUserContext';
 
-export interface Profile {
+export interface IProfile extends IUserContext {
   _id: string;
-  isDogSitter: { type: Boolean };
-  isAvailable: { type: Boolean };
-  firstName: { type: string; require: true };
-  lastName: { type: string; require: true };
-  gender: string;
-  title: string;
-  birthDate: Date;
-  email: string;
-  phoneNumber: string;
-  address: {
-    street: string;
-    city: string;
-    provinceState: string;
-  };
-  description: string;
-  profileImg: string;
-  coverImg: string;
-  galleryImg: string[];
-  availableDates: string[];
-  priceRate: Number;
 }
 
 export interface ProfilesApiData {
-  users?: User[];
-  error?: { message: string };
-  profiles: Profile[];
+  allUsers?: {
+    firstName: string;
+    lastName: string;
+    isDogSitter: boolean;
+    email: string;
+    _id: string;
+    profileId: IProfile[];
+  }[];
+  success?: string;
+  error?: string;
 }
