@@ -56,8 +56,8 @@ export default function Main({ location, history }: RouteComponentProps): JSX.El
       <LandingNavbar />
       <div className={classes.root}>
         <Grid container>
-          <Grid item sm={6} xs={12} className={classes.mainContent}>
-            <Grid className={classes.subBox}>
+          <Grid container xs={12} md={5} className={classes.mainContent}>
+            <Grid item>
               <Typography variant="h2" component="h1" className={classes.mainText}>
                 Find the care your
                 <Box display="block" component="span">
@@ -85,7 +85,7 @@ export default function Main({ location, history }: RouteComponentProps): JSX.El
               </form>
             </Grid>
           </Grid>
-          <Grid item sm={6} xs={12}>
+          <Grid xs={12} md={7} container className={classes.mainPhotoContainer}>
             <img src={mainPagePhoto} alt="mainPagePhoto" className={classes.mainPhoto} />
           </Grid>
         </Grid>

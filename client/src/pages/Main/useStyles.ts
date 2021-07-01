@@ -10,19 +10,19 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  subBox: {
-    padding: '30px 120px',
-    [theme.breakpoints.down('xs')]: {
-      padding: theme.spacing(6, 6, 0, 6),
-    },
-  },
   mainText: {
     fontWeight: 900,
     whiteSpace: 'nowrap',
-    [theme.breakpoints.down('xs')]: {
-      marginTop: '2rem',
+    [theme.breakpoints.only('xs')]: {
       fontSize: '1.5rem',
       textAlign: 'center',
+    },
+    [theme.breakpoints.down('sm')]: {
+      marginTop: '10rem',
+      textAlign: 'center',
+    },
+    [theme.breakpoints.only('md')]: {
+      fontSize: '2.5rem',
     },
   },
   searchText: {
@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
       width: '70%',
       display: 'block',
     },
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       '&.MuiFormControl-fullWidth': {
         width: '100%',
       },
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   },
   dateRange: {
     width: '35%',
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       width: '100%',
     },
   },
@@ -59,11 +59,19 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2, 6),
     marginTop: '35px',
     textTransform: 'uppercase',
+    [theme.breakpoints.down('sm')]: {
+      width: '100%',
+    },
+  },
+  mainPhotoContainer: {
+    minHeight: '100vh',
+    minWidth: '50vw',
   },
   mainPhoto: {
+    height: '100%',
     width: '100%',
-    height: '100vh',
-    [theme.breakpoints.down('xs')]: {
+    objectFit: 'cover',
+    [theme.breakpoints.down('sm')]: {
       display: 'none',
     },
   },

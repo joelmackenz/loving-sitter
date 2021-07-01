@@ -4,17 +4,16 @@ Loving Sitter is a web app made to connect animal owners with animal caretakers.
 
 ## Table of Contents
 
--   [General Info](#general-info)
+-   [General Info](#general)
 -   [Contributors](#contributors)
 -   [Technologies](#technologies)
 -   [Features](#features)
 -   [Usage](#usage)
 -   [Acknowledgements](#acknowledgements)
--   [Screenshoots](#screenshoots)
 
 ---
 
-## General Information
+## General
 
 This application was made as part of the co-hort program with Hatchways.
 
@@ -43,12 +42,12 @@ This application was made as part of the co-hort program with Hatchways.
 
 ## Usage
 
--   For basic sign-in access, the project requires a .env file in the server folder, containing at least this:
-    JWT_SECRET=<any string>
-    Ideally, the project is also connected to MongoDB and Amazon S3.
-    For MongoDB access, include a string labelled as such:
-    MONGO_URI=""
-    For Amazon S3, include the following:
+-   For basic sign-in access, the project requires a .env file in the server folder, containing at least this:<br>
+    JWT_SECRET=[any string]<br>
+    Ideally, the project is also connected to MongoDB and Amazon S3.<br>
+    For MongoDB access, include a string labelled as such:<br>
+    MONGO_URI="[mongo URI]"<br>
+    For Amazon S3, include the following:<br>
     BUCKET_NAME, ACCESS_KEY, SECRET_ACCESS_KEY, REGION
 -   With the .env file in place, run npm start on the client folder, and npm run dev in the server
 -   When the project opens in the browser, sign up on the front page, or use the demo account by pressing the "demo" button
