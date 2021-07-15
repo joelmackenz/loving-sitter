@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import useStyles from './useStyles';
 import { Link } from 'react-router-dom';
+import { randomImage } from './dummyProfilePhotos';
 
 import { Profile } from './ProfileListings';
 
@@ -27,7 +28,11 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ profile }) => {
       <Card className={classes.card} raised={true}>
         <CardActionArea>
           <CardContent className={classes.cardContentUpper}>
-            <Avatar className={classes.cardUserAvatar} src={profile.profileId[0].profileImg} alt="" />
+            <Avatar
+              className={classes.cardUserAvatar}
+              src={profile.profileId[0].profileImg === 'demo' ? randomImage() : profile.profileId[0].profileImg}
+              alt=""
+            />
             <Typography gutterBottom variant="h5" component="h2" className={classes.cardUserName}>
               {profile.firstName} {profile.lastName}
             </Typography>
