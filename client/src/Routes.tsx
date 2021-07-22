@@ -10,6 +10,7 @@ import ProtectedRoute from './ProtectedRoute';
 import Main from './pages/Main/Main';
 import AuthNavbar from './components/AuthNavbar/Navbar';
 import { useAuth } from './context/useAuthContext';
+import ManageBookings from './pages/ManageBookings/ManageBookings';
 
 const Routes = (): JSX.Element => {
   const { loggedInUser } = useAuth();
@@ -23,6 +24,7 @@ const Routes = (): JSX.Element => {
         <ProtectedRoute exact path="/dashboard" component={ProfileListings} />
         <ProtectedRoute exact path="/settings" component={Settings} />
         <ProtectedRoute exact path="/messages" component={Messages} />
+        <ProtectedRoute exact path="/managebookings" component={ManageBookings} />
         <ProtectedRoute path="/dashboard/:userId" component={ProfileDetails} />
         <Route path="*">
           <Redirect to="/login" />

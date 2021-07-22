@@ -37,6 +37,7 @@ import {
 import { updateRequest } from '../../helpers/APICalls/request';
 import { newConvo } from '../../utils/conversation';
 import { updateIsDogSitter } from '../../helpers/APICalls/profileFields';
+import ManageBookings from '../../pages/ManageBookings/ManageBookings';
 
 const headersData = [
   {
@@ -49,7 +50,7 @@ const headersData = [
   },
   {
     label: 'My Jobs',
-    href: '/dashboard',
+    href: '/managebookings',
   },
   {
     label: 'Messages',
@@ -457,7 +458,7 @@ export default function AuthNavbar(): JSX.Element {
           {loggedInUser?.isDogSitter ? (
             <MenuItem>
               <Link
-                to={{ pathname: '/myjobs', state: { previousPath: location.pathname } }}
+                to={{ pathname: '/managebookings', state: { previousPath: location.pathname } }}
                 className={classes.linkItem}
               >
                 My Jobs
