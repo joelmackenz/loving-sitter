@@ -1,3 +1,5 @@
+import { IProfile } from './Profile';
+
 export interface User {
   email: string;
   _id: string;
@@ -5,6 +7,7 @@ export interface User {
   lastName: string;
   isDogSitter: boolean;
   profileImg?: string;
+  profile?: IProfile;
 }
 
 export interface SearchUsersApiData {
