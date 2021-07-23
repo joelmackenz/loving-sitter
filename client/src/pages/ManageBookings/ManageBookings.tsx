@@ -10,7 +10,6 @@ import { Typography } from '@material-ui/core';
 import { BookingRequest } from '../../interface/BookingRequest';
 import getBookingRequests from '../../helpers/APICalls/bookingRequests/getBookingRequests';
 import { Badge } from '@material-ui/core';
-import EditBookingPopover from './EditBookingPopover';
 
 export default function ManageBookings(): JSX.Element {
   const classes = useStyles();
@@ -34,7 +33,7 @@ export default function ManageBookings(): JSX.Element {
       methods[time](
         <>
           {bookingRequestName.map((booking: BookingRequest) => {
-            const profile = booking.user_id.profile;
+            const profile = booking.user_id;
             return (
               <Grid key={booking._id}>
                 <Booking
@@ -82,6 +81,7 @@ export default function ManageBookings(): JSX.Element {
         const requestDate = new Date(request.start_date);
         const formattedDate = requestDate.toLocaleDateString('en-US');
         requestDatesList.push(formattedDate);
+        console.log('formatted date: ' + formattedDate);
         if (nowString === formattedDate || requestDate > now) {
           currentRequestsList.push(request);
         } else {
@@ -90,7 +90,7 @@ export default function ManageBookings(): JSX.Element {
       });
       setRequestDates(requestDatesList);
       setNextBookingRequest(currentRequestsList[0]);
-      setCurrentBookingRequests(currentRequestsList.slice(1));
+      setCurrentBookingRequests(currentRequestsList[0] ? currentRequestsList.slice(1) : undefined);
       setPastBookingRequests(pastRequestsList);
     }
   };
@@ -163,6 +163,7 @@ export default function ManageBookings(): JSX.Element {
                 const dateString: string | undefined | null = date && date.toLocaleDateString('en-US');
                 const isSelected: boolean | undefined | null =
                   date && isInCurrentMonth && requestDates && requestDates.includes(dateString);
+                console.log('requestDates: ' + requestDates);
                 return isSelected ? (
                   <Badge
                     overlap="circle"

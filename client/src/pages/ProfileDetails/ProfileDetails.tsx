@@ -23,7 +23,7 @@ export default function ProfileDetails({ location, match }: RouteComponentProps)
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
-    if (state.profile) {
+    if (state && state.profile) {
       setProfile(state.profile);
     } else {
       const params = match.params as { userId: string };
