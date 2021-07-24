@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import useStyles from './useStyles';
 import { Link } from 'react-router-dom';
-import { randomImage } from './dummyProfilePhotos';
+import { specificImage } from './dummyProfilePhotos';
 
 import { Profile } from './ProfileListings';
 
@@ -30,7 +30,11 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ profile }) => {
           <CardContent className={classes.cardContentUpper}>
             <Avatar
               className={classes.cardUserAvatar}
-              src={profile.profileId[0].profileImg === 'demo' ? randomImage() : profile.profileId[0].profileImg}
+              src={
+                typeof parseInt(profile.profileId[0].profileImg) === 'number'
+                  ? specificImage(parseInt(profile.profileId[0].profileImg))
+                  : profile.profileId[0].profileImg
+              }
               alt=""
             />
             <Typography gutterBottom variant="h5" component="h2" className={classes.cardUserName}>

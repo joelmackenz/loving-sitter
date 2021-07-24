@@ -12,6 +12,9 @@ const images = [image1, image2, image3, image4, image5, image6, image7, image8, 
 
 export const randomImage = () => {
   const randomNum = Math.floor(Math.random() * 9);
-  console.log(randomNum + ' is the num');
   return images[randomNum];
+};
+
+export const specificImage = (imageNum: number) => {
+  return images[imageNum];
 };

@@ -75,13 +75,12 @@ export default function ManageBookings(): JSX.Element {
     const pastRequestsList: BookingRequest[] = [];
     const requestDatesList: (string | null)[] = [];
     const now = new Date();
-    const nowString = now.toLocaleDateString('en-US');
+    const nowString = now.toLocaleDateString();
     if (data.requests) {
       data.requests.map((request) => {
         const requestDate = new Date(request.start_date);
-        const formattedDate = requestDate.toLocaleDateString('en-US');
+        const formattedDate = requestDate.toLocaleDateString();
         requestDatesList.push(formattedDate);
-        console.log('formatted date: ' + formattedDate);
         if (nowString === formattedDate || requestDate > now) {
           currentRequestsList.push(request);
         } else {
@@ -91,7 +90,7 @@ export default function ManageBookings(): JSX.Element {
       setRequestDates(requestDatesList);
       setNextBookingRequest(currentRequestsList[0]);
       setCurrentBookingRequests(currentRequestsList[0] ? currentRequestsList.slice(1) : undefined);
-      setPastBookingRequests(pastRequestsList);
+      setPastBookingRequests(pastRequestsList[0] ? pastRequestsList : undefined);
     }
   };
 
@@ -160,10 +159,9 @@ export default function ManageBookings(): JSX.Element {
               disabled
               readOnly
               renderDay={(date, selectedDate, isInCurrentMonth, dayComponent) => {
-                const dateString: string | undefined | null = date && date.toLocaleDateString('en-US');
+                const dateString: string | undefined | null = date && date.toLocaleDateString();
                 const isSelected: boolean | undefined | null =
                   date && isInCurrentMonth && requestDates && requestDates.includes(dateString);
-                console.log('requestDates: ' + requestDates);
                 return isSelected ? (
                   <Badge
                     overlap="circle"
