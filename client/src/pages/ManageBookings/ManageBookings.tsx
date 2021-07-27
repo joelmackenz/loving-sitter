@@ -50,7 +50,7 @@ export default function ManageBookings(): JSX.Element {
       );
       // if bookingRequestName is not an array, display the single booking request (next booking request)
     } else if (bookingRequestName) {
-      const profile = bookingRequestName.user_id && bookingRequestName.user_id.profile;
+      const profile = bookingRequestName.user_id!;
       methods[time](
         <>
           <Grid key={bookingRequestName._id}>

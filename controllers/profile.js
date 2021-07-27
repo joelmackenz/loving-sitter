@@ -261,28 +261,64 @@ exports.getAllProfiles = asyncHandler(async (req, res, next) => {
 exports.getProfilesBySearch = asyncHandler(async (req, res, next) => {
     const search = req.params.search;
     try {
-        const foundUsers = await User.find({
-            _id: { $ne: req.user.id },
-            isDogSitter: {
-                $exists: true,
-            },
-        }).populate({
-            path: "profileId",
-        });
-        // Sets users to array of users with populated profiles
-        const users = [];
-        foundUsers.map((user) => {
-            if (user.profileId) {
-                const city = user.profileId.city.toLowerCase();
-                if (city.includes(search)) {
-                    users.push(user);
+        User.aggregate(
+            [
+                {
+                    $match: {
+                        $expr: { $ne: ["$_id", { $toObjectId: req.user.id }] },
+                        isDogSitter: { $eq: true },
+                        profileId: { $exists: true },
+                    },
+                },
+                {
+                    $project: {
+                        firstName: 1,
+                        lastName: 1,
+                        email: 1,
+                        isDogSitter: 1,
+                        profileId: 1,
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "profiles",
+                        let: { id: "$profileId" },
+                        pipeline: [
+                            {
+                                $project: {
+                                    __v: 0,
+                                    availableDays: 0,
+                                },
+                            },
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ["$_id", { $toObjectId: "$$id" }],
+                                    },
+                                    city: search,
+                                },
+                            },
+                        ],
+                        as: "profileId",
+                    },
+                },
+                {
+                    $match: {
+                        profileId: { $ne: [] },
+                    },
+                },
+            ],
+            (error, result) => {
+                if (error || !result.length) {
+                    return res.status(400).json({
+                        error: "No Search Result Found",
+                    });
                 }
+                return res.status(200).json({
+                    allUsers: result,
+                });
             }
-        });
-        // Returns only users with profiles
-        res.status(200).json({
-            users,
-        });
+        );
     } catch (e) {
         res.status(500);
         throw new Error(e.message);
